@@ -70,21 +70,16 @@
   <div class="max-w-xl mx-auto min-h-screen flex flex-col bg-lightBg dark:bg-darkBg text-slate-800 dark:text-slate-200 shadow-2xl relative">
     
     <!-- HEADER -->
-    <header class="bg-cogerhSlatePrimary text-white py-3.5 px-4 shadow-md sticky top-0 z-50">
-      <div class="flex items-center justify-between">
-        <div class="flex flex-col">
-          <div class="flex items-center gap-1">
-            <span class="text-2xl font-black tracking-wider text-white">COGE</span>
-            <span class="text-2xl font-black tracking-wider text-cogerhGoldAccent">RH</span>
-          </div>
-          <span class="text-[7.5px] font-semibold tracking-wider text-slate-300 uppercase leading-none">
-            Coordenadoria de Gestão de Recursos Humanos | UTFPR
-          </span>
+    <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50">
+      <div class="relative flex items-center justify-center min-h-[56px]">
+        <!-- Center Logo matching the native design layout -->
+        <div class="flex items-center justify-center w-full">
+          <img src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-[70%] object-contain" />
         </div>
         
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-2">
-          <button onclick="toggleTheme()" title="Alterar Tema" class="text-cogerhGoldAccent hover:scale-110 p-2 rounded-full hover:bg-slate-700/40 transition active:scale-95">
+        <!-- Theme Selection Action Button (absolute right) -->
+        <div class="absolute right-0 top-1/2 -translate-y-1/2">
+          <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95">
             <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
           </button>
         </div>
@@ -134,7 +129,7 @@
         <!-- Canais Tab -->
         <button onclick="switchTab(4)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
           <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
-            <i class="fa-solid fa-circle-nodes text-lg text-slate-500 dark:text-slate-400"></i>
+            <i class="fa-solid fa-share-nodes text-lg text-slate-500 dark:text-slate-400"></i>
           </div>
           <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Canais</span>
         </button>
@@ -186,6 +181,85 @@
               Sincronizar
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- THEME SELECTION MODAL -->
+    <div id="theme-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fa-solid fa-palette text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-xl"></i>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Aparência do Aplicativo</h3>
+        </div>
+        
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+          Selecione o tema visual do aplicativo:
+        </p>
+
+        <div class="space-y-3">
+          <!-- Option 1: Claro -->
+          <div onclick="selectThemeOption('light')" id="theme-opt-light" class="flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-sun text-base text-slate-500 dark:text-slate-400"></i>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Claro</p>
+                <p class="text-[10px] text-slate-400">Fundo claro com tons corporativos suaves</p>
+              </div>
+            </div>
+            <input type="radio" name="theme-radio" id="theme-radio-light" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+          </div>
+
+          <!-- Option 2: Escuro -->
+          <div onclick="selectThemeOption('dark')" id="theme-opt-dark" class="flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-moon text-base text-slate-500 dark:text-slate-400"></i>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Escuro</p>
+                <p class="text-[10px] text-slate-400">Fundo escuro, ideal para reduzir o cansaço visual</p>
+              </div>
+            </div>
+            <input type="radio" name="theme-radio" id="theme-radio-dark" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+          </div>
+
+          <!-- Option 3: Seguir Sistema -->
+          <div onclick="selectThemeOption('system')" id="theme-opt-system" class="flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-sliders text-base text-slate-500 dark:text-slate-400"></i>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Siga o Sistema</p>
+                <p class="text-[10px] text-slate-400">Acompanha as configurações do smartphone</p>
+              </div>
+            </div>
+            <input type="radio" name="theme-radio" id="theme-radio-system" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="closeThemeModal()" class="text-xs font-black uppercase tracking-wider text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:underline px-4 py-2">
+            Concluído
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTICE DETAIL MODAL -->
+    <div id="notice-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span id="notice-detail-category" class="text-[10px] font-bold px-2.5 py-0.5 rounded-md"></span>
+          <span id="notice-detail-date" class="text-[10px] text-slate-500 dark:text-slate-400"></span>
+        </div>
+        <h3 id="notice-detail-title" class="text-base font-extrabold text-slate-900 dark:text-slate-100 mb-3 leading-snug"></h3>
+        <p id="notice-detail-content" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-6 whitespace-pre-line"></p>
+        
+        <div class="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="closeNoticeDetailModal()" class="text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 px-4 py-2">
+            Fechar
+          </button>
+          <button id="notice-detail-share-btn" class="flex items-center gap-1.5 bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 font-bold px-4 py-2 rounded-xl text-xs shadow-md transition active:scale-95">
+            <i class="fa-solid fa-share-nodes"></i> Compartilhar
+          </button>
         </div>
       </div>
     </div>
@@ -456,7 +530,7 @@
 
     // LOCAL APP STATE ENGINE
     let state = {
-      themeMode: localStorage.getItem("cogerh_theme") || "light",
+      themeMode: localStorage.getItem("cogerh_theme") || "system",
       currentTab: 0,
       searchQuery: "",
       selectedCategory: "Todos",
@@ -480,6 +554,13 @@
       renderCurrentScreen();
       initServiceWorker();
       autoSyncFromDefaultSheet();
+
+      // Listen for system theme changes dynamically if "system" mode is selected
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (state.themeMode === "system") {
+          applyTheme();
+        }
+      });
     });
 
     // PWA SERVICE WORKER REGISTRATION
@@ -494,22 +575,157 @@
     }
 
     // THEME MANAGEMENT
-    function toggleTheme() {
-      state.themeMode = state.themeMode === "light" ? "dark" : "light";
-      localStorage.setItem("cogerh_theme", state.themeMode);
+    function openThemeModal() {
+      document.getElementById("theme-modal").classList.remove("hidden");
+      updateThemeModalUI();
+    }
+
+    function closeThemeModal() {
+      document.getElementById("theme-modal").classList.add("hidden");
+    }
+
+    function selectThemeOption(mode) {
+      state.themeMode = mode;
+      localStorage.setItem("cogerh_theme", mode);
       applyTheme();
+      updateThemeModalUI();
+    }
+
+    function updateThemeModalUI() {
+      const options = ["light", "dark", "system"];
+      options.forEach(opt => {
+        const rowEl = document.getElementById(`theme-opt-${opt}`);
+        const radioEl = document.getElementById(`theme-radio-${opt}`);
+        if (!rowEl || !radioEl) return;
+        
+        if (state.themeMode === opt) {
+          rowEl.className = "flex items-center justify-between p-3.5 rounded-xl border-2 border-cogerhSlatePrimary dark:border-cogerhGoldAccent bg-slate-50 dark:bg-slate-900 cursor-pointer transition";
+          radioEl.checked = true;
+        } else {
+          rowEl.className = "flex items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-cogerhSlateDark/40 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 transition";
+          radioEl.checked = false;
+        }
+      });
     }
 
     function applyTheme() {
       const htmlEl = document.documentElement;
       const themeIcon = document.getElementById("theme-icon");
+      if (!themeIcon) return;
+      
+      let isDark = false;
       if (state.themeMode === "dark") {
+        isDark = true;
+      } else if (state.themeMode === "system") {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      
+      if (isDark) {
         htmlEl.classList.add("dark");
-        themeIcon.className = "fa-solid fa-moon text-lg";
       } else {
         htmlEl.classList.remove("dark");
-        themeIcon.className = "fa-solid fa-sun text-lg";
       }
+
+      // Update header button icon based on selection
+      if (state.themeMode === "dark") {
+        themeIcon.className = "fa-solid fa-moon text-lg text-cogerhGoldAccent";
+      } else if (state.themeMode === "light") {
+        themeIcon.className = "fa-solid fa-sun text-lg text-cogerhGoldAccent";
+      } else {
+        themeIcon.className = "fa-solid fa-sliders text-lg text-cogerhGoldAccent";
+      }
+    }
+
+    // NOTICE DETAIL MODAL & SHARE LOGIC
+    let currentDetailedNoticeId = null;
+
+    function openNoticeDetail(id) {
+      const notice = state.notices.find(n => n.id === id);
+      if (!notice) return;
+      
+      currentDetailedNoticeId = id;
+      
+      document.getElementById("modal-notice-title").innerText = notice.title;
+      document.getElementById("modal-notice-date").innerText = notice.date;
+      document.getElementById("modal-notice-category").innerText = notice.category || (notice.isPriority ? "URGENTE" : "Geral");
+      document.getElementById("modal-notice-content").innerHTML = notice.content.replace(/\n/g, '<br>');
+      
+      const badge = document.getElementById("modal-notice-category-badge");
+      if (badge) {
+        if (notice.isPriority) {
+          badge.className = "text-[10px] bg-cogerhGoldAccent text-slate-950 font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0";
+        } else {
+          badge.className = "text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0";
+        }
+      }
+      
+      document.getElementById("notice-detail-modal").classList.remove("hidden");
+    }
+
+    function closeNoticeDetail() {
+      document.getElementById("notice-detail-modal").classList.add("hidden");
+      currentDetailedNoticeId = null;
+    }
+
+    function shareNoticeFromModal() {
+      if (!currentDetailedNoticeId) return;
+      const notice = state.notices.find(n => n.id === currentDetailedNoticeId);
+      if (!notice) return;
+      
+      const shareText = `*COGERH Apucarana - ${notice.category || "Aviso"}*\n\n*${notice.title}*\n_${notice.date}_\n\n${notice.content}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: notice.title,
+          text: shareText
+        }).then(() => {
+          console.log('Compartilhado com sucesso!');
+        }).catch(err => {
+          console.log('Erro ao compartilhar:', err);
+        });
+      } else {
+        // Fallback to copy-to-clipboard
+        navigator.clipboard.writeText(shareText).then(() => {
+          showToast("Aviso copiado para a área de transferência!");
+        }).catch(() => {
+          showToast("Não foi possível copiar o texto.");
+        });
+      }
+    }
+
+    // MODERN TOAST NOTIFICATION ENGINE
+    function showToast(message) {
+      let container = document.getElementById("toast-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        container.className = "fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm";
+        document.body.appendChild(container);
+      }
+      
+      const toast = document.createElement("div");
+      toast.className = "bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-950 text-xs font-bold px-4 py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 animate-fade-in pointer-events-auto transition duration-300 opacity-0 transform translate-y-2";
+      toast.innerHTML = `
+        <i class="fa-solid fa-circle-check text-cogerhGoldAccent dark:text-cogerhSlatePrimary"></i>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      // Trigger animations
+      setTimeout(() => {
+        toast.style.opacity = "1";
+        toast.style.transform = "translateY(0)";
+      }, 50);
+      
+      // Remove toast
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(2px)";
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3000);
     }
 
     // NAVIGATION
@@ -578,15 +794,19 @@
       if (priorityNotices.length > 0) {
         priorityNotices.forEach(notice => {
           noticesHtml += `
-            <div class="bg-[#FFF9E6] dark:bg-amber-950/20 border-l-4 border-cogerhGoldAccent p-4 rounded-xl shadow-sm mb-4">
+            <div onclick="openNoticeDetail('${notice.id}')" class="bg-[#FFF9E6] dark:bg-amber-950/15 border-l-4 border-cogerhGoldAccent p-4 rounded-xl shadow-sm mb-4 cursor-pointer hover:shadow-md transition active:scale-98">
               <div class="flex items-start justify-between gap-2">
-                <span class="text-[10px] bg-cogerhGoldAccent text-slate-950 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                <span class="text-[10px] bg-cogerhGoldAccent text-slate-950 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                   ${notice.category || 'URGENTE'}
                 </span>
-                <span class="text-[10px] text-slate-500 dark:text-slate-400">${notice.date}</span>
+                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">${notice.date}</span>
               </div>
-              <h4 class="text-sm font-extrabold text-slate-900 dark:text-amber-200 mt-2.5 mb-1.5 leading-snug">${notice.title}</h4>
-              <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${notice.content}</p>
+              <h4 class="text-sm font-black text-slate-900 dark:text-amber-200 mt-2.5 mb-1.5 leading-snug">${notice.title}</h4>
+              <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-2">${notice.content}</p>
+              <div class="flex items-center gap-1.5 mt-3 text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent">
+                <span>Toque para ler mais e compartilhar</span>
+                <i class="fa-solid fa-arrow-right text-[8px] mt-0.5"></i>
+              </div>
             </div>
           `;
         });
@@ -596,15 +816,19 @@
       if (generalNotices.length > 0) {
         generalNotices.forEach(notice => {
           generalNoticesHtml += `
-            <div class="bg-white dark:bg-cogerhSlateDark p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 mb-3.5">
+            <div onclick="openNoticeDetail('${notice.id}')" class="bg-white dark:bg-cogerhSlateDark p-4 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-800 mb-3.5 cursor-pointer hover:shadow-md transition active:scale-98">
               <div class="flex items-start justify-between gap-2">
-                <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                <span class="text-[10px] bg-slate-100 dark:bg-slate-850 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                   ${notice.category || 'Geral'}
                 </span>
-                <span class="text-[10px] text-slate-400">${notice.date}</span>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">${notice.date}</span>
               </div>
               <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-2 mb-1 leading-snug">${notice.title}</h4>
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${notice.content}</p>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">${notice.content}</p>
+              <div class="flex items-center gap-1.5 mt-3 text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent">
+                <span>Toque para ler mais e compartilhar</span>
+                <i class="fa-solid fa-arrow-right text-[8px] mt-0.5"></i>
+              </div>
             </div>
           `;
         });
@@ -638,38 +862,44 @@
           `;
         });
       } else {
-        agendaHtml = `<p class="text-xs text-slate-400 text-center py-4">Nenhum evento na agenda.</p>`;
+        agendaHtml = `<p class="text-xs text-slate-400 text-center py-4">Nenhuma atividade pendente na agenda.</p>`;
       }
 
       container.innerHTML = `
         <div class="space-y-5 animate-fade-in">
-          <!-- Welcome Section -->
+          <!-- Welcome Section matching native home card exactly -->
           <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
-            <div class="relative z-10">
-              <h2 class="text-lg font-black tracking-tight">Olá, Servidor!</h2>
-              <p class="text-xs text-slate-200 mt-1.5 leading-relaxed max-w-[85%]">
-                Bem-vindo ao canal portátil da COGERH Apucarana. Encontre procedimentos rápidos, contatos imediatos e circulares oficiais.
+            <div class="relative z-10 space-y-3.5">
+              <h2 class="text-lg font-black tracking-tight">Olá, Servidor(a)!</h2>
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Este é o canal direto da COGERH Apucarana para você consultar processos, acompanhar notícias e entrar em contato com nossa equipe para tirar dúvidas de forma rápida e intuitiva.
               </p>
+              <div>
+                <button onclick="switchTab(1)" class="bg-cogerhGoldAccent hover:bg-yellow-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow-md transition active:scale-95 flex items-center gap-1.5">
+                  <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                  Consultar Processos
+                </button>
+              </div>
             </div>
             <!-- Decorative backdrop logo icon -->
-            <i class="fa-solid fa-people-roof text-8xl absolute -right-4 -bottom-4 opacity-10 text-white"></i>
+            <i class="fa-solid fa-magnifying-glass text-8xl absolute -right-4 -bottom-4 opacity-10 text-white"></i>
           </div>
 
           <!-- Dynamic Urgent Notices Section -->
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-1.5">
-              <i class="fa-solid fa-bullhorn text-sm text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
-              Avisos Importantes
+            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3.5 flex items-center gap-2">
+              <i class="fa-solid fa-bullhorn text-base text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+              Avisos e Comunicados
             </h3>
             ${noticesHtml}
             ${generalNoticesHtml}
           </div>
 
           <!-- Agenda / Deadlines Section -->
-          <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-1.5">
-              <i class="fa-solid fa-calendar-check text-sm text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
-              Agenda e Prazos
+          <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-check text-base text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+              Agenda e Cronograma da COGERH
             </h3>
             <div class="space-y-4">
               ${agendaHtml}
@@ -717,16 +947,16 @@
           let catChips = "";
           p.categories.forEach(c => {
             catChips += `
-              <span class="text-[10px] bg-slate-150 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mr-1 mb-1 inline-block">
+              <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider mr-1 mb-1 inline-block">
                 ${c}
               </span>
             `;
           });
 
-          // System Used Badge style
+          // System Used Badge style - High-contrast text on soft, single-tone borders
           const sysBadgeColor = p.systemUsed.split(" / ").firstOrNull === "SEI" 
-            ? "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border border-blue-200/50" 
-            : "bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50";
+            ? "bg-[#EAF2FF] dark:bg-blue-950/25 text-blue-700 dark:text-blue-450 border border-blue-200/50 dark:border-blue-900/30" 
+            : "bg-[#EEF2FF] dark:bg-indigo-950/25 text-indigo-700 dark:text-indigo-450 border border-indigo-200/50 dark:border-indigo-900/30";
 
           // Expandable segment height
           const displayStyle = isExpanded ? "max-height: 2000px; opacity: 1;" : "max-height: 0px; opacity: 0; overflow: hidden;";
@@ -737,7 +967,7 @@
           if (p.stepByStep && p.stepByStep.length > 0) {
             p.stepByStep.forEach((step, stepIdx) => {
               stepsListHtml += `
-                <div class="flex items-start gap-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                <div class="flex items-start gap-2.5 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                   <span class="flex items-center justify-center w-5 h-5 bg-cogerhSlatePrimary text-white text-[10px] font-bold rounded-full mt-0.5 shrink-0">${stepIdx + 1}</span>
                   <p class="flex-1">${step}</p>
                 </div>
@@ -746,15 +976,15 @@
           }
 
           cardsHtml += `
-            <!-- CARD (Solid background, beautifully designed) -->
-            <div class="bg-white dark:bg-cogerhSlateDark rounded-2xl border border-slate-100 dark:border-slate-800 p-5 shadow-sm transition hover:shadow-md">
+            <!-- CARD (Solid background, beautifully designed with unified background) -->
+            <div class="bg-white dark:bg-cogerhSlateDark rounded-2xl border border-slate-200/60 dark:border-slate-800 p-5 shadow-sm transition hover:shadow-md">
               
               <!-- Category and System Tags -->
               <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div class="flex flex-wrap items-center">
                   ${catChips}
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md border shrink-0 ${sysBadgeColor}">
+                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md shrink-0 ${sysBadgeColor}">
                   ${p.systemUsed}
                 </span>
               </div>
@@ -763,16 +993,16 @@
               <h4 class="text-base font-extrabold text-slate-900 dark:text-slate-100 leading-snug mb-2">${p.title}</h4>
               
               <!-- Summary Description -->
-              <p class="text-xs text-slate-500 dark:text-slate-300 leading-relaxed">${p.description}</p>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${p.description}</p>
               
-              <!-- Interactive Expansion trigger -->
-              <button onclick="toggleProcedure('${p.id}')" class="w-full flex items-center justify-center gap-1.5 mt-4 text-xs font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:underline py-1.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl transition active:scale-98">
+              <!-- Interactive Expansion trigger - clean transparent outline instead of dual grey colors -->
+              <button onclick="toggleProcedure('${p.id}')" class="w-full flex items-center justify-center gap-1.5 mt-4 text-xs font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:bg-slate-50 dark:hover:bg-slate-900/30 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl transition active:scale-98">
                 <span>${isExpanded ? 'Esconder detalhes' : 'Toque para ver o passo a passo completo'}</span>
                 <i class="fa-solid ${expandIcon} text-[10px]"></i>
               </button>
 
               <!-- Detailed Section -->
-              <div class="transition-max-height duration-300 mt-4 space-y-4 border-t border-slate-100 dark:border-slate-800/80 pt-4" style="${displayStyle}">
+              <div class="transition-max-height duration-300 mt-4 space-y-4 border-t border-slate-200/60 dark:border-slate-800/80 pt-4" style="${displayStyle}">
                 
                 <!-- Steps list -->
                 <div class="space-y-3">
@@ -780,8 +1010,8 @@
                   ${stepsListHtml}
                 </div>
 
-                <!-- Responsible Meta info -->
-                <div class="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200/40 dark:border-slate-800/60 space-y-2">
+                <!-- Responsible Meta info (Transparent, single-color container) -->
+                <div class="bg-transparent p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 space-y-2">
                   <div class="flex items-start gap-2">
                     <i class="fa-solid fa-user-tie text-xs text-slate-400 mt-0.5"></i>
                     <div>
@@ -871,20 +1101,20 @@
       if (filtered.length > 0) {
         filtered.forEach(manual => {
           listHtml += `
-            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition hover:shadow-md flex flex-col justify-between">
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-3.5">
-                  <span class="text-[10px] bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 font-extrabold px-3 py-1 rounded-full border border-slate-150 dark:border-slate-800 uppercase tracking-wider">
+                  <span class="text-[10px] bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
                     ${manual.category}
                   </span>
                   <i class="fa-solid fa-file-pdf text-red-500 text-lg"></i>
                 </div>
                 <h4 class="text-sm font-extrabold text-slate-900 dark:text-slate-100 leading-snug mb-2">${manual.title}</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-300 leading-relaxed">${manual.description}</p>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${manual.description}</p>
               </div>
               
               <div class="mt-4 pt-1">
-                <a href="${manual.link}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-800/80 text-cogerhSlatePrimary dark:text-cogerhGoldAccent font-bold py-2 rounded-xl text-xs border border-slate-200 dark:border-slate-800 transition active:scale-98">
+                <a href="${manual.link}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900/30 text-cogerhSlatePrimary dark:text-cogerhGoldAccent font-bold py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-800 transition active:scale-98 shadow-sm">
                   <i class="fa-solid fa-download"></i>
                   Visualizar / Baixar Manual
                 </a>
@@ -943,13 +1173,13 @@
           const hasWhatsapp = member.whatsapp && member.whatsapp.trim().length > 0;
           const cleanWa = hasWhatsapp ? member.whatsapp.replace(/\D/g, '') : '';
           const waButton = hasWhatsapp 
-            ? `<a href="https://wa.me/${cleanWa}" target="_blank" class="flex-1 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-center text-xs font-bold border border-emerald-200/40 dark:border-emerald-900/40 transition active:scale-95 flex items-center justify-center gap-1.5">
+            ? `<a href="https://wa.me/${cleanWa}" target="_blank" class="flex-1 py-2.5 bg-transparent hover:bg-emerald-50/40 dark:bg-emerald-950/10 text-emerald-600 dark:text-emerald-400 rounded-xl text-center text-xs font-bold border border-emerald-200 dark:border-emerald-900/40 transition active:scale-95 flex items-center justify-center gap-1.5">
                 <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
                </a>` 
             : "";
 
           teamHtml += `
-            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4">
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm space-y-4">
               <!-- Avatar, Name & Role -->
               <div class="flex items-center gap-3.5">
                 <div class="w-12 h-12 bg-cogerhSlatePrimary text-white rounded-full flex items-center justify-center text-lg font-black tracking-tight shrink-0 border border-slate-200 dark:border-slate-700">
@@ -962,7 +1192,7 @@
               </div>
 
               <!-- General details -->
-              <div class="border-t border-b border-slate-100 dark:border-slate-800/80 py-3 space-y-2">
+              <div class="border-t border-b border-slate-200/60 dark:border-slate-800/80 py-3 space-y-2">
                 <div class="flex items-start gap-2.5 text-xs">
                   <i class="fa-solid fa-business-time text-slate-400 mt-0.5 w-4 text-center"></i>
                   <div>
@@ -993,7 +1223,7 @@
               <!-- Action buttons -->
               <div class="flex gap-2.5 pt-1">
                 ${waButton}
-                <a href="mailto:${member.email}" class="flex-1 py-2 bg-slate-50 hover:bg-slate-150 dark:bg-slate-900 text-slate-700 dark:text-slate-200 rounded-xl text-center text-xs font-bold border border-slate-200 dark:border-slate-800 transition active:scale-95 flex items-center justify-center gap-1.5">
+                <a href="mailto:${member.email}" class="flex-1 py-2.5 bg-transparent hover:bg-slate-50 dark:bg-slate-900/40 text-slate-700 dark:text-slate-200 rounded-xl text-center text-xs font-bold border border-slate-200 dark:border-slate-800 transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
                   <i class="fa-solid fa-envelope"></i> E-mail
                 </a>
               </div>
@@ -1006,7 +1236,7 @@
 
       container.innerHTML = `
         <div class="space-y-4 animate-fade-in">
-          <div class="bg-slate-50 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+          <div class="bg-transparent p-4 rounded-xl border border-slate-200 dark:border-slate-800/80">
             <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 leading-snug">
               <i class="fa-solid fa-circle-info text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
               Fale Conosco
@@ -1029,55 +1259,79 @@
       container.innerHTML = `
         <div class="space-y-4 animate-fade-in">
           <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-sm text-center">
-            <h3 class="font-extrabold text-sm mb-1">Canais Oficiais e Portais</h3>
-            <p class="text-[11px] text-slate-300 leading-relaxed">Links rápidos de acesso aos sistemas federais, institucionais e suporte direto.</p>
+            <h3 class="font-extrabold text-sm mb-1">Canais de Comunicação</h3>
+            <p class="text-[11px] text-slate-300 leading-relaxed">Acesse diretamente os canais de atendimento da COGERH, os portais de serviços federais e informativos oficiais da UTFPR.</p>
           </div>
 
           <div class="grid grid-cols-1 gap-3.5">
-            <!-- Instagram -->
-            <a href="https://www.instagram.com/cogerh.apucarana" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
-              <div class="w-10 h-10 bg-pink-50 dark:bg-pink-950/20 text-pink-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
-                <i class="fa-brands fa-instagram"></i>
-              </div>
-              <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Instagram COGERH-AP</h4>
-                <p class="text-[10px] text-slate-400">Acompanhe avisos rápidos, dicas de direitos e postagens oficiais.</p>
-              </div>
-              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
-            </a>
-
-            <!-- Suporte WhatsApp -->
-            <a href="https://wa.me/554331621206" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+            <!-- Atendimento por WhatsApp -->
+            <a href="https://wa.me/554331621206" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
               <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
                 <i class="fa-brands fa-whatsapp"></i>
               </div>
               <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">WhatsApp de Atendimento</h4>
-                <p class="text-[10px] text-slate-400">Canal direto de mensagens oficiais e dúvidas (43) 3162-1206.</p>
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Atendimento por WhatsApp</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Canal direto de mensagens com a equipe da COGERH</p>
               </div>
               <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
             </a>
 
-            <!-- Portal UTFPR -->
-            <a href="https://www.utfpr.edu.br" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+            <!-- Atendimento por Telefone -->
+            <a href="tel:4331621205" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-950/20 text-blue-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Atendimento por Telefone</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">(43) 3162-1205</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- E-mail Institucional -->
+            <a href="mailto:cogerh-ap@utfpr.edu.br" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-slate-50 dark:bg-slate-900 text-slate-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">E-mail Institucional da COGERH</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">cogerh-ap@utfpr.edu.br</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- Instagram da COGERH -->
+            <a href="https://www.instagram.com/cogerh.apucarana" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-pink-50 dark:bg-pink-950/20 text-pink-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-brands fa-instagram"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Instagram da COGERH</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Acompanhe novidades e comunicados no nosso Instagram</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- Portal da UTFPR -->
+            <a href="https://www.utfpr.edu.br" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-amber-50 dark:bg-amber-950/20 text-amber-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
                 <i class="fa-solid fa-globe"></i>
               </div>
               <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal do Servidor UTFPR</h4>
-                <p class="text-[10px] text-slate-400">Atalhos para sistemas institucionais, editais, convênios e formulários.</p>
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal da UTFPR</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Portal oficial da Universidade Tecnológica Federal do Paraná</p>
               </div>
               <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
             </a>
 
-            <!-- SouGov Link -->
-            <a href="https://www.gov.br/servidor/pt-br/assuntos/sou-gov" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+            <!-- Portal do Servidor Federal -->
+            <a href="https://www.gov.br/servidor" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
               <div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
                 <i class="fa-solid fa-circle-user"></i>
               </div>
               <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal SouGov</h4>
-                <p class="text-[10px] text-slate-400">Consulte seu contracheque, marque férias e faça autodeclarações.</p>
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal do Servidor Federal</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Acesse o portal de informações do Governo Federal</p>
               </div>
               <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
             </a>
