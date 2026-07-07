@@ -9,11 +9,12 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#343A45">
   
-  <!-- iOS support -->
+  <!-- iOS support & Favicon -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="COGERH-AP">
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%23343A45' rx='40'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='44' fill='%23FBCA03' text-anchor='middle' dominant-baseline='middle'>COGERH</text></svg>">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   
   <!-- Tailwind CSS & FontAwesome Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -71,18 +72,16 @@
     
     <!-- HEADER -->
     <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50">
-      <div class="relative flex items-center justify-center min-h-[56px]">
-        <!-- Center Logo matching the native design layout -->
-        <div class="flex items-center justify-center w-full">
+      <div class="flex items-center justify-between min-h-[56px]">
+        <!-- Left Logo matching the native design layout -->
+        <div class="flex items-center">
           <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-[70%] object-contain" />
         </div>
         
-        <!-- Theme Selection Action Button (absolute right) -->
-        <div class="absolute right-0 top-1/2 -translate-y-1/2">
-          <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95">
-            <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
-          </button>
-        </div>
+        <!-- Theme Selection Action Button (right) -->
+        <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
+          <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
+        </button>
       </div>
     </header>
 
@@ -257,7 +256,7 @@
           <button onclick="closeNoticeDetailModal()" class="text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 px-4 py-2">
             Fechar
           </button>
-          <button id="notice-detail-share-btn" class="flex items-center gap-1.5 bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 font-bold px-4 py-2 rounded-xl text-xs shadow-md transition active:scale-95">
+          <button onclick="shareNoticeFromModal()" id="notice-detail-share-btn" class="flex items-center gap-1.5 bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 font-bold px-4 py-2 rounded-xl text-xs shadow-md transition active:scale-95">
             <i class="fa-solid fa-share-nodes"></i> Compartilhar
           </button>
         </div>
@@ -662,13 +661,13 @@
       
       currentDetailedNoticeId = id;
       
-      document.getElementById("modal-notice-title").innerText = notice.title;
-      document.getElementById("modal-notice-date").innerText = notice.date;
-      document.getElementById("modal-notice-category").innerText = notice.category || (notice.isPriority ? "URGENTE" : "Geral");
-      document.getElementById("modal-notice-content").innerHTML = notice.content.replace(/\n/g, '<br>');
+      document.getElementById("notice-detail-title").innerText = notice.title;
+      document.getElementById("notice-detail-date").innerText = notice.date;
+      document.getElementById("notice-detail-content").innerHTML = notice.content.replace(/\n/g, '<br>');
       
-      const badge = document.getElementById("modal-notice-category-badge");
+      const badge = document.getElementById("notice-detail-category");
       if (badge) {
+        badge.innerText = notice.category || (notice.isPriority ? "URGENTE" : "Geral");
         if (notice.isPriority) {
           badge.className = "text-[10px] bg-cogerhGoldAccent text-slate-950 font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0";
         } else {
@@ -679,9 +678,13 @@
       document.getElementById("notice-detail-modal").classList.remove("hidden");
     }
 
-    function closeNoticeDetail() {
+    function closeNoticeDetailModal() {
       document.getElementById("notice-detail-modal").classList.add("hidden");
       currentDetailedNoticeId = null;
+    }
+
+    function closeNoticeDetail() {
+      closeNoticeDetailModal();
     }
 
     function shareNoticeFromModal() {
@@ -758,6 +761,13 @@
 
     function updateNavigationUI() {
       const tabs = document.querySelectorAll(".nav-tab-btn");
+      const baseIcons = [
+        "fa-solid fa-house text-lg",
+        "fa-solid fa-file-invoice text-lg",
+        "fa-solid fa-book-open text-lg",
+        "fa-solid fa-user-group text-lg",
+        "fa-solid fa-share-nodes text-lg"
+      ];
       tabs.forEach((tab, index) => {
         const iconContainer = tab.querySelector(".nav-icon-container");
         const icon = tab.querySelector("i");
@@ -765,11 +775,11 @@
         
         if (index === state.currentTab) {
           iconContainer.className = "nav-icon-container px-4 py-1.5 rounded-full bg-slate-150 dark:bg-slate-800 text-slate-900 dark:text-cogerhGoldAccent transition duration-150";
-          icon.className = icon.className.replace("text-slate-500", "text-cogerhSlatePrimary dark:text-cogerhGoldAccent font-bold");
+          icon.className = `${baseIcons[index]} text-cogerhSlatePrimary dark:text-cogerhGoldAccent font-bold`;
           label.className = "text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent";
         } else {
           iconContainer.className = "nav-icon-container px-4 py-1.5 rounded-full bg-transparent text-slate-500 dark:text-slate-400 transition duration-150";
-          icon.className = icon.className.replace("font-bold", "font-medium").replace("text-cogerhSlatePrimary dark:text-cogerhGoldAccent", "text-slate-500 dark:text-slate-400");
+          icon.className = `${baseIcons[index]} text-slate-500 dark:text-slate-400 font-medium`;
           label.className = "text-[10px] font-medium text-slate-500 dark:text-slate-400";
         }
       });
@@ -1120,12 +1130,12 @@
           listHtml += `
             <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-end mb-3.5">
-                  <span class="text-[10px] bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                <div class="flex items-start justify-between gap-3 mb-2.5">
+                  <h4 class="text-base font-extrabold text-slate-900 dark:text-slate-100 leading-snug flex-1">${manual.title}</h4>
+                  <span class="text-[9px] bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0 mt-0.5">
                     ${manual.category}
                   </span>
                 </div>
-                <h4 class="text-sm font-extrabold text-slate-900 dark:text-slate-100 leading-snug mb-2">${manual.title}</h4>
                 <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${manual.description}</p>
               </div>
               
@@ -1194,6 +1204,20 @@
                </a>` 
             : "";
 
+          // Telephone / Extension link creation
+          const hasPhone = member.phone && member.phone.trim().length > 0;
+          let cleanPhone = hasPhone ? member.phone.replace(/\D/g, '') : '';
+          if (cleanPhone.length === 4) {
+            cleanPhone = "433162" + cleanPhone;
+          } else if (cleanPhone.length === 8) {
+            cleanPhone = "43" + cleanPhone;
+          }
+          const phoneButton = hasPhone 
+            ? `<a href="tel:${cleanPhone}" class="flex-1 py-2.5 bg-transparent hover:bg-blue-50/40 dark:bg-blue-950/10 text-blue-600 dark:text-blue-400 rounded-xl text-center text-xs font-bold border border-slate-200 dark:border-slate-800 transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-phone"></i> Telefone
+               </a>` 
+            : "";
+
           const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
           const hasPhoto = member.photoUrl && member.photoUrl.trim().length > 0;
           const avatarHtml = hasPhoto
@@ -1202,52 +1226,53 @@
 
           teamHtml += `
             <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm space-y-4">
-              <!-- Avatar, Name & Role -->
-              <div class="flex items-center gap-3.5">
-                ${avatarHtml}
-                <div>
-                  <h4 class="text-sm font-black text-slate-900 dark:text-slate-100 leading-tight">${member.name}</h4>
-                  <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">${member.role}</p>
-                </div>
-              </div>
+               <!-- Avatar, Name & Role -->
+               <div class="flex items-center gap-3.5">
+                 ${avatarHtml}
+                 <div>
+                   <h4 class="text-sm font-black text-slate-900 dark:text-slate-100 leading-tight">${member.name}</h4>
+                   <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">${member.role}</p>
+                 </div>
+               </div>
 
-              <!-- General details -->
-              <div class="border-t border-b border-slate-200/60 dark:border-slate-800/80 py-3 space-y-2">
-                <div class="flex items-start gap-2.5 text-xs">
-                  <i class="fa-solid fa-business-time text-slate-400 mt-0.5 w-4 text-center"></i>
-                  <div>
-                    <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-0.5">Horário de Atendimento</span>
-                    <p class="text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed">${member.atendimento}</p>
-                  </div>
-                </div>
-                
-                <div class="flex items-center gap-2.5 text-xs">
-                  <i class="fa-solid fa-envelope text-slate-400 w-4 text-center"></i>
-                  <a href="mailto:${member.email}" class="text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:underline font-medium">${member.email}</a>
-                </div>
+               <!-- General details -->
+               <div class="border-t border-b border-slate-200/60 dark:border-slate-800/80 py-3 space-y-2">
+                 <div class="flex items-start gap-2.5 text-xs">
+                   <i class="fa-solid fa-business-time text-slate-400 mt-0.5 w-4 text-center"></i>
+                   <div>
+                     <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-0.5">Horário de Atendimento</span>
+                     <p class="text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed">${member.atendimento}</p>
+                   </div>
+                 </div>
+                 
+                 <div class="flex items-center gap-2.5 text-xs">
+                   <i class="fa-solid fa-envelope text-slate-400 w-4 text-center"></i>
+                   <a href="mailto:${member.email}" class="text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:underline font-medium">${member.email}</a>
+                 </div>
 
-                <div class="flex items-center gap-2.5 text-xs">
-                  <i class="fa-solid fa-phone text-slate-400 w-4 text-center"></i>
-                  <span class="text-slate-600 dark:text-slate-300 font-medium">Ramal: ${member.phone}</span>
-                </div>
-              </div>
+                 <div class="flex items-center gap-2.5 text-xs">
+                   <i class="fa-solid fa-phone text-slate-400 w-4 text-center"></i>
+                   <span class="text-slate-600 dark:text-slate-300 font-medium">Ramal: ${member.phone}</span>
+                 </div>
+               </div>
 
-              <!-- Main responsibilities -->
-              <div class="space-y-2">
-                <h5 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Principais Processos & Atribuições</h5>
-                <ul class="space-y-1.5">
-                  ${responsibilitiesList}
-                </ul>
-              </div>
+               <!-- Main responsibilities -->
+               <div class="space-y-2">
+                 <h5 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Principais Processos & Atribuições</h5>
+                 <ul class="space-y-1.5">
+                   ${responsibilitiesList}
+                 </ul>
+               </div>
 
-              <!-- Action buttons -->
-              <div class="flex gap-2.5 pt-1">
-                ${waButton}
-                <a href="mailto:${member.email}" class="flex-1 py-2.5 bg-transparent hover:bg-slate-50 dark:bg-slate-900/40 text-slate-700 dark:text-slate-200 rounded-xl text-center text-xs font-bold border border-slate-200 dark:border-slate-800 transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
-                  <i class="fa-solid fa-envelope"></i> E-mail
-                </a>
-              </div>
-            </div>
+               <!-- Action buttons -->
+               <div class="flex gap-2.5 pt-1">
+                 <a href="mailto:${member.email}" class="flex-1 py-2.5 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900/40 text-slate-700 dark:text-slate-200 rounded-xl text-center text-xs font-bold border border-slate-200 dark:border-slate-800 transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+                   <i class="fa-solid fa-envelope"></i> E-mail
+                 </a>
+                 ${phoneButton}
+                 ${waButton}
+               </div>
+             </div>
           `;
         });
       } else {
