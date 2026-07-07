@@ -74,7 +74,7 @@
       <div class="relative flex items-center justify-center min-h-[56px]">
         <!-- Center Logo matching the native design layout -->
         <div class="flex items-center justify-center w-full">
-          <img src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-[70%] object-contain" />
+          <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-[70%] object-contain" />
         </div>
         
         <!-- Theme Selection Action Button (absolute right) -->
@@ -550,6 +550,23 @@
     // INITS
     document.addEventListener("DOMContentLoaded", () => {
       applyTheme();
+      
+      // Adjust logo path dynamically
+      const logoImg = document.getElementById("header-logo-img");
+      if (logoImg) {
+        const path = window.location.pathname;
+        if (path.endsWith("/pwa")) {
+          logoImg.src = "pwa/cogerh_logo.png";
+        } else {
+          logoImg.src = "cogerh_logo.png";
+        }
+        logoImg.onerror = function() {
+          if (this.src !== window.location.origin + "/pwa/cogerh_logo.png") {
+            this.src = "/pwa/cogerh_logo.png";
+          }
+        };
+      }
+
       updateNavigationUI();
       renderCurrentScreen();
       initServiceWorker();
@@ -1015,7 +1032,7 @@
                   <div class="flex items-start gap-2">
                     <i class="fa-solid fa-user-tie text-xs text-slate-400 mt-0.5"></i>
                     <div>
-                      <p class="text-[10px] uppercase font-bold text-slate-400">Responsável Administrativo</p>
+                      <p class="text-[10px] uppercase font-bold text-slate-400">Responsável</p>
                       <p class="text-xs text-slate-700 dark:text-slate-200 font-medium">${p.responsible}</p>
                     </div>
                   </div>
@@ -1023,7 +1040,7 @@
                   <div class="flex items-start gap-2">
                     <i class="fa-solid fa-window-restore text-xs text-slate-400 mt-0.5"></i>
                     <div>
-                      <p class="text-[10px] uppercase font-bold text-slate-400">Sistemas Requeridos</p>
+                      <p class="text-[10px] uppercase font-bold text-slate-400">Sistemas</p>
                       <p class="text-xs text-slate-700 dark:text-slate-200 font-medium">${p.systemUsed}</p>
                     </div>
                   </div>
@@ -1103,11 +1120,10 @@
           listHtml += `
             <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-between mb-3.5">
+                <div class="flex items-center justify-end mb-3.5">
                   <span class="text-[10px] bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
                     ${manual.category}
                   </span>
-                  <i class="fa-solid fa-file-pdf text-red-500 text-lg"></i>
                 </div>
                 <h4 class="text-sm font-extrabold text-slate-900 dark:text-slate-100 leading-snug mb-2">${manual.title}</h4>
                 <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${manual.description}</p>
@@ -1115,8 +1131,8 @@
               
               <div class="mt-4 pt-1">
                 <a href="${manual.link}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900/30 text-cogerhSlatePrimary dark:text-cogerhGoldAccent font-bold py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-800 transition active:scale-98 shadow-sm">
-                  <i class="fa-solid fa-download"></i>
-                  Visualizar / Baixar Manual
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                  Acessar
                 </a>
               </div>
             </div>
@@ -1178,13 +1194,17 @@
                </a>` 
             : "";
 
+          const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+          const hasPhoto = member.photoUrl && member.photoUrl.trim().length > 0;
+          const avatarHtml = hasPhoto
+            ? `<img src="${member.photoUrl}" alt="${member.name}" class="w-12 h-12 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700" onerror="this.onerror=null; this.outerHTML='<div class=&quot;w-12 h-12 bg-cogerhSlatePrimary text-white rounded-full flex items-center justify-center text-lg font-black tracking-tight shrink-0 border border-slate-200 dark:border-slate-700&quot;>${initials}</div>';" />`
+            : `<div class="w-12 h-12 bg-cogerhSlatePrimary text-white rounded-full flex items-center justify-center text-lg font-black tracking-tight shrink-0 border border-slate-200 dark:border-slate-700">${initials}</div>`;
+
           teamHtml += `
             <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm space-y-4">
               <!-- Avatar, Name & Role -->
               <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 bg-cogerhSlatePrimary text-white rounded-full flex items-center justify-center text-lg font-black tracking-tight shrink-0 border border-slate-200 dark:border-slate-700">
-                  ${member.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
-                </div>
+                ${avatarHtml}
                 <div>
                   <h4 class="text-sm font-black text-slate-900 dark:text-slate-100 leading-tight">${member.name}</h4>
                   <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">${member.role}</p>
@@ -1537,7 +1557,7 @@
         const parsedTeam = [];
         if (rowsTeam.length > 0) {
           // Identify headers dynamically like Kotlin code
-          let nameCol = 0, roleCol = 1, emailCol = 2, phoneCol = 3, respCol = 4, atendCol = 5, waCol = 6;
+          let nameCol = 0, roleCol = 1, emailCol = 2, phoneCol = 3, respCol = 4, atendCol = 5, waCol = 6, photoCol = -1;
           const headers = rowsTeam[0].map(h => h.trim().toLowerCase());
           headers.forEach((h, index) => {
             if (h === "nome" || h === "name") nameCol = index;
@@ -1547,6 +1567,7 @@
             else if (h.includes("respons") || h === "processos") respCol = index;
             else if (h === "atendimento" || h.includes("atend") || h === "bio") atendCol = index;
             else if (h === "whatsapp" || h === "whats" || h.includes("celular")) waCol = index;
+            else if (h === "foto" || h === "photo" || h === "imagem" || h === "image") photoCol = index;
           });
 
           rowsTeam.forEach((row, idx) => {
@@ -1560,12 +1581,13 @@
             const respText = row[respCol]?.trim() || "";
             const atendimento = row[atendCol]?.trim() || "";
             const whatsapp = row[waCol]?.trim() || "";
+            const photoUrl = photoCol !== -1 ? row[photoCol]?.trim() || "" : "";
             
             const responsibilities = respText.includes("|")
               ? respText.split("|").map(r => r.trim()).filter(r => r.length > 0)
               : respText.split("\n").map(r => r.trim()).filter(r => r.length > 0);
 
-            parsedTeam.push({ name, role, email, phone, responsibilities, atendimento, whatsapp });
+            parsedTeam.push({ name, role, email, phone, responsibilities, atendimento, whatsapp, photoUrl });
           });
         }
 
@@ -1730,7 +1752,7 @@
         const rowsTeam = parseCsvText(csvTeam);
         const parsedTeam = [];
         if (rowsTeam.length > 0) {
-          let nameCol = 0, roleCol = 1, emailCol = 2, phoneCol = 3, respCol = 4, atendCol = 5, waCol = 6;
+          let nameCol = 0, roleCol = 1, emailCol = 2, phoneCol = 3, respCol = 4, atendCol = 5, waCol = 6, photoCol = -1;
           const headers = rowsTeam[0].map(h => h.trim().toLowerCase());
           headers.forEach((h, index) => {
             if (h === "nome" || h === "name") nameCol = index;
@@ -1740,6 +1762,7 @@
             else if (h.includes("respons") || h === "processos") respCol = index;
             else if (h === "atendimento" || h.includes("atend") || h === "bio") atendCol = index;
             else if (h === "whatsapp" || h === "whats" || h.includes("celular")) waCol = index;
+            else if (h === "foto" || h === "photo" || h === "imagem" || h === "image") photoCol = index;
           });
 
           rowsTeam.forEach((row, idx) => {
@@ -1753,12 +1776,13 @@
             const respText = row[respCol]?.trim() || "";
             const atendimento = row[atendCol]?.trim() || "";
             const whatsapp = row[waCol]?.trim() || "";
+            const photoUrl = photoCol !== -1 ? row[photoCol]?.trim() || "" : "";
             
             const responsibilities = respText.includes("|")
               ? respText.split("|").map(r => r.trim()).filter(r => r.length > 0)
               : respText.split("\n").map(r => r.trim()).filter(r => r.length > 0);
 
-            parsedTeam.push({ name, role, email, phone, responsibilities, atendimento, whatsapp });
+            parsedTeam.push({ name, role, email, phone, responsibilities, atendimento, whatsapp, photoUrl });
           });
         }
 
