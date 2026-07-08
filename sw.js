@@ -115,7 +115,7 @@ async function checkNewNoticesAndNotify() {
   try {
     // 1. Open sync-data cache and load current spreadsheet parameters and cached notices
     const cache = await caches.open('cogerh-sync-data');
-    const cacheResponse = await cache.match('/pwa-sync-data.json');
+    const cacheResponse = await cache.match('./pwa-sync-data.json');
     if (!cacheResponse) {
       console.log('Nenhum parâmetro de sincronização encontrado no cache do SW.');
       return;
@@ -166,8 +166,8 @@ async function checkNewNoticesAndNotify() {
       for (const notice of toNotify) {
         await self.registration.showNotification(notice.title || 'Novo Aviso COGERH', {
           body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
-          icon: './icon.svg',
-          badge: './favicon.svg',
+          icon: './cogerh_logo.png',
+          badge: './cogerh_logo.png',
           tag: 'notice-' + notice.id,
           data: { noticeId: notice.id },
           vibrate: [100, 50, 100],
@@ -177,7 +177,7 @@ async function checkNewNoticesAndNotify() {
       
       // 5. Update cached notices list so we don't notify of these again
       await cache.put(
-        new Request('/pwa-sync-data.json'),
+        new Request('./pwa-sync-data.json'),
         new Response(JSON.stringify({ spreadsheetId, notices: latestNotices, updatedAt: Date.now() }), {
           headers: { 'Content-Type': 'application/json' }
         })
@@ -192,6 +192,13 @@ async function checkNewNoticesAndNotify() {
 
 // Listening to Periodic Background Sync API events (runs background routine when PWA is installed)
 self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'sync-notices') {
+    event.waitUntil(checkNewNoticesAndNotify());
+  }
+});
+
+// Listening to standard Background Sync events (fires when connectivity is restored/changed)
+self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-notices') {
     event.waitUntil(checkNewNoticesAndNotify());
   }
