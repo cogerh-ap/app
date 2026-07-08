@@ -182,6 +182,19 @@ async function checkNewNoticesAndNotify() {
           headers: { 'Content-Type': 'application/json' }
         })
       );
+
+      // 6. Notify active app windows of the update
+      try {
+        const clientsList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+        for (const client of clientsList) {
+          client.postMessage({
+            action: 'cache-updated',
+            notices: latestNotices
+          });
+        }
+      } catch (postErr) {
+        console.warn('Não foi possível notificar as janelas do aplicativo:', postErr);
+      }
     } else {
       console.log('Nenhum aviso novo detectado durante sincronização em segundo plano.');
     }

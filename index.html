@@ -623,8 +623,14 @@
 
       updateNavigationUI();
       renderCurrentScreen();
-      initServiceWorker();
-      autoSyncFromDefaultSheet();
+      loadCachedSyncData().then(() => {
+        initServiceWorker();
+        autoSyncFromDefaultSheet();
+      }).catch(err => {
+        console.error('Erro na inicialização de cache:', err);
+        initServiceWorker();
+        autoSyncFromDefaultSheet();
+      });
 
       // Listen for system theme changes dynamically if "system" mode is selected
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
@@ -670,7 +676,7 @@
           window.addEventListener('load', registerSW);
         }
         
-        // Listen to messages from Service Worker (such as opening a specific notice)
+        // Listen to messages from Service Worker (such as opening a specific notice or updating cache)
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (event.data && event.data.action === 'open-notice') {
             const noticeId = event.data.noticeId;
@@ -681,6 +687,13 @@
               setTimeout(() => {
                 openNoticeDetail(noticeId);
               }, 300);
+            }
+          } else if (event.data && event.data.action === 'cache-updated') {
+            console.log('Recebida atualização de cache do Service Worker!');
+            if (event.data.notices && Array.isArray(event.data.notices)) {
+              state.notices = event.data.notices;
+              localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
+              renderCurrentScreen();
             }
           }
         });
@@ -1661,13 +1674,15 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       // Run background notice checks active fallback (every 30 minutes)
       setInterval(async () => {
         console.log('Executando verificação de novos avisos em primeiro plano...');
+        await loadCachedSyncData();
         await checkNewNoticesInForeground();
       }, 30 * 60 * 1000);
 
       // Instantly check for new notices when user opens/returns to the app (visibility change)
       document.addEventListener('visibilitychange', async () => {
         if (document.visibilityState === 'visible') {
-          console.log('Aplicativo em primeiro plano. Verificando novos avisos imediatamente...');
+          console.log('Aplicativo em primeiro plano. Sincronizando com cache e verificando novos avisos...');
+          await loadCachedSyncData();
           await checkNewNoticesInForeground();
         }
       });
@@ -1888,6 +1903,30 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         }
       } catch (err) {
         console.error('Erro ao salvar dados de sincronização para cache do sw:', err);
+      }
+    }
+
+    async function loadCachedSyncData() {
+      try {
+        if ('caches' in window) {
+          const cache = await caches.open('cogerh-sync-data');
+          const response = await cache.match('./pwa-sync-data.json');
+          if (response) {
+            const data = await response.json();
+            if (data && data.notices && Array.isArray(data.notices)) {
+              const currentIds = state.notices.map(n => n.id).join(',');
+              const cachedIds = data.notices.map(n => n.id).join(',');
+              if (currentIds !== cachedIds) {
+                console.log('Sincronizando avisos recebidos no segundo plano com o cache do SW...');
+                state.notices = data.notices;
+                localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
+                renderCurrentScreen();
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao ler dados de sincronização do cache do SW:', err);
       }
     }
 
