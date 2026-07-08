@@ -1557,6 +1557,17 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       
       if (permission === 'granted') {
         await registerPeriodicSync();
+        try {
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            if (reg && 'sync' in reg) {
+              await reg.sync.register('sync-notices');
+              console.log('Standard Background Sync registrado após permissão!');
+            }
+          }
+        } catch (e) {
+          console.warn('Sync registration failed:', e);
+        }
         await saveSyncDataToCache();
         alert('Notificações ativadas! O aplicativo agora enviará avisos importantes quando o celular estiver conectado.');
       }
@@ -1662,9 +1673,158 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       });
     }
 
+    // ----------------------------------------------------
+    // UNIFIED NOTIFICATION & IN-APP TOAST SYSTEM
+    // ----------------------------------------------------
+    function showInAppNoticeToast(notice) {
+      try {
+        let container = document.getElementById("in-app-toast-container");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "in-app-toast-container";
+          container.className = "fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-sm px-4 pointer-events-none flex flex-col gap-3";
+          document.body.appendChild(container);
+        }
+
+        const toast = document.createElement("div");
+        toast.className = "bg-white dark:bg-cogerhSlateDark border-l-4 border-cogerhGoldAccent p-4 rounded-xl shadow-2xl flex items-start gap-3 pointer-events-auto cursor-pointer transform -translate-y-10 opacity-0 transition-all duration-300 hover:scale-102 active:scale-98 border border-slate-100 dark:border-slate-800";
+        
+        toast.innerHTML = `
+          <div class="w-8 h-8 bg-amber-50 dark:bg-amber-950/20 text-cogerhGoldAccent rounded-lg flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-bell animate-bounce"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1.5 mb-0.5">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-cogerhGoldAccent">${notice.category || 'Aviso'}</span>
+              <span class="text-[9px] text-slate-400">${notice.date || ''}</span>
+            </div>
+            <h4 class="text-xs font-black text-slate-900 dark:text-slate-100 truncate">${notice.title}</h4>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mt-0.5">${notice.content}</p>
+          </div>
+          <button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5 self-start transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        `;
+
+        toast.addEventListener("click", (e) => {
+          if (e.target.closest("button")) {
+            dismissToast(toast);
+          } else {
+            dismissToast(toast);
+            state.currentTab = 0; // Go to home screen
+            renderCurrentScreen();
+            setTimeout(() => {
+              openNoticeDetail(notice.id);
+            }, 300);
+          }
+        });
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.remove("-translate-y-10", "opacity-0");
+        }, 50);
+
+        const autoDismissTimer = setTimeout(() => {
+          dismissToast(toast);
+        }, 8000);
+
+        function dismissToast(el) {
+          clearTimeout(autoDismissTimer);
+          el.classList.add("-translate-y-10", "opacity-0");
+          setTimeout(() => {
+            el.remove();
+            if (container.children.length === 0) {
+              container.remove();
+            }
+          }, 300);
+        }
+      } catch (err) {
+        console.error("Erro ao mostrar toast em primeiro plano:", err);
+      }
+    }
+
+    async function showActualNotification(title, options) {
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          if (reg && typeof reg.showNotification === 'function') {
+            await reg.showNotification(title, options);
+            console.log('Notificação enviada com sucesso via Service Worker:', title);
+            return;
+          }
+        }
+        
+        if (typeof Notification === 'function') {
+          const localNotification = new Notification(title, {
+            body: options.body,
+            icon: options.icon
+          });
+          localNotification.onclick = function() {
+            window.focus();
+            if (options.data && options.data.noticeId) {
+              state.currentTab = 0;
+              renderCurrentScreen();
+              setTimeout(() => {
+                openNoticeDetail(options.data.noticeId);
+              }, 300);
+            }
+            localNotification.close();
+          };
+          console.log('Notificação enviada com sucesso via construtor padrão:', title);
+        }
+      } catch (err) {
+        console.error('Erro na showActualNotification:', err);
+      }
+    }
+
+    async function triggerNotificationsForNewNotices(oldNotices, incomingNotices) {
+      try {
+        const oldIds = new Set((oldNotices || []).map(n => n.id));
+        const newItems = (incomingNotices || []).filter(n => !oldIds.has(n.id));
+        
+        if (newItems.length === 0) {
+          console.log("Nenhum aviso novo para notificar.");
+          return;
+        }
+
+        // Avoid flooding user with many items
+        const listToNotify = (oldNotices && oldNotices.length > 0) 
+          ? newItems.slice(0, 3) 
+          : (newItems.length > 0 ? [newItems[0]] : []);
+
+        console.log(`Disparando notificações para ${listToNotify.length} novos avisos...`, listToNotify);
+
+        for (const notice of listToNotify) {
+          // 1. Show custom in-app visual toast instantly
+          showInAppNoticeToast(notice);
+
+          // 2. Try native OS notification if permissions are granted
+          if (Notification.permission === 'granted') {
+            await showActualNotification(notice.title || 'Novo Aviso COGERH', {
+              body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
+              icon: './cogerh_logo.png',
+              badge: './cogerh_logo.png',
+              tag: 'notice-' + notice.id,
+              data: { noticeId: notice.id },
+              vibrate: [100, 50, 100],
+              requireInteraction: notice.isPriority
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Erro na triggerNotificationsForNewNotices:", err);
+      }
+    }
+
+    function triggerServiceWorkerCacheSync() {
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ action: 'check-notices' });
+        console.log('Sinal de sincronização enviado ao Service Worker.');
+      }
+    }
+
     async function checkNewNoticesInForeground() {
-      if (Notification.permission !== 'granted') return;
-      
       try {
         const defaultId = state.spreadsheetId || PRESETS.spreadsheetId;
         const csvNotices = await downloadSheetCsv(defaultId, "avisos");
@@ -1687,39 +1847,21 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
           latestNotices.push({ id, title, content, date, isPriority, category });
         });
         
-        // Compare
+        // Compare with current local state
         const localIds = new Set(state.notices.map(n => n.id));
         const newNotices = latestNotices.filter(n => !localIds.has(n.id));
         
         if (newNotices.length > 0) {
-          console.log('Novos avisos detectados no primeiro plano:', newNotices);
+          console.log('Novos avisos detectados no primeiro plano (polling/visibility):', newNotices);
           
-          if ('serviceWorker' in navigator) {
-            const reg = await navigator.serviceWorker.ready;
-            for (const notice of newNotices.slice(0, 3)) {
-              reg.showNotification(notice.title || 'Novo Aviso COGERH', {
-                body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
-                icon: './cogerh_logo.png',
-                badge: './cogerh_logo.png',
-                tag: 'notice-' + notice.id,
-                data: { noticeId: notice.id },
-                vibrate: [100, 50, 100],
-                requireInteraction: notice.isPriority
-              });
-            }
-          } else {
-            for (const notice of newNotices.slice(0, 3)) {
-              new Notification(notice.title || 'Novo Aviso COGERH', {
-                body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
-                icon: './cogerh_logo.png'
-              });
-            }
-          }
+          // Trigger notifications (handles both system push and beautiful in-app toast)
+          await triggerNotificationsForNewNotices(state.notices, latestNotices);
           
           // Update state
           state.notices = [...latestNotices];
           localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
           await saveSyncDataToCache();
+          triggerServiceWorkerCacheSync();
           renderCurrentScreen();
         }
       } catch (err) {
@@ -1742,6 +1884,7 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
             })
           );
           console.log('Dados de sincronização salvos com sucesso na Cache Storage do PWA.');
+          triggerServiceWorkerCacheSync();
         }
       } catch (err) {
         console.error('Erro ao salvar dados de sincronização para cache do sw:', err);
@@ -1996,6 +2139,12 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         // Apply and Save!
         state.spreadsheetId = extractedId;
         state.procedures = parsedProc.length > 0 ? parsedProc : PRESETS.procedures;
+        
+        // Trigger notifications for any new notices during manual sync
+        if (parsedNotices.length > 0) {
+          await triggerNotificationsForNewNotices(state.notices, parsedNotices);
+        }
+
         state.notices = parsedNotices.length > 0 ? parsedNotices : PRESETS.notices;
         state.agenda = parsedAgenda.length > 0 ? parsedAgenda : PRESETS.agenda;
         state.team = parsedTeam.length > 0 ? parsedTeam : PRESETS.team;
@@ -2194,6 +2343,12 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         // Apply and Save!
         state.spreadsheetId = defaultId;
         state.procedures = parsedProc.length > 0 ? parsedProc : state.procedures;
+        
+        // Trigger notifications for any new notices during auto sync
+        if (parsedNotices.length > 0) {
+          await triggerNotificationsForNewNotices(state.notices, parsedNotices);
+        }
+
         state.notices = parsedNotices.length > 0 ? parsedNotices : state.notices;
         state.agenda = parsedAgenda.length > 0 ? parsedAgenda : state.agenda;
         state.team = parsedTeam.length > 0 ? parsedTeam : state.team;
