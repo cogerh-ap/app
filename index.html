@@ -897,7 +897,7 @@
           generalNoticesHtml += `
             <div onclick="openNoticeDetail('${notice.id}')" class="bg-white dark:bg-cogerhSlateDark p-4 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-800 mb-3.5 cursor-pointer hover:shadow-md transition active:scale-98">
               <div class="flex items-start justify-between gap-2">
-                <span class="text-[10px] bg-slate-100 dark:bg-slate-850 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                   ${notice.category || 'Geral'}
                 </span>
                 <span class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">${notice.date}</span>
@@ -966,8 +966,8 @@
 
           <!-- Dynamic Urgent Notices Section -->
           <div>
-            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3.5 flex items-center gap-2">
-              <i class="fa-solid fa-bullhorn text-base text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
+              <i class="fa-solid fa-bullhorn text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
               Avisos e Comunicados
             </h3>
             ${noticesHtml}
@@ -975,13 +975,15 @@
           </div>
 
           <!-- Agenda / Deadlines Section -->
-          <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
-              <i class="fa-solid fa-calendar-check text-base text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+          <div class="space-y-3.5">
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
+              <i class="fa-solid fa-calendar-check text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
               Agenda e Cronograma da COGERH
             </h3>
-            <div class="space-y-4">
-              ${agendaHtml}
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
+              <div class="space-y-4">
+                ${agendaHtml}
+              </div>
             </div>
           </div>
         </div>
@@ -1038,7 +1040,9 @@
             : "bg-[#EEF2FF] dark:bg-indigo-950/25 text-indigo-700 dark:text-indigo-450 border border-indigo-200/50 dark:border-indigo-900/30";
 
           // Expandable segment height
-          const displayStyle = isExpanded ? "max-height: 2000px; opacity: 1;" : "max-height: 0px; opacity: 0; overflow: hidden;";
+          const displayStyle = isExpanded 
+            ? "max-height: 2000px; opacity: 1;" 
+            : "max-height: 0px; opacity: 0; overflow: hidden; margin-top: 0px; padding-top: 0px; border-top-width: 0px;";
           const expandIcon = isExpanded ? "fa-chevron-up" : "fa-chevron-down";
 
           // Build Steps HTML
@@ -1184,7 +1188,7 @@
               <div>
                 <div class="flex items-start justify-between gap-3 mb-2.5">
                   <h4 class="text-base font-extrabold text-slate-900 dark:text-slate-100 leading-snug flex-1">${manual.title}</h4>
-                  <span class="text-[9px] bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0 mt-0.5">
+                  <span class="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0 mt-0.5">
                     ${manual.category}
                   </span>
                 </div>
@@ -1347,6 +1351,29 @@
             <i class="fa-solid fa-circle-info text-7xl absolute -right-3 -bottom-3 opacity-10 text-white"></i>
           </div>
           <div class="space-y-4">
+            <!-- Onde nos Encontrar (Location & Operating Hours Card) -->
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm space-y-4">
+              <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-location-dot text-base text-cogerhGoldAccent"></i>
+                <h4 class="text-sm font-black text-slate-900 dark:text-slate-100">Onde nos Encontrar</h4>
+              </div>
+              
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">UTFPR - Campus Apucarana
+Bloco Administrativo (Bloco B)
+Sala da COGERH
+Rua Marcílio Dias, 635 - Apucarana - PR</p>
+              
+              <div class="border-t border-slate-100 dark:border-slate-800/80 my-2"></div>
+              
+              <div class="flex items-start gap-2.5">
+                <i class="fa-solid fa-clock text-xs text-cogerhSlatePrimary dark:text-cogerhGoldAccent mt-0.5"></i>
+                <div>
+                  <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-1">Horário de Atendimento</span>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Segunda a Sexta-Feira, das 08:00 às 12:00 e das 13:00 às 17:00</p>
+                </div>
+              </div>
+            </div>
+
             ${teamHtml}
           </div>
         </div>
