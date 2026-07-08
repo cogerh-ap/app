@@ -78,9 +78,9 @@
           <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-[70%] object-contain" />
         </div>
         
-        <!-- Settings Action Button (right) -->
-        <button onclick="openThemeModal()" title="Configurações do Aplicativo" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
-          <i id="theme-icon" class="fa-solid fa-gear text-lg"></i>
+        <!-- Theme Selection Action Button (right) -->
+        <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
+          <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
         </button>
       </div>
     </header>
@@ -184,75 +184,80 @@
       </div>
     </div>
     
-    <!-- CONFIGURAÇÕES DO APLICATIVO MODAL -->
+    <!-- THEME SELECTION MODAL -->
     <div id="theme-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
-      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100 flex flex-col max-h-[85vh]">
-        <!-- Header -->
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80 mb-4">
-          <div class="flex items-center gap-2.5">
-            <i class="fa-solid fa-gear text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-xl animate-spin-slow"></i>
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50">Configurações do Aplicativo</h3>
-          </div>
-          <button onclick="closeThemeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1">
-            <i class="fa-solid fa-xmark text-lg"></i>
-          </button>
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fa-solid fa-palette text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-xl"></i>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Aparência do Aplicativo</h3>
         </div>
+        
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+          Selecione o tema visual do aplicativo:
+        </p>
 
-        <!-- Scrollable Content Area -->
-        <div class="overflow-y-auto space-y-5 pr-1 custom-scrollbar flex-1">
-          <!-- SECTION 1: APARÊNCIA -->
-          <div class="space-y-3">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-palette text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-sm"></i>
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Aparência do Aplicativo</h4>
-            </div>
-            
-            <p class="text-[11px] text-slate-400 leading-normal mb-1">
-              Selecione o tema visual de exibição do aplicativo:
-            </p>
-
-            <div class="space-y-2.5">
-              <!-- Option 1: Claro -->
-              <div onclick="selectThemeOption('light')" id="theme-opt-light" class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition">
-                <div class="flex items-center gap-2.5">
-                  <i class="fa-solid fa-sun text-xs text-slate-500 dark:text-slate-400"></i>
-                  <div>
-                    <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Claro</p>
-                    <p class="text-[9px] text-slate-400">Fundo claro corporativo</p>
-                  </div>
-                </div>
-                <input type="radio" name="theme-radio" id="theme-radio-light" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
-              </div>
-
-              <!-- Option 2: Escuro -->
-              <div onclick="selectThemeOption('dark')" id="theme-opt-dark" class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition">
-                <div class="flex items-center gap-2.5">
-                  <i class="fa-solid fa-moon text-xs text-slate-500 dark:text-slate-400"></i>
-                  <div>
-                    <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Escuro</p>
-                    <p class="text-[9px] text-slate-400">Fundo escuro, amigável aos olhos</p>
-                  </div>
-                </div>
-                <input type="radio" name="theme-radio" id="theme-radio-dark" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
-              </div>
-
-              <!-- Option 3: Seguir Sistema -->
-              <div onclick="selectThemeOption('system')" id="theme-opt-system" class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition">
-                <div class="flex items-center gap-2.5">
-                  <i class="fa-solid fa-sliders text-xs text-slate-500 dark:text-slate-400"></i>
-                  <div>
-                    <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Siga o Sistema</p>
-                    <p class="text-[9px] text-slate-400">Acompanha as configurações do celular</p>
-                  </div>
-                </div>
-                <input type="radio" name="theme-radio" id="theme-radio-system" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+        <div class="space-y-3">
+          <!-- Option 1: Claro -->
+          <div onclick="selectThemeOption('light')" id="theme-opt-light" class="flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-sun text-base text-slate-500 dark:text-slate-400"></i>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Claro</p>
+                <p class="text-[10px] text-slate-400">Fundo claro com tons corporativos suaves</p>
               </div>
             </div>
+            <input type="radio" name="theme-radio" id="theme-radio-light" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+          </div>
+
+          <!-- Option 2: Escuro -->
+          <div onclick="selectThemeOption('dark')" id="theme-opt-dark" class="flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-moon text-base text-slate-500 dark:text-slate-400"></i>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Escuro</p>
+                <p class="text-[10px] text-slate-400">Fundo escuro, ideal para reduzir o cansaço visual</p>
+              </div>
+            </div>
+            <input type="radio" name="theme-radio" id="theme-radio-dark" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+          </div>
+
+          <!-- Option 3: Seguir Sistema -->
+          <div onclick="selectThemeOption('system')" id="theme-opt-system" class="flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-sliders text-base text-slate-500 dark:text-slate-400"></i>
+              <div>
+                <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Siga o Sistema</p>
+                <p class="text-[10px] text-slate-400">Acompanha as configurações do smartphone</p>
+              </div>
+            </div>
+            <input type="radio" name="theme-radio" id="theme-radio-system" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
           </div>
         </div>
 
-        <!-- Footer -->
-        <div class="flex justify-end pt-3 mt-4 border-t border-slate-100 dark:border-slate-800">
+        <!-- NOTIFICATIONS SECTOR -->
+        <div class="border-t border-slate-100 dark:border-slate-800/80 pt-4 mt-4">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Notificações em Segundo Plano</label>
+          <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+            <div class="space-y-0.5 max-w-[70%]">
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 block">Alertas de Novos Avisos</span>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400 leading-normal block">Atualiza a cada 30 min e emite notificações de novos comunicados.</span>
+            </div>
+            <button onclick="toggleNotificationPermission()" id="notification-toggle-btn" class="px-3.5 py-1.5 text-[11px] font-bold bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 rounded-lg hover:opacity-90 active:scale-95 transition">
+              Ativar
+            </button>
+          </div>
+          
+          <div id="notification-test-box" class="hidden flex items-center justify-between mt-2.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-2.5 rounded-xl">
+            <span class="text-[10px] text-amber-800 dark:text-amber-300 leading-normal">
+              Sincronização em segundo plano (30 min) ativada com sucesso!
+            </span>
+            <button onclick="triggerTestNotification()" class="text-[9px] font-extrabold uppercase text-amber-900 dark:text-amber-400 border border-amber-200 dark:border-amber-900 px-2.5 py-1 rounded bg-white dark:bg-slate-900 hover:bg-amber-50 active:scale-95 transition">
+              Testar
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
           <button onclick="closeThemeModal()" class="text-xs font-black uppercase tracking-wider text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:underline px-4 py-2">
             Concluído
           </button>
@@ -600,19 +605,39 @@
     // PWA SERVICE WORKER REGISTRATION
     function initServiceWorker() {
       if ('serviceWorker' in navigator) {
-        const registerSW = () => {
+        window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js')
             .then(reg => {
               console.log('Service Worker registrado com sucesso:', reg.scope);
+              
+              // Register Periodic Sync if permission is granted
+              if ('Notification' in window && Notification.permission === 'granted') {
+                registerPeriodicSync();
+              }
+              
+              // Save sync data to cache so the sw can access it
+              saveSyncDataToCache();
+              
+              // Set up active foreground polling fallback
+              initForegroundPolling();
             })
-            .catch(err => console.error('Erro ao registrar Service Worker:', err));
-        };
-
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-          registerSW();
-        } else {
-          window.addEventListener('load', registerSW);
-        }
+            .catch(err => console.log('Erro ao registrar Service Worker:', err));
+        });
+        
+        // Listen to messages from Service Worker (such as opening a specific notice)
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.action === 'open-notice') {
+            const noticeId = event.data.noticeId;
+            if (noticeId) {
+              // Switch to home screen and open notice
+              state.currentTab = 0;
+              renderCurrentScreen();
+              setTimeout(() => {
+                openNoticeDetail(noticeId);
+              }, 300);
+            }
+          }
+        });
       }
     }
 
@@ -620,6 +645,7 @@
     function openThemeModal() {
       document.getElementById("theme-modal").classList.remove("hidden");
       updateThemeModalUI();
+      updateNotificationUI();
     }
 
     function closeThemeModal() {
@@ -668,8 +694,14 @@
         htmlEl.classList.remove("dark");
       }
 
-      // Keep header button icon as a gear for Configurações
-      themeIcon.className = "fa-solid fa-gear text-lg text-cogerhGoldAccent";
+      // Update header button icon based on selection
+      if (state.themeMode === "dark") {
+        themeIcon.className = "fa-solid fa-moon text-lg text-cogerhGoldAccent";
+      } else if (state.themeMode === "light") {
+        themeIcon.className = "fa-solid fa-sun text-lg text-cogerhGoldAccent";
+      } else {
+        themeIcon.className = "fa-solid fa-sliders text-lg text-cogerhGoldAccent";
+      }
     }
 
     // NOTICE DETAIL MODAL & SHARE LOGIC
@@ -1053,7 +1085,7 @@
               </button>
 
               <!-- Detailed Section -->
-              <div class="transition-max-height duration-300 ${isExpanded ? 'mt-4 space-y-4 border-t border-slate-200/60 dark:border-slate-800/80 pt-4' : 'overflow-hidden'}" style="${displayStyle}">
+              <div class="transition-max-height duration-300 mt-4 space-y-4 border-t border-slate-200/60 dark:border-slate-800/80 pt-4" style="${displayStyle}">
                 
                 <!-- Steps list -->
                 <div class="space-y-3">
@@ -1460,10 +1492,193 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         modal.classList.remove("hidden");
         document.getElementById("spreadsheet-id-input").value = state.spreadsheetId;
         updateModalLabels();
+        updateNotificationUI();
       } else {
         modal.classList.add("hidden");
         document.getElementById("sync-error-box").classList.add("hidden");
         document.getElementById("sync-success-box").classList.add("hidden");
+      }
+    }
+
+    // PWA BACKGROUD SYNC & NOTIFICATION HELPERS
+    async function toggleNotificationPermission() {
+      if (!('Notification' in window)) {
+        alert('Seu navegador não suporta notificações de sistema.');
+        return;
+      }
+      
+      if (Notification.permission === 'granted') {
+        updateNotificationUI();
+        return;
+      }
+      
+      const permission = await Notification.requestPermission();
+      updateNotificationUI();
+      
+      if (permission === 'granted') {
+        await registerPeriodicSync();
+        await saveSyncDataToCache();
+        alert('Notificações ativadas! O aplicativo agora enviará avisos importantes quando o celular estiver conectado.');
+      }
+    }
+
+    async function triggerTestNotification() {
+      if (Notification.permission !== 'granted') return;
+      
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        reg.showNotification('Teste de Notificação COGERH', {
+          body: 'Este é um teste de aviso para validar o sistema de alertas em segundo plano do PWA!',
+          icon: './icon.svg',
+          badge: './favicon.svg',
+          vibrate: [100, 50, 100]
+        });
+      } else {
+        new Notification('Teste de Notificação COGERH', {
+          body: 'Este é um teste de aviso para validar o sistema de alertas em segundo plano do PWA!',
+          icon: './icon.svg'
+        });
+      }
+    }
+
+    function updateNotificationUI() {
+      const toggleBtn = document.getElementById("notification-toggle-btn");
+      const testBox = document.getElementById("notification-test-box");
+      
+      if (!toggleBtn) return;
+      
+      if (!('Notification' in window)) {
+        toggleBtn.textContent = "Incompatível";
+        toggleBtn.disabled = true;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg cursor-not-allowed";
+        return;
+      }
+      
+      if (Notification.permission === "granted") {
+        toggleBtn.textContent = "Ativo";
+        toggleBtn.disabled = true;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg cursor-default";
+        testBox.classList.remove("hidden");
+      } else if (Notification.permission === "denied") {
+        toggleBtn.textContent = "Bloqueado";
+        toggleBtn.disabled = true;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg cursor-not-allowed";
+        testBox.classList.add("hidden");
+      } else {
+        toggleBtn.textContent = "Ativar";
+        toggleBtn.disabled = false;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 rounded-lg hover:opacity-90 active:scale-95 transition";
+        testBox.classList.add("hidden");
+      }
+    }
+
+    async function registerPeriodicSync() {
+      if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.periodicSync.register('sync-notices', {
+            minInterval: 30 * 60 * 1000 // 30 minutes
+          });
+          console.log('Periodic Background Sync registrado com sucesso!');
+        } catch (err) {
+          console.warn('Periodic Sync falhou ou não pôde ser ativado automaticamente (requer engajamento):', err);
+        }
+      } else {
+        console.log('Periodic Sync não suportado. Usando fallback ativo.');
+      }
+    }
+
+    function initForegroundPolling() {
+      // Run background notice checks active fallback (every 30 minutes)
+      setInterval(async () => {
+        console.log('Executando verificação de novos avisos em primeiro plano...');
+        await checkNewNoticesInForeground();
+      }, 30 * 60 * 1000);
+    }
+
+    async function checkNewNoticesInForeground() {
+      if (Notification.permission !== 'granted') return;
+      
+      try {
+        const defaultId = state.spreadsheetId || PRESETS.spreadsheetId;
+        const csvNotices = await downloadSheetCsv(defaultId, "avisos");
+        if (!csvNotices) return;
+        
+        const rowsNotices = parseCsvText(csvNotices);
+        const latestNotices = [];
+        rowsNotices.forEach(row => {
+          if (row.length < 3) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return;
+          
+          const title = row[1]?.trim() || "";
+          const content = row[2]?.trim() || "";
+          const date = row[3]?.trim() || "";
+          const priorityText = row[4]?.trim()?.toLowerCase() || "";
+          const isPriority = priorityText === "true" || priorityText === "sim" || priorityText === "1" || priorityText === "yes";
+          const category = row[5]?.trim() || "Geral";
+          
+          latestNotices.push({ id, title, content, date, isPriority, category });
+        });
+        
+        // Compare
+        const localIds = new Set(state.notices.map(n => n.id));
+        const newNotices = latestNotices.filter(n => !localIds.has(n.id));
+        
+        if (newNotices.length > 0) {
+          console.log('Novos avisos detectados no primeiro plano:', newNotices);
+          
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            for (const notice of newNotices.slice(0, 3)) {
+              reg.showNotification(notice.title || 'Novo Aviso COGERH', {
+                body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
+                icon: './icon.svg',
+                badge: './favicon.svg',
+                tag: 'notice-' + notice.id,
+                data: { noticeId: notice.id },
+                vibrate: [100, 50, 100],
+                requireInteraction: notice.isPriority
+              });
+            }
+          } else {
+            for (const notice of newNotices.slice(0, 3)) {
+              new Notification(notice.title || 'Novo Aviso COGERH', {
+                body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
+                icon: './icon.svg'
+              });
+            }
+          }
+          
+          // Update state
+          state.notices = [...latestNotices];
+          localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
+          await saveSyncDataToCache();
+          renderCurrentScreen();
+        }
+      } catch (err) {
+        console.error('Erro ao verificar avisos no primeiro plano:', err);
+      }
+    }
+
+    async function saveSyncDataToCache() {
+      try {
+        if ('caches' in window) {
+          const cache = await caches.open('cogerh-sync-data');
+          const data = {
+            spreadsheetId: state.spreadsheetId || PRESETS.spreadsheetId,
+            notices: state.notices || []
+          };
+          await cache.put(
+            new Request('/pwa-sync-data.json'),
+            new Response(JSON.stringify(data), {
+              headers: { 'Content-Type': 'application/json' }
+            })
+          );
+          console.log('Dados de sincronização salvos com sucesso na Cache Storage do PWA.');
+        }
+      } catch (err) {
+        console.error('Erro ao salvar dados de sincronização para cache do sw:', err);
       }
     }
 
@@ -1715,12 +1930,6 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         // Apply and Save!
         state.spreadsheetId = extractedId;
         state.procedures = parsedProc.length > 0 ? parsedProc : PRESETS.procedures;
-        
-        // Trigger notifications for any new notices during manual sync
-        if (parsedNotices.length > 0) {
-          await triggerNotificationsForNewNotices(state.notices, parsedNotices);
-        }
-
         state.notices = parsedNotices.length > 0 ? parsedNotices : PRESETS.notices;
         state.agenda = parsedAgenda.length > 0 ? parsedAgenda : PRESETS.agenda;
         state.team = parsedTeam.length > 0 ? parsedTeam : PRESETS.team;
@@ -1919,12 +2128,6 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         // Apply and Save!
         state.spreadsheetId = defaultId;
         state.procedures = parsedProc.length > 0 ? parsedProc : state.procedures;
-        
-        // Trigger notifications for any new notices during auto sync
-        if (parsedNotices.length > 0) {
-          await triggerNotificationsForNewNotices(state.notices, parsedNotices);
-        }
-
         state.notices = parsedNotices.length > 0 ? parsedNotices : state.notices;
         state.agenda = parsedAgenda.length > 0 ? parsedAgenda : state.agenda;
         state.team = parsedTeam.length > 0 ? parsedTeam : state.team;
@@ -1943,6 +2146,9 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         localStorage.setItem("cogerh_data_agenda", JSON.stringify(state.agenda));
         localStorage.setItem("cogerh_data_team", JSON.stringify(state.team));
         localStorage.setItem("cogerh_data_manuals", JSON.stringify(state.manuals));
+
+        // Sync with Service Worker Cache
+        await saveSyncDataToCache();
 
         console.log("Sincronização automática de dados realizada com sucesso!");
         renderCurrentScreen();
