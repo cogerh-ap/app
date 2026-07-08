@@ -249,43 +249,6 @@
               </div>
             </div>
           </div>
-
-          <!-- SECTION 2: NOTIFICAÇÕES -->
-          <div class="border-t border-slate-100 dark:border-slate-800/80 pt-4 space-y-3">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-bell text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-sm"></i>
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Notificações em Segundo Plano</h4>
-            </div>
-            
-            <p class="text-[11px] text-slate-400 leading-normal mb-1">
-              Fique sempre por dentro dos avisos e atualizações importantes da coordenação:
-            </p>
-
-            <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
-              <div class="space-y-0.5 max-w-[70%]">
-                <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 block">Alertas de Novos Avisos</span>
-                <span class="text-[9px] text-slate-500 dark:text-slate-400 leading-normal block">Sincroniza em segundo plano a cada 30 min e emite notificações locais.</span>
-              </div>
-              <button onclick="toggleNotificationPermission()" id="notification-toggle-btn" class="px-3 py-1.5 text-[11px] font-bold bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 rounded-lg hover:opacity-90 active:scale-95 transition shrink-0">
-                Ativar
-              </button>
-            </div>
-            
-            <div id="notification-test-box" class="hidden flex flex-col gap-2 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-3 rounded-xl">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-[10px] text-amber-800 dark:text-amber-300 leading-normal font-medium">
-                  Sincronização em segundo plano ativada com sucesso!
-                </span>
-                <button onclick="triggerTestNotification()" class="text-[9px] font-extrabold uppercase text-amber-900 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50 px-2.5 py-1 rounded bg-white dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-slate-850 active:scale-95 transition shrink-0">
-                  Testar
-                </button>
-              </div>
-            </div>
-            
-            <p class="text-[9px] text-slate-400 dark:text-slate-500 leading-normal italic">
-              Nota: Se as notificações não aparecerem, certifique-se de que as permissões de notificação do navegador estão autorizadas nas configurações do seu celular.
-            </p>
-          </div>
         </div>
 
         <!-- Footer -->
@@ -623,14 +586,8 @@
 
       updateNavigationUI();
       renderCurrentScreen();
-      loadCachedSyncData().then(() => {
-        initServiceWorker();
-        autoSyncFromDefaultSheet();
-      }).catch(err => {
-        console.error('Erro na inicialização de cache:', err);
-        initServiceWorker();
-        autoSyncFromDefaultSheet();
-      });
+      initServiceWorker();
+      autoSyncFromDefaultSheet();
 
       // Listen for system theme changes dynamically if "system" mode is selected
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
@@ -645,27 +602,8 @@
       if ('serviceWorker' in navigator) {
         const registerSW = () => {
           navigator.serviceWorker.register('./sw.js')
-            .then(async reg => {
+            .then(reg => {
               console.log('Service Worker registrado com sucesso:', reg.scope);
-              
-              // Register Periodic Sync & Background Sync if permission is granted
-              if ('Notification' in window && Notification.permission === 'granted') {
-                registerPeriodicSync();
-                try {
-                  if ('sync' in reg) {
-                    await reg.sync.register('sync-notices');
-                    console.log('Standard Background Sync registrado!');
-                  }
-                } catch (e) {
-                  console.warn('Standard Sync registration failed:', e);
-                }
-              }
-              
-              // Save sync data to cache so the sw can access it
-              saveSyncDataToCache();
-              
-              // Set up active foreground polling fallback
-              initForegroundPolling();
             })
             .catch(err => console.error('Erro ao registrar Service Worker:', err));
         };
@@ -675,28 +613,6 @@
         } else {
           window.addEventListener('load', registerSW);
         }
-        
-        // Listen to messages from Service Worker (such as opening a specific notice or updating cache)
-        navigator.serviceWorker.addEventListener('message', (event) => {
-          if (event.data && event.data.action === 'open-notice') {
-            const noticeId = event.data.noticeId;
-            if (noticeId) {
-              // Switch to home screen and open notice
-              state.currentTab = 0;
-              renderCurrentScreen();
-              setTimeout(() => {
-                openNoticeDetail(noticeId);
-              }, 300);
-            }
-          } else if (event.data && event.data.action === 'cache-updated') {
-            console.log('Recebida atualização de cache do Service Worker!');
-            if (event.data.notices && Array.isArray(event.data.notices)) {
-              state.notices = event.data.notices;
-              localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
-              renderCurrentScreen();
-            }
-          }
-        });
       }
     }
 
@@ -704,7 +620,6 @@
     function openThemeModal() {
       document.getElementById("theme-modal").classList.remove("hidden");
       updateThemeModalUI();
-      updateNotificationUI();
     }
 
     function closeThemeModal() {
@@ -1545,388 +1460,10 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         modal.classList.remove("hidden");
         document.getElementById("spreadsheet-id-input").value = state.spreadsheetId;
         updateModalLabels();
-        updateNotificationUI();
       } else {
         modal.classList.add("hidden");
         document.getElementById("sync-error-box").classList.add("hidden");
         document.getElementById("sync-success-box").classList.add("hidden");
-      }
-    }
-
-    // PWA BACKGROUD SYNC & NOTIFICATION HELPERS
-    async function toggleNotificationPermission() {
-      if (!('Notification' in window)) {
-        alert('Seu navegador não suporta notificações de sistema.');
-        return;
-      }
-      
-      if (Notification.permission === 'granted') {
-        updateNotificationUI();
-        return;
-      }
-      
-      const permission = await Notification.requestPermission();
-      updateNotificationUI();
-      
-      if (permission === 'granted') {
-        await registerPeriodicSync();
-        try {
-          if ('serviceWorker' in navigator) {
-            const reg = await navigator.serviceWorker.ready;
-            if (reg && 'sync' in reg) {
-              await reg.sync.register('sync-notices');
-              console.log('Standard Background Sync registrado após permissão!');
-            }
-          }
-        } catch (e) {
-          console.warn('Sync registration failed:', e);
-        }
-        await saveSyncDataToCache();
-        alert('Notificações ativadas! O aplicativo agora enviará avisos importantes quando o celular estiver conectado.');
-      }
-    }
-
-    async function triggerTestNotification() {
-      try {
-        if (Notification.permission !== 'granted') {
-          alert('Permissão de notificação não concedida. Status atual: ' + Notification.permission);
-          return;
-        }
-        
-        const options = {
-          body: 'Este é um teste de aviso para validar o sistema de alertas em segundo plano do PWA!',
-          icon: './cogerh_logo.png',
-          badge: './cogerh_logo.png',
-          vibrate: [100, 50, 100],
-          data: { noticeId: 'test' }
-        };
-
-        if ('serviceWorker' in navigator) {
-          const reg = await navigator.serviceWorker.ready;
-          if (reg && typeof reg.showNotification === 'function') {
-            await reg.showNotification('Teste de Notificação COGERH', options);
-            console.log('Notificação disparada com sucesso via Service Worker.');
-            return;
-          }
-        }
-        
-        // Fallback standard Notification
-        if (typeof Notification === 'function') {
-          new Notification('Teste de Notificação COGERH', options);
-          console.log('Notificação disparada com sucesso via construtor padrão.');
-        } else {
-          alert('Seu navegador não possui suporte para exibir notificações diretamente.');
-        }
-      } catch (err) {
-        console.error('Erro ao disparar notificação de teste:', err);
-        alert('Falha ao acionar a notificação: ' + err.message + '\n\nCertifique-se de que o aplicativo foi instalado na tela inicial e as notificações do sistema estão ativadas nas configurações do celular.');
-      }
-    }
-
-    function updateNotificationUI() {
-      const toggleBtn = document.getElementById("notification-toggle-btn");
-      const testBox = document.getElementById("notification-test-box");
-      
-      if (!toggleBtn) return;
-      
-      if (!('Notification' in window)) {
-        toggleBtn.textContent = "Incompatível";
-        toggleBtn.disabled = true;
-        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg cursor-not-allowed";
-        return;
-      }
-      
-      if (Notification.permission === "granted") {
-        toggleBtn.textContent = "Ativo";
-        toggleBtn.disabled = true;
-        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg cursor-default";
-        testBox.classList.remove("hidden");
-      } else if (Notification.permission === "denied") {
-        toggleBtn.textContent = "Bloqueado";
-        toggleBtn.disabled = true;
-        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg cursor-not-allowed";
-        testBox.classList.add("hidden");
-      } else {
-        toggleBtn.textContent = "Ativar";
-        toggleBtn.disabled = false;
-        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 rounded-lg hover:opacity-90 active:scale-95 transition";
-        testBox.classList.add("hidden");
-      }
-    }
-
-    async function registerPeriodicSync() {
-      if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
-        try {
-          const registration = await navigator.serviceWorker.ready;
-          await registration.periodicSync.register('sync-notices', {
-            minInterval: 30 * 60 * 1000 // 30 minutes
-          });
-          console.log('Periodic Background Sync registrado com sucesso!');
-        } catch (err) {
-          console.warn('Periodic Sync falhou ou não pôde ser ativado automaticamente (requer engajamento):', err);
-        }
-      } else {
-        console.log('Periodic Sync não suportado. Usando fallback ativo.');
-      }
-    }
-
-    function initForegroundPolling() {
-      // Run background notice checks active fallback (every 30 minutes)
-      setInterval(async () => {
-        console.log('Executando verificação de novos avisos em primeiro plano...');
-        await loadCachedSyncData();
-        await checkNewNoticesInForeground();
-      }, 30 * 60 * 1000);
-
-      // Instantly check for new notices when user opens/returns to the app (visibility change)
-      document.addEventListener('visibilitychange', async () => {
-        if (document.visibilityState === 'visible') {
-          console.log('Aplicativo em primeiro plano. Sincronizando com cache e verificando novos avisos...');
-          await loadCachedSyncData();
-          await checkNewNoticesInForeground();
-        }
-      });
-    }
-
-    // ----------------------------------------------------
-    // UNIFIED NOTIFICATION & IN-APP TOAST SYSTEM
-    // ----------------------------------------------------
-    function showInAppNoticeToast(notice) {
-      try {
-        let container = document.getElementById("in-app-toast-container");
-        if (!container) {
-          container = document.createElement("div");
-          container.id = "in-app-toast-container";
-          container.className = "fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-sm px-4 pointer-events-none flex flex-col gap-3";
-          document.body.appendChild(container);
-        }
-
-        const toast = document.createElement("div");
-        toast.className = "bg-white dark:bg-cogerhSlateDark border-l-4 border-cogerhGoldAccent p-4 rounded-xl shadow-2xl flex items-start gap-3 pointer-events-auto cursor-pointer transform -translate-y-10 opacity-0 transition-all duration-300 hover:scale-102 active:scale-98 border border-slate-100 dark:border-slate-800";
-        
-        toast.innerHTML = `
-          <div class="w-8 h-8 bg-amber-50 dark:bg-amber-950/20 text-cogerhGoldAccent rounded-lg flex items-center justify-center text-sm shrink-0">
-            <i class="fa-solid fa-bell animate-bounce"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-1.5 mb-0.5">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-cogerhGoldAccent">${notice.category || 'Aviso'}</span>
-              <span class="text-[9px] text-slate-400">${notice.date || ''}</span>
-            </div>
-            <h4 class="text-xs font-black text-slate-900 dark:text-slate-100 truncate">${notice.title}</h4>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mt-0.5">${notice.content}</p>
-          </div>
-          <button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5 self-start transition">
-            <i class="fa-solid fa-xmark text-sm"></i>
-          </button>
-        `;
-
-        toast.addEventListener("click", (e) => {
-          if (e.target.closest("button")) {
-            dismissToast(toast);
-          } else {
-            dismissToast(toast);
-            state.currentTab = 0; // Go to home screen
-            renderCurrentScreen();
-            setTimeout(() => {
-              openNoticeDetail(notice.id);
-            }, 300);
-          }
-        });
-
-        container.appendChild(toast);
-
-        setTimeout(() => {
-          toast.classList.remove("-translate-y-10", "opacity-0");
-        }, 50);
-
-        const autoDismissTimer = setTimeout(() => {
-          dismissToast(toast);
-        }, 8000);
-
-        function dismissToast(el) {
-          clearTimeout(autoDismissTimer);
-          el.classList.add("-translate-y-10", "opacity-0");
-          setTimeout(() => {
-            el.remove();
-            if (container.children.length === 0) {
-              container.remove();
-            }
-          }, 300);
-        }
-      } catch (err) {
-        console.error("Erro ao mostrar toast em primeiro plano:", err);
-      }
-    }
-
-    async function showActualNotification(title, options) {
-      try {
-        if ('serviceWorker' in navigator) {
-          const reg = await navigator.serviceWorker.ready;
-          if (reg && typeof reg.showNotification === 'function') {
-            await reg.showNotification(title, options);
-            console.log('Notificação enviada com sucesso via Service Worker:', title);
-            return;
-          }
-        }
-        
-        if (typeof Notification === 'function') {
-          const localNotification = new Notification(title, {
-            body: options.body,
-            icon: options.icon
-          });
-          localNotification.onclick = function() {
-            window.focus();
-            if (options.data && options.data.noticeId) {
-              state.currentTab = 0;
-              renderCurrentScreen();
-              setTimeout(() => {
-                openNoticeDetail(options.data.noticeId);
-              }, 300);
-            }
-            localNotification.close();
-          };
-          console.log('Notificação enviada com sucesso via construtor padrão:', title);
-        }
-      } catch (err) {
-        console.error('Erro na showActualNotification:', err);
-      }
-    }
-
-    async function triggerNotificationsForNewNotices(oldNotices, incomingNotices) {
-      try {
-        const oldIds = new Set((oldNotices || []).map(n => n.id));
-        const newItems = (incomingNotices || []).filter(n => !oldIds.has(n.id));
-        
-        if (newItems.length === 0) {
-          console.log("Nenhum aviso novo para notificar.");
-          return;
-        }
-
-        // Avoid flooding user with many items
-        const listToNotify = (oldNotices && oldNotices.length > 0) 
-          ? newItems.slice(0, 3) 
-          : (newItems.length > 0 ? [newItems[0]] : []);
-
-        console.log(`Disparando notificações para ${listToNotify.length} novos avisos...`, listToNotify);
-
-        for (const notice of listToNotify) {
-          // 1. Show custom in-app visual toast instantly
-          showInAppNoticeToast(notice);
-
-          // 2. Try native OS notification if permissions are granted
-          if (Notification.permission === 'granted') {
-            await showActualNotification(notice.title || 'Novo Aviso COGERH', {
-              body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
-              icon: './cogerh_logo.png',
-              badge: './cogerh_logo.png',
-              tag: 'notice-' + notice.id,
-              data: { noticeId: notice.id },
-              vibrate: [100, 50, 100],
-              requireInteraction: notice.isPriority
-            });
-          }
-        }
-      } catch (err) {
-        console.error("Erro na triggerNotificationsForNewNotices:", err);
-      }
-    }
-
-    function triggerServiceWorkerCacheSync() {
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ action: 'check-notices' });
-        console.log('Sinal de sincronização enviado ao Service Worker.');
-      }
-    }
-
-    async function checkNewNoticesInForeground() {
-      try {
-        const defaultId = state.spreadsheetId || PRESETS.spreadsheetId;
-        const csvNotices = await downloadSheetCsv(defaultId, "avisos");
-        if (!csvNotices) return;
-        
-        const rowsNotices = parseCsvText(csvNotices);
-        const latestNotices = [];
-        rowsNotices.forEach(row => {
-          if (row.length < 3) return;
-          const id = row[0]?.trim() || "";
-          if (!id || id.toLowerCase() === "id") return;
-          
-          const title = row[1]?.trim() || "";
-          const content = row[2]?.trim() || "";
-          const date = row[3]?.trim() || "";
-          const priorityText = row[4]?.trim()?.toLowerCase() || "";
-          const isPriority = priorityText === "true" || priorityText === "sim" || priorityText === "1" || priorityText === "yes";
-          const category = row[5]?.trim() || "Geral";
-          
-          latestNotices.push({ id, title, content, date, isPriority, category });
-        });
-        
-        // Compare with current local state
-        const localIds = new Set(state.notices.map(n => n.id));
-        const newNotices = latestNotices.filter(n => !localIds.has(n.id));
-        
-        if (newNotices.length > 0) {
-          console.log('Novos avisos detectados no primeiro plano (polling/visibility):', newNotices);
-          
-          // Trigger notifications (handles both system push and beautiful in-app toast)
-          await triggerNotificationsForNewNotices(state.notices, latestNotices);
-          
-          // Update state
-          state.notices = [...latestNotices];
-          localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
-          await saveSyncDataToCache();
-          triggerServiceWorkerCacheSync();
-          renderCurrentScreen();
-        }
-      } catch (err) {
-        console.error('Erro ao verificar avisos no primeiro plano:', err);
-      }
-    }
-
-    async function saveSyncDataToCache() {
-      try {
-        if ('caches' in window) {
-          const cache = await caches.open('cogerh-sync-data');
-          const data = {
-            spreadsheetId: state.spreadsheetId || PRESETS.spreadsheetId,
-            notices: state.notices || []
-          };
-          await cache.put(
-            new Request('./pwa-sync-data.json'),
-            new Response(JSON.stringify(data), {
-              headers: { 'Content-Type': 'application/json' }
-            })
-          );
-          console.log('Dados de sincronização salvos com sucesso na Cache Storage do PWA.');
-          triggerServiceWorkerCacheSync();
-        }
-      } catch (err) {
-        console.error('Erro ao salvar dados de sincronização para cache do sw:', err);
-      }
-    }
-
-    async function loadCachedSyncData() {
-      try {
-        if ('caches' in window) {
-          const cache = await caches.open('cogerh-sync-data');
-          const response = await cache.match('./pwa-sync-data.json');
-          if (response) {
-            const data = await response.json();
-            if (data && data.notices && Array.isArray(data.notices)) {
-              const currentIds = state.notices.map(n => n.id).join(',');
-              const cachedIds = data.notices.map(n => n.id).join(',');
-              if (currentIds !== cachedIds) {
-                console.log('Sincronizando avisos recebidos no segundo plano com o cache do SW...');
-                state.notices = data.notices;
-                localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
-                renderCurrentScreen();
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Erro ao ler dados de sincronização do cache do SW:', err);
       }
     }
 
@@ -2406,9 +1943,6 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         localStorage.setItem("cogerh_data_agenda", JSON.stringify(state.agenda));
         localStorage.setItem("cogerh_data_team", JSON.stringify(state.team));
         localStorage.setItem("cogerh_data_manuals", JSON.stringify(state.manuals));
-
-        // Sync with Service Worker Cache
-        await saveSyncDataToCache();
 
         console.log("Sincronização automática de dados realizada com sucesso!");
         renderCurrentScreen();
