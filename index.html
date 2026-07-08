@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COGERH-AP | Gestão de Pessoas</title>
+  
+  <!-- PWA Manifest & Theme Color -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#343A45">
+  
+  <!-- iOS support & Favicon -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="COGERH-AP">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  
+  <!-- Tailwind CSS & FontAwesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cogerhSlatePrimary: '#343A45',
+            cogerhSlateDark: '#1E232B',
+            cogerhSlateLight: '#4E5664',
+            cogerhGoldAccent: '#FBCA03',
+            cogerhGoldLight: '#FFDF63',
+            lightBg: '#F5F7FA',
+            lightSurface: '#FFFFFF',
+            darkBg: '#13171D',
+            darkSurface: '#1E232B',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Premium Native-Like Transitions & Scrolling */
+    body {
+      overscroll-behavior-y: contain;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+    .transition-max-height {
+      transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 transition-colors duration-200">
+
+  <!-- Mobile-first Container Frame for Desktop Premium feel -->
+  <div class="max-w-xl mx-auto min-h-screen flex flex-col bg-lightBg dark:bg-darkBg text-slate-800 dark:text-slate-200 shadow-2xl relative">
+    
+    <!-- HEADER -->
+    <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50">
+      <div class="flex items-center justify-between min-h-[56px]">
+        <!-- Left Logo matching the native design layout -->
+        <div class="flex items-center">
+          <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-[70%] object-contain" />
+        </div>
+        
+        <!-- Settings Action Button (right) -->
+        <button onclick="openThemeModal()" title="Configurações do Aplicativo" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
+          <i id="theme-icon" class="fa-solid fa-gear text-lg"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN INTERACTIVE CONTENT AREA (Scrollable) -->
+    <main id="app-content" class="flex-1 overflow-y-auto px-4 py-5 pb-24 custom-scrollbar">
+      <!-- Dynamic Screen Content will render here -->
+    </main>
+
+    <!-- PERSISTENT BOTTOM NAVIGATION BAR -->
+    <nav class="bg-white dark:bg-cogerhSlateDark border-t border-slate-200 dark:border-slate-800 py-2 px-2 shadow-lg fixed bottom-0 left-0 right-0 max-w-xl mx-auto z-40">
+      <div class="grid grid-cols-5 text-center">
+        <!-- Início Tab -->
+        <button onclick="switchTab(0)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
+          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+            <i class="fa-solid fa-house text-lg text-slate-500 dark:text-slate-400"></i>
+          </div>
+          <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Início</span>
+        </button>
+        
+        <!-- Processos Tab -->
+        <button onclick="switchTab(1)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
+          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+            <i class="fa-solid fa-file-invoice text-lg text-slate-500 dark:text-slate-400"></i>
+          </div>
+          <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Processos</span>
+        </button>
+        
+        <!-- Manuais Tab -->
+        <button onclick="switchTab(2)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
+          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+            <i class="fa-solid fa-book-open text-lg text-slate-500 dark:text-slate-400"></i>
+          </div>
+          <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Manuais</span>
+        </button>
+        
+        <!-- Equipe Tab -->
+        <button onclick="switchTab(3)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
+          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+            <i class="fa-solid fa-user-group text-lg text-slate-500 dark:text-slate-400"></i>
+          </div>
+          <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Equipe</span>
+        </button>
+        
+        <!-- Canais Tab -->
+        <button onclick="switchTab(4)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
+          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+            <i class="fa-solid fa-share-nodes text-lg text-slate-500 dark:text-slate-400"></i>
+          </div>
+          <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Canais</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- SETTINGS & SHEET SYNC MODAL -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-down text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+            Sincronizar Planilha
+          </h3>
+          <button onclick="toggleSettingsModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+        
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+          Sincronize os dados do seu aplicativo diretamente com uma planilha pública do Google Sheets contendo as abas correspondentes (procedimentos, avisos, agenda, equipe, manuais).
+        </p>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">ID da Planilha ou Link</label>
+            <input type="text" id="spreadsheet-id-input" placeholder="Cole o ID da planilha ou link de compartilhamento" class="w-full text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition">
+          </div>
+          
+          <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 space-y-1.5">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-500">Última Sincronização:</span>
+              <span id="sync-time-lbl" class="font-bold text-slate-700 dark:text-slate-300">Carregando...</span>
+            </div>
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-500">Status da Conexão:</span>
+              <span id="sync-status-lbl" class="font-bold text-red-500">Nunca</span>
+            </div>
+          </div>
+          
+          <div id="sync-error-box" class="hidden text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-xl border border-red-200 dark:border-red-900/50"></div>
+          <div id="sync-success-box" class="hidden text-xs bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl border border-emerald-200 dark:border-emerald-900/50"></div>
+
+          <div class="flex gap-3 pt-2">
+            <button onclick="resetToDefaultSheet()" class="flex-1 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-800 transition active:scale-95">
+              Padrão
+            </button>
+            <button onclick="startSyncAndSave()" id="save-sync-btn" class="flex-1 bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 py-2.5 text-xs font-bold rounded-xl shadow-md transition active:scale-95">
+              Sincronizar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CONFIGURAÇÕES DO APLICATIVO MODAL -->
+    <div id="theme-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100 flex flex-col max-h-[85vh]">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80 mb-4">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-gear text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-xl animate-spin-slow"></i>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50">Configurações do Aplicativo</h3>
+          </div>
+          <button onclick="closeThemeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Scrollable Content Area -->
+        <div class="overflow-y-auto space-y-5 pr-1 custom-scrollbar flex-1">
+          <!-- SECTION 1: APARÊNCIA -->
+          <div class="space-y-3">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-palette text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-sm"></i>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Aparência do Aplicativo</h4>
+            </div>
+            
+            <p class="text-[11px] text-slate-400 leading-normal mb-1">
+              Selecione o tema visual de exibição do aplicativo:
+            </p>
+
+            <div class="space-y-2.5">
+              <!-- Option 1: Claro -->
+              <div onclick="selectThemeOption('light')" id="theme-opt-light" class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition">
+                <div class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-sun text-xs text-slate-500 dark:text-slate-400"></i>
+                  <div>
+                    <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Claro</p>
+                    <p class="text-[9px] text-slate-400">Fundo claro corporativo</p>
+                  </div>
+                </div>
+                <input type="radio" name="theme-radio" id="theme-radio-light" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+              </div>
+
+              <!-- Option 2: Escuro -->
+              <div onclick="selectThemeOption('dark')" id="theme-opt-dark" class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition">
+                <div class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-moon text-xs text-slate-500 dark:text-slate-400"></i>
+                  <div>
+                    <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Escuro</p>
+                    <p class="text-[9px] text-slate-400">Fundo escuro, amigável aos olhos</p>
+                  </div>
+                </div>
+                <input type="radio" name="theme-radio" id="theme-radio-dark" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+              </div>
+
+              <!-- Option 3: Seguir Sistema -->
+              <div onclick="selectThemeOption('system')" id="theme-opt-system" class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition">
+                <div class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-sliders text-xs text-slate-500 dark:text-slate-400"></i>
+                  <div>
+                    <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Siga o Sistema</p>
+                    <p class="text-[9px] text-slate-400">Acompanha as configurações do celular</p>
+                  </div>
+                </div>
+                <input type="radio" name="theme-radio" id="theme-radio-system" class="accent-cogerhSlatePrimary dark:accent-cogerhGoldAccent" />
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: NOTIFICAÇÕES -->
+          <div class="border-t border-slate-100 dark:border-slate-800/80 pt-4 space-y-3">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bell text-cogerhSlatePrimary dark:text-cogerhGoldAccent text-sm"></i>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Notificações em Segundo Plano</h4>
+            </div>
+            
+            <p class="text-[11px] text-slate-400 leading-normal mb-1">
+              Fique sempre por dentro dos avisos e atualizações importantes da coordenação:
+            </p>
+
+            <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+              <div class="space-y-0.5 max-w-[70%]">
+                <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 block">Alertas de Novos Avisos</span>
+                <span class="text-[9px] text-slate-500 dark:text-slate-400 leading-normal block">Sincroniza em segundo plano a cada 30 min e emite notificações locais.</span>
+              </div>
+              <button onclick="toggleNotificationPermission()" id="notification-toggle-btn" class="px-3 py-1.5 text-[11px] font-bold bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 rounded-lg hover:opacity-90 active:scale-95 transition shrink-0">
+                Ativar
+              </button>
+            </div>
+            
+            <div id="notification-test-box" class="hidden flex flex-col gap-2 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-3 rounded-xl">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] text-amber-800 dark:text-amber-300 leading-normal font-medium">
+                  Sincronização em segundo plano ativada com sucesso!
+                </span>
+                <button onclick="triggerTestNotification()" class="text-[9px] font-extrabold uppercase text-amber-900 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50 px-2.5 py-1 rounded bg-white dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-slate-850 active:scale-95 transition shrink-0">
+                  Testar
+                </button>
+              </div>
+            </div>
+            
+            <p class="text-[9px] text-slate-400 dark:text-slate-500 leading-normal italic">
+              Nota: Se as notificações não aparecerem, certifique-se de que as permissões de notificação do navegador estão autorizadas nas configurações do seu celular.
+            </p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end pt-3 mt-4 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="closeThemeModal()" class="text-xs font-black uppercase tracking-wider text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:underline px-4 py-2">
+            Concluído
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTICE DETAIL MODAL -->
+    <div id="notice-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span id="notice-detail-category" class="text-[10px] font-bold px-2.5 py-0.5 rounded-md"></span>
+          <span id="notice-detail-date" class="text-[10px] text-slate-500 dark:text-slate-400"></span>
+        </div>
+        <h3 id="notice-detail-title" class="text-base font-extrabold text-slate-900 dark:text-slate-100 mb-3 leading-snug"></h3>
+        <p id="notice-detail-content" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-6 whitespace-pre-line"></p>
+        
+        <div class="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="closeNoticeDetailModal()" class="text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 px-4 py-2">
+            Fechar
+          </button>
+          <button onclick="shareNoticeFromModal()" id="notice-detail-share-btn" class="flex items-center gap-1.5 bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 font-bold px-4 py-2 rounded-xl text-xs shadow-md transition active:scale-95">
+            <i class="fa-solid fa-share-nodes"></i> Compartilhar
+          </button>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <script>
+    // PRESET DATA REPOSITORY (Fallbacks / Cache initializer)
+    const PRESETS = {
+      spreadsheetId: "1UphCH_ZboQdlbPHe5z6kNceZqer8ReAx2gNbIOKUfWY",
+      categories: [
+        "Todos", "Carreira", "Benefícios", "Cadastro", "Férias", 
+        "Licenças e Afastamentos", "Capacitação", "Movimentação", "Saúde", "Aposentadoria", "Avaliação"
+      ],
+      procedures: [
+        {
+          id: "p1",
+          title: "Solicitação de Férias",
+          categories: ["Férias", "Licenças e Afastamentos"],
+          description: "O agendamento e a alteração de férias de servidores técnico-administrativos e docentes devem ser solicitados via aplicativo ou portal SouGov.",
+          stepByStep: [
+            "Acesse o aplicativo SouGov ou o portal sougov.economia.gov.br.",
+            "Na aba 'Autoatendimento', localize a opção 'Férias'.",
+            "Selecione 'Programar Férias' ou 'Alterar Férias' conforme o caso.",
+            "Insira o ano correspondente, a quantidade de parcelas (até 3) e o período inicial de cada período.",
+            "Confirme se deseja solicitar adiantamento do 13º salário ou adicional de férias.",
+            "Envie a solicitação, que será tramitada automaticamente à chefia imediata para homologação."
+          ],
+          responsible: "Ana Paula Santos (Assistente em Administração)",
+          systemUsed: "SouGov / SEI",
+          link: "https://www.gov.br/servidor/pt-br/assuntos/sou-gov"
+        },
+        {
+          id: "p2",
+          title: "Progressão por Capacitação",
+          categories: ["Carreira", "Capacitação"],
+          description: "Direito de ascensão de nível de capacitação do servidor técnico-administrativo (TAE), mediante apresentação de certificado de cursos de capacitação compatíveis com o cargo.",
+          stepByStep: [
+            "Inicie um processo no SEI com o tipo: 'Pessoal: Progressão por Capacitação'.",
+            "Preencha e assine o formulário 'Requerimento de Progressão por Capacitação'.",
+            "Anexe o certificado digitalizado do curso de capacitação (deve possuir carga horária mínima exigida).",
+            "Verifique se o curso possui correlação direta com as atividades desempenhadas ou o ambiente organizacional do servidor.",
+            "Encaminhe o processo para a COGERH-AP (COGERH do Campus Apucarana) para análise e parecer.",
+            "Após homologado, os efeitos financeiros passam a vigorar a partir do cumprimento de interstício ou apresentação do requerimento."
+          ],
+          responsible: "Carlos Eduardo Lima (Assistente de Recursos Humanos)",
+          systemUsed: "SEI / SISGEP",
+          link: "https://www.utfpr.edu.br/servidores"
+        },
+        {
+          id: "p3",
+          title: "Progresso por Mérito Profissional",
+          categories: ["Carreira", "Avaliação"],
+          description: "Progressão automática baseada no interstício de 18 meses de efetivo exercício, desde que o TAE obtenha resultado favorável em sua avaliação de desempenho.",
+          stepByStep: [
+            "A COGERH identifica mensalmente os servidores aptos à concessão do mérito profissional.",
+            "O servidor e sua chefia imediata preenchem a Avaliação de Desempenho no sistema interno.",
+            "Não é necessário abrir processo manual. O processo é de rito automático iniciado pela própria COGERH.",
+            "Em caso de aprovação, é expedida a portaria de progressão pela Diretoria de Gestão de Pessoas."
+          ],
+          responsible: "Rosemeire Silva (Administradora da COGERH)",
+          systemUsed: "SISGEP / SEI",
+          link: "https://www.utfpr.edu.br/servidores"
+        },
+        {
+          id: "p4",
+          title: "Licença para Tratamento de Saúde",
+          categories: ["Licenças e Afastamentos", "Saúde"],
+          description: "Licença médica concedida ao servidor que, por motivo de saúde pessoal ou familiar, necessita afastar-se temporariamente de suas atribuições regulamentadas.",
+          stepByStep: [
+            "O servidor deve providenciar o atestado médico legível contendo diagnóstico (ou CID se outorgado), dias de repouso e assinatura/carimbo do médico.",
+            "No prazo de até 5 (cinco) dias corridos do início do afastamento, envie o atestado pelo aplicativo SouGov.",
+            "Selecione 'Atestado de Saúde' no SouGov e anexe a foto legível do documento.",
+            "Dependendo da quantidade de dias e histórico, o sistema agendará perícia médica presencial ou homologará por análise documental automática.",
+            "Informe imediatamente a chefia imediata sobre o afastamento para fins de ajuste das escalas de trabalho."
+          ],
+          responsible: "Juliana Souza (Enfermeira do Trabalho / SIASS)",
+          systemUsed: "SouGov",
+          link: "https://www.gov.br/servidor/pt-br/assuntos/sou-gov"
+        },
+        {
+          id: "p5",
+          title: "Auxílio Transporte",
+          categories: ["Benefícios"],
+          description: "Benefício de caráter indenizatório para custear despesas de locomoção diária entre residência e local de trabalho, em veículo coletivo institucional ou pessoal.",
+          stepByStep: [
+            "Inicie processo no SEI: 'Pessoal: Solicitação de Auxílio Transporte'.",
+            "Preencha a autodeclaração eletrônica com os dados do itinerário, linhas de ônibus utilizadas e tarifas correspondentes.",
+            "Comprove o endereço de domicílio anexando um comprovante de residência atual em seu nome.",
+            "Encaminhe o processo para a COGERH-AP.",
+            "O desconto de 6% sobre o vencimento básico proporcional será aplicado conforme previsto em lei."
+          ],
+          responsible: "Ana Paula Santos (Assistente em Administração)",
+          systemUsed: "SEI / SouGov",
+          link: "https://www.utfpr.edu.br/servidores"
+        },
+        {
+          id: "p6",
+          title: "Licença Prêmio / Licença Capacitação",
+          categories: ["Licenças e Afastamentos", "Capacitação"],
+          description: "A cada 5 anos de efetivo exercício, o servidor pode solicitar até 3 meses de licença capacitação para participar de curso de aperfeiçoamento profissional.",
+          stepByStep: [
+            "Consulte o saldo de interstício com a COGERH com antecedência mínima de 60 dias.",
+            "Inicie o processo no SEI com o tipo correspondente a 'Licença Capacitação'.",
+            "Anexe o folder do curso, cronograma detalhado de horas, CNPJ da instituição promotora e manifestação da chefia direta.",
+            "A COGERH efetuará o cálculo de conveniência administrativa e publicará a portaria de concessão.",
+            "Ao retornar, o servidor deve anexar o certificado de conclusão do curso no mesmo processo SEI em até 30 dias."
+          ],
+          responsible: "Rosemeire Silva (Administradora da COGERH)",
+          systemUsed: "SEI",
+          link: "https://www.utfpr.edu.br"
+        }
+      ],
+      notices: [
+        {
+          id: "n1",
+          title: "Fechamento da Folha de Pagamento - Junho/2026",
+          content: "Atenção servidores! O prazo para entrega de documentos, homologações de férias e alterações financeiras para a folha de pagamento do mês de Junho encerra-se improrrogavelmente no dia 16/06/2026 às 12h.",
+          date: "11 de Junho de 2026",
+          isPriority: true,
+          category: "Urgente"
+        },
+        {
+          id: "n2",
+          title: "Recadastramento Obrigatório de Auxílio Alimentação",
+          content: "Todos os servidores ativos devem revisar seus dados de auxílio alimentação e contatos de emergência no portal SouGov. O processo de auditoria anual foi prorrogado.",
+          date: "08 de Junho de 2026",
+          isPriority: false,
+          category: "Geral"
+        },
+        {
+          id: "n3",
+          title: "Plantão Tira-Dúvidas: Novo Plano de Saúde UTFPR",
+          content: "A COGERH realizará um encontro presencial na Sala de Reuniões do Bloco A na próxima terça-feira para esclarecer dúvidas sobre os novos convênios de saúde disponíveis à nossa comunidade.",
+          date: "05 de Junho de 2026",
+          isPriority: false,
+          category: "Evento"
+        }
+      ],
+      agenda: [
+        {
+          id: "a1",
+          title: "Prazo Final de Homologação de Férias (Chefias)",
+          date: "15/06/2026",
+          description: "Último dia para as chefias imediatas homologarem as solicitações de férias pendentes do mês de Julho e Agosto no SouGov.",
+          type: "Deadlines"
+        },
+        {
+          id: "a2",
+          title: "Curso de Formação de Novas Chefias",
+          date: "18/06/2026",
+          endDate: "20/06/2026",
+          description: "Capacitação sobre liderança, gestão pública e rotinas de recursos humanos da UTFPR. Evento online via Teams.",
+          type: "Capacitações"
+        },
+        {
+          id: "a3",
+          title: "Vencimento do Interstício de Progressão Docente",
+          date: "22/06/2026",
+          description: "Fechamento das solicitações de avaliação de desempenho docente enviadas pela CPPD para a COGERH da UTFPR Apucarana.",
+          type: "Deadlines"
+        },
+        {
+          id: "a4",
+          title: "Semana de Planejamento Integrado da COGERH",
+          date: "29/06/2026",
+          endDate: "02/07/2026",
+          description: "Período de reuniões de alinhamento estratégico, revisão de metas e planejamento de processos internos para o próximo semestre.",
+          type: "Eventos"
+        }
+      ],
+      team: [
+        {
+          name: "Diego Maronese",
+          role: "Coordenador de Gestão de Recursos Humanos (COGERH-AP)",
+          email: "diegomaronese@utfpr.edu.br",
+          phone: "(43) 3162-1201",
+          responsibilities: [
+            "Gestão Geral da Coordenadoria",
+            "Planejamento de Pessoas",
+            "Substituição de Funções Comissionadas (CD/FG)",
+            "Mediação de Conflitos e Consultas Complexas"
+          ],
+          atendimento: "Segunda a Sexta-feira:\nPresencial (08h às 14h) | Remoto (14h às 17h)",
+          whatsapp: "554331621201"
+        },
+        {
+          name: "Rosemeire Silva",
+          role: "Administradora e Assessora Técnica",
+          email: "rosemeire@utfpr.edu.br",
+          phone: "(43) 3162-1202",
+          responsibilities: [
+            "Admissão de Efetivos e Substitutos",
+            "Licença Capacitação e Afastamentos Integrais",
+            "Progressão por Mérito Técnico-Administrativo",
+            "Estágio Probatório Docente e TAE"
+          ],
+          atendimento: "Segunda, Quarta e Sexta: Presencial (08h às 17h)\nTerça e Quinta: Remoto (08h às 17h)",
+          whatsapp: "554331621202"
+        },
+        {
+          name: "Ana Paula Santos",
+          role: "Assistente em Administração",
+          email: "anapaula@utfpr.edu.br",
+          phone: "(43) 3162-1203",
+          responsibilities: [
+            "Programação e Alteração de Férias",
+            "Concessão de Auxílio Transporte e Alimentação",
+            "Controle de Frequência e Homologação de Ponto",
+            "Substituições e Designações Mapeadas"
+          ],
+          atendimento: "Segunda a Quinta: Presencial (08h às 17h)\nSexta-feira: Remoto (08h às 17h)",
+          whatsapp: "554331621203"
+        },
+        {
+          name: "Carlos Eduardo Lima",
+          role: "Assistente de Recursos Humanos",
+          email: "carloseduardo@utfpr.edu.br",
+          phone: "(43) 3162-1204",
+          responsibilities: [
+            "Progressão por Capacitação (TAE)",
+            "Cadastros Iniciais e Atualizações Cadastrais",
+            "Declarações de Vínculo, Margem Consignável",
+            "Gestão do Arquivo de Pastas Funcionais"
+          ],
+          atendimento: "Segunda a Sexta-feira:\nPresencial (08h às 17h)",
+          whatsapp: "554331621204"
+        }
+      ],
+      manuals: [
+        {
+          id: "m1",
+          title: "Cartilha de Benefícios do Servidor",
+          category: "Benefícios",
+          description: "Consulte as principais regras, canais de solicitação e valores atualizados para auxílio-alimentação, auxílio-transporte, assistência pré-escolar e saúde suplementar.",
+          link: "https://www.utfpr.edu.br"
+        },
+        {
+          id: "m2",
+          title: "Manual Prático de Férias e Afastamentos",
+          category: "Férias",
+          description: "Passo a passo completo de como planejar, parcelar e alterar as suas férias no sistema SouGov, além de orientações sobre as principais licenças legais.",
+          link: "https://www.utfpr.edu.br"
+        },
+        {
+          id: "m3",
+          title: "Guia do Estágio Probatório",
+          category: "Carreira",
+          description: "Entenda os critérios de avaliação de desempenho, cronogramas de relatórios parciais, pontuações mínimas e o papel da comissão avaliadora durante o estágio probatório.",
+          link: "https://www.utfpr.edu.br"
+        },
+        {
+          id: "m4",
+          title: "Manual de Capacitação e Desenvolvimento",
+          category: "Capacitação",
+          description: "Normas para afastamento integral para pós-graduação stricto sensu, critérios de seleção para licença capacitação e como registrar cursos internos na COGERH.",
+          link: "https://www.utfpr.edu.br"
+        }
+      ]
+    };
+
+    // Define firstOrNull property on Array prototype for safe access
+    Object.defineProperty(Array.prototype, 'firstOrNull', {
+      get: function() {
+        return this.length > 0 ? this[0] : null;
+      }
+    });
+
+    // LOCAL APP STATE ENGINE
+    let state = {
+      themeMode: localStorage.getItem("cogerh_theme") || "system",
+      currentTab: 0,
+      searchQuery: "",
+      selectedCategory: "Todos",
+      expandedProcedureId: null,
+      spreadsheetId: PRESETS.spreadsheetId, // Force always default ID
+      lastSyncTime: localStorage.getItem("cogerh_last_sync_time") || "Nunca sincronizado",
+      lastSyncSuccess: localStorage.getItem("cogerh_last_sync_success") === "true",
+      
+      // Data models cached from localStorage or presets
+      procedures: JSON.parse(localStorage.getItem("cogerh_data_procedures")) || PRESETS.procedures,
+      notices: JSON.parse(localStorage.getItem("cogerh_data_notices")) || PRESETS.notices,
+      agenda: JSON.parse(localStorage.getItem("cogerh_data_agenda")) || PRESETS.agenda,
+      team: JSON.parse(localStorage.getItem("cogerh_data_team")) || PRESETS.team,
+      manuals: JSON.parse(localStorage.getItem("cogerh_data_manuals")) || PRESETS.manuals
+    };
+
+    // INITS
+    document.addEventListener("DOMContentLoaded", () => {
+      applyTheme();
+      
+      // Adjust logo path dynamically
+      const logoImg = document.getElementById("header-logo-img");
+      if (logoImg) {
+        const path = window.location.pathname;
+        if (path.endsWith("/pwa")) {
+          logoImg.src = "pwa/cogerh_logo.png";
+        } else {
+          logoImg.src = "cogerh_logo.png";
+        }
+        logoImg.onerror = function() {
+          if (this.src !== window.location.origin + "/pwa/cogerh_logo.png") {
+            this.src = "/pwa/cogerh_logo.png";
+          }
+        };
+      }
+
+      updateNavigationUI();
+      renderCurrentScreen();
+      initServiceWorker();
+      autoSyncFromDefaultSheet();
+
+      // Listen for system theme changes dynamically if "system" mode is selected
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (state.themeMode === "system") {
+          applyTheme();
+        }
+      });
+    });
+
+    // PWA SERVICE WORKER REGISTRATION
+    function initServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        const registerSW = () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(async reg => {
+              console.log('Service Worker registrado com sucesso:', reg.scope);
+              
+              // Register Periodic Sync & Background Sync if permission is granted
+              if ('Notification' in window && Notification.permission === 'granted') {
+                registerPeriodicSync();
+                try {
+                  if ('sync' in reg) {
+                    await reg.sync.register('sync-notices');
+                    console.log('Standard Background Sync registrado!');
+                  }
+                } catch (e) {
+                  console.warn('Standard Sync registration failed:', e);
+                }
+              }
+              
+              // Save sync data to cache so the sw can access it
+              saveSyncDataToCache();
+              
+              // Set up active foreground polling fallback
+              initForegroundPolling();
+            })
+            .catch(err => console.error('Erro ao registrar Service Worker:', err));
+        };
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          registerSW();
+        } else {
+          window.addEventListener('load', registerSW);
+        }
+        
+        // Listen to messages from Service Worker (such as opening a specific notice)
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.action === 'open-notice') {
+            const noticeId = event.data.noticeId;
+            if (noticeId) {
+              // Switch to home screen and open notice
+              state.currentTab = 0;
+              renderCurrentScreen();
+              setTimeout(() => {
+                openNoticeDetail(noticeId);
+              }, 300);
+            }
+          }
+        });
+      }
+    }
+
+    // THEME MANAGEMENT
+    function openThemeModal() {
+      document.getElementById("theme-modal").classList.remove("hidden");
+      updateThemeModalUI();
+      updateNotificationUI();
+    }
+
+    function closeThemeModal() {
+      document.getElementById("theme-modal").classList.add("hidden");
+    }
+
+    function selectThemeOption(mode) {
+      state.themeMode = mode;
+      localStorage.setItem("cogerh_theme", mode);
+      applyTheme();
+      updateThemeModalUI();
+    }
+
+    function updateThemeModalUI() {
+      const options = ["light", "dark", "system"];
+      options.forEach(opt => {
+        const rowEl = document.getElementById(`theme-opt-${opt}`);
+        const radioEl = document.getElementById(`theme-radio-${opt}`);
+        if (!rowEl || !radioEl) return;
+        
+        if (state.themeMode === opt) {
+          rowEl.className = "flex items-center justify-between p-3.5 rounded-xl border-2 border-cogerhSlatePrimary dark:border-cogerhGoldAccent bg-slate-50 dark:bg-slate-900 cursor-pointer transition";
+          radioEl.checked = true;
+        } else {
+          rowEl.className = "flex items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-cogerhSlateDark/40 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 transition";
+          radioEl.checked = false;
+        }
+      });
+    }
+
+    function applyTheme() {
+      const htmlEl = document.documentElement;
+      const themeIcon = document.getElementById("theme-icon");
+      if (!themeIcon) return;
+      
+      let isDark = false;
+      if (state.themeMode === "dark") {
+        isDark = true;
+      } else if (state.themeMode === "system") {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      
+      if (isDark) {
+        htmlEl.classList.add("dark");
+      } else {
+        htmlEl.classList.remove("dark");
+      }
+
+      // Keep header button icon as a gear for Configurações
+      themeIcon.className = "fa-solid fa-gear text-lg text-cogerhGoldAccent";
+    }
+
+    // NOTICE DETAIL MODAL & SHARE LOGIC
+    let currentDetailedNoticeId = null;
+
+    function openNoticeDetail(id) {
+      const notice = state.notices.find(n => n.id === id);
+      if (!notice) return;
+      
+      currentDetailedNoticeId = id;
+      
+      document.getElementById("notice-detail-title").innerText = notice.title;
+      document.getElementById("notice-detail-date").innerText = notice.date;
+      document.getElementById("notice-detail-content").innerHTML = notice.content.replace(/\n/g, '<br>');
+      
+      const badge = document.getElementById("notice-detail-category");
+      if (badge) {
+        badge.innerText = notice.category || (notice.isPriority ? "URGENTE" : "Geral");
+        if (notice.isPriority) {
+          badge.className = "text-[10px] bg-cogerhGoldAccent text-slate-950 font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0";
+        } else {
+          badge.className = "text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0";
+        }
+      }
+      
+      document.getElementById("notice-detail-modal").classList.remove("hidden");
+    }
+
+    function closeNoticeDetailModal() {
+      document.getElementById("notice-detail-modal").classList.add("hidden");
+      currentDetailedNoticeId = null;
+    }
+
+    function closeNoticeDetail() {
+      closeNoticeDetailModal();
+    }
+
+    function shareNoticeFromModal() {
+      if (!currentDetailedNoticeId) return;
+      const notice = state.notices.find(n => n.id === currentDetailedNoticeId);
+      if (!notice) return;
+      
+      const shareText = `*COGERH Apucarana - ${notice.category || "Aviso"}*\n\n*${notice.title}*\n_${notice.date}_\n\n${notice.content}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: notice.title,
+          text: shareText
+        }).then(() => {
+          console.log('Compartilhado com sucesso!');
+        }).catch(err => {
+          console.log('Erro ao compartilhar:', err);
+        });
+      } else {
+        // Fallback to copy-to-clipboard
+        navigator.clipboard.writeText(shareText).then(() => {
+          showToast("Aviso copiado para a área de transferência!");
+        }).catch(() => {
+          showToast("Não foi possível copiar o texto.");
+        });
+      }
+    }
+
+    // MODERN TOAST NOTIFICATION ENGINE
+    function showToast(message) {
+      let container = document.getElementById("toast-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        container.className = "fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm";
+        document.body.appendChild(container);
+      }
+      
+      const toast = document.createElement("div");
+      toast.className = "bg-slate-900/95 dark:bg-slate-100/95 text-white dark:text-slate-950 text-xs font-bold px-4 py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 animate-fade-in pointer-events-auto transition duration-300 opacity-0 transform translate-y-2";
+      toast.innerHTML = `
+        <i class="fa-solid fa-circle-check text-cogerhGoldAccent dark:text-cogerhSlatePrimary"></i>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      // Trigger animations
+      setTimeout(() => {
+        toast.style.opacity = "1";
+        toast.style.transform = "translateY(0)";
+      }, 50);
+      
+      // Remove toast
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(2px)";
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3000);
+    }
+
+    // NAVIGATION
+    function switchTab(tabIndex) {
+      state.currentTab = tabIndex;
+      state.searchQuery = ""; // Reset search query on change
+      state.selectedCategory = "Todos"; // Reset category
+      state.expandedProcedureId = null;
+      updateNavigationUI();
+      renderCurrentScreen();
+      document.getElementById("app-content").scrollTop = 0;
+    }
+
+    function updateNavigationUI() {
+      const tabs = document.querySelectorAll(".nav-tab-btn");
+      const baseIcons = [
+        "fa-solid fa-house text-lg",
+        "fa-solid fa-file-invoice text-lg",
+        "fa-solid fa-book-open text-lg",
+        "fa-solid fa-user-group text-lg",
+        "fa-solid fa-share-nodes text-lg"
+      ];
+      tabs.forEach((tab, index) => {
+        const iconContainer = tab.querySelector(".nav-icon-container");
+        const icon = tab.querySelector("i");
+        const label = tab.querySelector("span");
+        
+        if (index === state.currentTab) {
+          iconContainer.className = "nav-icon-container px-4 py-1.5 rounded-full bg-slate-150 dark:bg-slate-800 text-slate-900 dark:text-cogerhGoldAccent transition duration-150";
+          icon.className = `${baseIcons[index]} text-cogerhSlatePrimary dark:text-cogerhGoldAccent`;
+          label.className = "text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent";
+        } else {
+          iconContainer.className = "nav-icon-container px-4 py-1.5 rounded-full bg-transparent text-slate-500 dark:text-slate-400 transition duration-150";
+          icon.className = `${baseIcons[index]} text-slate-500 dark:text-slate-400`;
+          label.className = "text-[10px] font-medium text-slate-500 dark:text-slate-400";
+        }
+      });
+    }
+
+    // SCREEN RENDERING MANAGER
+    function renderCurrentScreen() {
+      const mainContainer = document.getElementById("app-content");
+      
+      switch (state.currentTab) {
+        case 0:
+          renderInicioScreen(mainContainer);
+          break;
+        case 1:
+          renderProcessosScreen(mainContainer);
+          break;
+        case 2:
+          renderManuaisScreen(mainContainer);
+          break;
+        case 3:
+          renderEquipeScreen(mainContainer);
+          break;
+        case 4:
+          renderCanaisScreen(mainContainer);
+          break;
+      }
+    }
+
+    // ----------------------------------------------------
+    // SCREEN 1: INÍCIO (HOME)
+    // ----------------------------------------------------
+    function renderInicioScreen(container) {
+      // Find priority and general notices
+      const priorityNotices = state.notices.filter(n => n.isPriority);
+      const generalNotices = state.notices.filter(n => !n.isPriority);
+      
+      let noticesHtml = "";
+      
+      if (priorityNotices.length > 0) {
+        priorityNotices.forEach(notice => {
+          noticesHtml += `
+            <div onclick="openNoticeDetail('${notice.id}')" class="bg-[#FFF9E6] dark:bg-amber-950/15 border-l-4 border-cogerhGoldAccent p-4 rounded-xl shadow-sm mb-4 cursor-pointer hover:shadow-md transition active:scale-98">
+              <div class="flex items-start justify-between gap-2">
+                <span class="text-[10px] bg-cogerhGoldAccent text-slate-950 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                  ${notice.category || 'URGENTE'}
+                </span>
+                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">${notice.date}</span>
+              </div>
+              <h4 class="text-sm font-black text-slate-900 dark:text-amber-200 mt-2.5 mb-1.5 leading-snug">${notice.title}</h4>
+              <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-2">${notice.content}</p>
+              <div class="flex items-center gap-1.5 mt-3 text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent">
+                <span>Toque para ler mais e compartilhar</span>
+                <i class="fa-solid fa-arrow-right text-[8px] mt-0.5"></i>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      let generalNoticesHtml = "";
+      if (generalNotices.length > 0) {
+        generalNotices.forEach(notice => {
+          generalNoticesHtml += `
+            <div onclick="openNoticeDetail('${notice.id}')" class="bg-white dark:bg-cogerhSlateDark p-4 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-800 mb-3.5 cursor-pointer hover:shadow-md transition active:scale-98">
+              <div class="flex items-start justify-between gap-2">
+                <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                  ${notice.category || 'Geral'}
+                </span>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">${notice.date}</span>
+              </div>
+              <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-2 mb-1 leading-snug">${notice.title}</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">${notice.content}</p>
+              <div class="flex items-center gap-1.5 mt-3 text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent">
+                <span>Toque para ler mais e compartilhar</span>
+                <i class="fa-solid fa-arrow-right text-[8px] mt-0.5"></i>
+              </div>
+            </div>
+          `;
+        });
+      } else if (priorityNotices.length === 0) {
+        generalNoticesHtml = `<p class="text-xs text-slate-400 text-center py-4">Nenhum aviso disponível.</p>`;
+      }
+
+      // Agenda/Events Timeline
+      let agendaHtml = "";
+      if (state.agenda.length > 0) {
+        state.agenda.forEach(item => {
+          const isDeadline = item.type === "Deadlines" || item.type === "Prazos";
+          const dotColor = isDeadline ? "bg-red-500" : "bg-cogerhGoldAccent";
+          const badgeClass = isDeadline 
+            ? "bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-900/40" 
+            : "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/40";
+          
+          agendaHtml += `
+            <div class="relative pl-6 pb-4 border-l border-slate-200 dark:border-slate-800 last:pb-0">
+              <!-- Timeline Bullet -->
+              <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${dotColor} shadow-sm ring-4 ring-lightBg dark:ring-darkBg"></span>
+              
+              <div class="flex items-start justify-between gap-2">
+                <span class="text-xs font-bold text-slate-900 dark:text-slate-100">${item.title}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wider ${badgeClass}">
+                  ${item.date}${item.endDate ? ' - ' + item.endDate : ''}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${item.description}</p>
+            </div>
+          `;
+        });
+      } else {
+        agendaHtml = `<p class="text-xs text-slate-400 text-center py-4">Nenhuma atividade pendente na agenda.</p>`;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-5 animate-fade-in">
+          <!-- Welcome Section matching native home card exactly -->
+          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
+            <div class="relative z-10 space-y-3.5">
+              <h2 class="text-lg font-black tracking-tight">Olá, Servidor(a)!</h2>
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Este é o canal direto da COGERH Apucarana para você consultar processos, acompanhar notícias e entrar em contato com nossa equipe para tirar dúvidas de forma rápida e intuitiva.
+              </p>
+              <div>
+                <button onclick="switchTab(1)" class="bg-cogerhGoldAccent hover:bg-yellow-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow-md transition active:scale-95 flex items-center gap-1.5">
+                  <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                  Consultar Processos
+                </button>
+              </div>
+            </div>
+            <!-- Decorative backdrop logo icon -->
+            <i class="fa-solid fa-magnifying-glass text-8xl absolute -right-4 -bottom-4 opacity-10 text-white"></i>
+          </div>
+
+          <!-- Dynamic Urgent Notices Section -->
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
+              <i class="fa-solid fa-bullhorn text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+              Avisos e Comunicados
+            </h3>
+            ${noticesHtml}
+            ${generalNoticesHtml}
+          </div>
+
+          <!-- Agenda / Deadlines Section -->
+          <div class="space-y-3.5">
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
+              <i class="fa-solid fa-calendar-check text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+              Agenda e Cronograma da COGERH
+            </h3>
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
+              <div class="space-y-4">
+                ${agendaHtml}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ----------------------------------------------------
+    // SCREEN 2: PROCESSOS (PROCEDURES) - Dynamic Solid Cards
+    // ----------------------------------------------------
+    function renderProcessosScreen(container) {
+      // Create Filter Chips Header
+      let chipsHtml = "";
+      PRESETS.categories.forEach(cat => {
+        const isSelected = state.selectedCategory === cat;
+        const chipClass = isSelected
+          ? "bg-cogerhGoldAccent text-slate-950 font-bold border-cogerhGoldAccent shadow-sm scale-105"
+          : "bg-white dark:bg-cogerhSlateDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/45";
+        
+        chipsHtml += `
+          <button onclick="setCategoryFilter('${cat}')" class="px-3.5 py-1.5 text-xs font-medium rounded-full border shrink-0 transition active:scale-95 ${chipClass}">
+            ${cat}
+          </button>
+        `;
+      });
+
+      // Filter procedures list
+      const filtered = state.procedures.filter(p => {
+        const matchesQuery = p.title.toLowerCase().includes(state.searchQuery.toLowerCase()) || 
+                             p.description.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                             p.systemUsed.toLowerCase().includes(state.searchQuery.toLowerCase());
+        const matchesCat = state.selectedCategory === "Todos" || p.categories.includes(state.selectedCategory);
+        return matchesQuery && matchesCat;
+      });
+
+      // Render cards
+      let cardsHtml = "";
+      if (filtered.length > 0) {
+        filtered.forEach(p => {
+          const isExpanded = state.expandedProcedureId === p.id;
+          
+          // Generate categories chips
+          let catChips = "";
+          p.categories.forEach(c => {
+            catChips += `
+              <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider mr-1 mb-1 inline-block">
+                ${c}
+              </span>
+            `;
+          });
+
+          // System Used Badge style - High-contrast text on soft, single-tone borders
+          const sysBadgeColor = p.systemUsed.split(" / ").firstOrNull === "SEI" 
+            ? "bg-[#EAF2FF] dark:bg-blue-950/25 text-blue-700 dark:text-blue-450 border border-blue-200/50 dark:border-blue-900/30" 
+            : "bg-[#EEF2FF] dark:bg-indigo-950/25 text-indigo-700 dark:text-indigo-450 border border-indigo-200/50 dark:border-indigo-900/30";
+
+          // Expandable segment height
+          const displayStyle = isExpanded 
+            ? "max-height: 2000px; opacity: 1;" 
+            : "max-height: 0px; opacity: 0; overflow: hidden; margin-top: 0px; padding-top: 0px; border-top-width: 0px;";
+          const expandIcon = isExpanded ? "fa-chevron-up" : "fa-chevron-down";
+
+          // Build Steps HTML
+          let stepsListHtml = "";
+          if (p.stepByStep && p.stepByStep.length > 0) {
+            p.stepByStep.forEach((step, stepIdx) => {
+              stepsListHtml += `
+                <div class="flex items-start gap-2.5 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                  <span class="flex items-center justify-center w-5 h-5 bg-cogerhSlatePrimary text-white text-[10px] font-bold rounded-full mt-0.5 shrink-0">${stepIdx + 1}</span>
+                  <p class="flex-1">${step}</p>
+                </div>
+              `;
+            });
+          }
+
+          cardsHtml += `
+            <!-- CARD (Solid background, beautifully designed with unified background) -->
+            <div class="bg-white dark:bg-cogerhSlateDark rounded-2xl border border-slate-200/60 dark:border-slate-800 p-5 shadow-sm transition hover:shadow-md">
+              
+              <!-- Category and System Tags -->
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex flex-wrap items-center">
+                  ${catChips}
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md shrink-0 ${sysBadgeColor}">
+                  ${p.systemUsed}
+                </span>
+              </div>
+
+              <!-- Procedure Title -->
+              <h4 class="text-base font-extrabold text-slate-900 dark:text-slate-100 leading-snug mb-2">${p.title}</h4>
+              
+              <!-- Summary Description -->
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${p.description}</p>
+              
+              <!-- Interactive Expansion trigger - clean transparent outline instead of dual grey colors -->
+              <button onclick="toggleProcedure('${p.id}')" class="w-full flex items-center justify-center gap-1.5 mt-4 text-xs font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:bg-slate-50 dark:hover:bg-slate-900/30 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl transition active:scale-98">
+                <span>${isExpanded ? 'Esconder detalhes' : 'Toque para ver o passo a passo completo'}</span>
+                <i class="fa-solid ${expandIcon} text-[10px]"></i>
+              </button>
+
+              <!-- Detailed Section -->
+              <div class="transition-max-height duration-300 ${isExpanded ? 'mt-4 space-y-4 border-t border-slate-200/60 dark:border-slate-800/80 pt-4' : 'overflow-hidden'}" style="${displayStyle}">
+                
+                <!-- Steps list -->
+                <div class="space-y-3">
+                  <h5 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Fluxo Passo a Passo:</h5>
+                  ${stepsListHtml}
+                </div>
+
+                <!-- Responsible Meta info (Transparent, single-color container) -->
+                <div class="bg-transparent p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 space-y-2">
+                  <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-user-tie text-xs text-slate-400 mt-0.5"></i>
+                    <div>
+                      <p class="text-[10px] uppercase font-bold text-slate-400">Responsável</p>
+                      <p class="text-xs text-slate-700 dark:text-slate-200 font-medium">${p.responsible}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-2">
+                    <i class="fa-solid fa-window-restore text-xs text-slate-400 mt-0.5"></i>
+                    <div>
+                      <p class="text-[10px] uppercase font-bold text-slate-400">Sistemas</p>
+                      <p class="text-xs text-slate-700 dark:text-slate-200 font-medium">${p.systemUsed}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Link Actions -->
+                <div class="pt-1">
+                  <a href="${p.link}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 font-extrabold py-2.5 rounded-xl shadow-md transition active:scale-95 text-xs text-center">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    Acessar Link / Sistema
+                  </a>
+                </div>
+
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        cardsHtml = `
+          <div class="text-center py-10 space-y-2">
+            <i class="fa-solid fa-triangle-exclamation text-3xl text-slate-300 dark:text-slate-700"></i>
+            <p class="text-xs text-slate-400">Nenhum procedimento encontrado.</p>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-4 animate-fade-in">
+          <!-- SEARCH FIELD -->
+          <div class="relative">
+            <input type="text" id="proc-search-input" value="${state.searchQuery}" oninput="searchProcedures(this.value)" placeholder="Pesquisar por assunto, palavra-chave, sistema..." class="w-full text-sm bg-white dark:bg-cogerhSlateDark border border-slate-200 dark:border-slate-800 rounded-2xl pl-10 pr-4 py-3 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition shadow-sm">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3.5 top-3.5 text-base"></i>
+          </div>
+
+          <!-- HORIZONTAL CATEGORY CHIPS SCROLL -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 custom-scrollbar">
+            ${chipsHtml}
+          </div>
+
+          <!-- LIST OF CARDS -->
+          <div class="space-y-4">
+            ${cardsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function searchProcedures(query) {
+      state.searchQuery = query;
+      renderCurrentScreen();
+    }
+
+    function setCategoryFilter(category) {
+      state.selectedCategory = category;
+      state.expandedProcedureId = null;
+      renderCurrentScreen();
+    }
+
+    function toggleProcedure(id) {
+      state.expandedProcedureId = state.expandedProcedureId === id ? null : id;
+      renderCurrentScreen();
+    }
+
+    // ----------------------------------------------------
+    // SCREEN 3: MANUAIS (MANUALS)
+    // ----------------------------------------------------
+    function renderManuaisScreen(container) {
+      const filtered = state.manuals.filter(m => {
+        return m.title.toLowerCase().includes(state.searchQuery.toLowerCase()) || 
+               m.description.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+               m.category.toLowerCase().includes(state.searchQuery.toLowerCase());
+      });
+
+      let listHtml = "";
+      if (filtered.length > 0) {
+        filtered.forEach(manual => {
+          listHtml += `
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between gap-3 mb-2.5">
+                  <h4 class="text-base font-extrabold text-slate-900 dark:text-slate-100 leading-snug flex-1">${manual.title}</h4>
+                  <span class="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0 mt-0.5">
+                    ${manual.category}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${manual.description}</p>
+              </div>
+              
+              <div class="mt-4 pt-1">
+                <a href="${manual.link}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900/30 text-cogerhSlatePrimary dark:text-cogerhGoldAccent font-bold py-2.5 rounded-xl text-xs border border-slate-200 dark:border-slate-800 transition active:scale-98 shadow-sm">
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                  Acessar
+                </a>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        listHtml = `
+          <div class="text-center py-10 col-span-full">
+            <i class="fa-solid fa-magnifying-glass text-3xl text-slate-300 dark:text-slate-700 mb-2"></i>
+            <p class="text-xs text-slate-400">Nenhum manual encontrado.</p>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-4 animate-fade-in">
+          <!-- SEARCH FIELD -->
+          <div class="relative">
+            <input type="text" id="manual-search-input" value="${state.searchQuery}" oninput="searchManuals(this.value)" placeholder="Pesquisar manuais e cartilhas..." class="w-full text-sm bg-white dark:bg-cogerhSlateDark border border-slate-200 dark:border-slate-800 rounded-2xl pl-10 pr-4 py-3 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition shadow-sm">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3.5 top-3.5 text-base"></i>
+          </div>
+
+          <!-- GRID OF MANUALS -->
+          <div class="grid grid-cols-1 gap-4">
+            ${listHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function searchManuals(query) {
+      state.searchQuery = query;
+      renderCurrentScreen();
+    }
+
+    // ----------------------------------------------------
+    // SCREEN 4: EQUIPE (TEAM MEMBERS)
+    // ----------------------------------------------------
+    function renderEquipeScreen(container) {
+      let teamHtml = "";
+      if (state.team.length > 0) {
+        state.team.forEach(member => {
+          let responsibilitiesList = "";
+          member.responsibilities.forEach(resp => {
+            responsibilitiesList += `
+              <li class="text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5">
+                <i class="fa-solid fa-check text-emerald-500 text-[10px] mt-1 shrink-0"></i>
+                <span>${resp}</span>
+              </li>
+            `;
+          });
+
+          // WhatsApp link creation
+          const hasWhatsapp = member.whatsapp && member.whatsapp.trim().length > 0;
+          const cleanWa = hasWhatsapp ? member.whatsapp.replace(/\D/g, '') : '';
+          const waButton = hasWhatsapp 
+            ? `<a href="https://wa.me/${cleanWa}" target="_blank" class="flex-1 py-2.5 bg-transparent hover:bg-emerald-50/40 dark:bg-emerald-950/10 text-emerald-600 dark:text-emerald-400 rounded-xl text-center text-xs font-bold border border-emerald-200 dark:border-emerald-900/40 transition active:scale-95 flex items-center justify-center gap-1.5">
+                <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+               </a>` 
+            : "";
+
+          // Telephone / Extension link creation
+          const hasPhone = member.phone && member.phone.trim().length > 0;
+          let cleanPhone = hasPhone ? member.phone.replace(/\D/g, '') : '';
+          if (cleanPhone.length === 4) {
+            cleanPhone = "433162" + cleanPhone;
+          } else if (cleanPhone.length === 8) {
+            cleanPhone = "43" + cleanPhone;
+          }
+          const phoneButton = hasPhone 
+            ? `<a href="tel:${cleanPhone}" class="flex-1 py-2.5 bg-transparent hover:bg-blue-50/40 dark:bg-blue-950/10 text-blue-600 dark:text-blue-400 rounded-xl text-center text-xs font-bold border border-slate-200 dark:border-slate-800 transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-phone"></i> Telefone
+               </a>` 
+            : "";
+
+          const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+          const hasPhoto = member.photoUrl && member.photoUrl.trim().length > 0;
+          const avatarHtml = hasPhoto
+            ? `<img src="${member.photoUrl}" alt="${member.name}" class="w-12 h-12 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700" onerror="this.onerror=null; this.outerHTML='<div class=&quot;w-12 h-12 bg-cogerhSlatePrimary text-white rounded-full flex items-center justify-center text-lg font-black tracking-tight shrink-0 border border-slate-200 dark:border-slate-700&quot;>${initials}</div>';" />`
+            : `<div class="w-12 h-12 bg-cogerhSlatePrimary text-white rounded-full flex items-center justify-center text-lg font-black tracking-tight shrink-0 border border-slate-200 dark:border-slate-700">${initials}</div>`;
+
+          teamHtml += `
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm space-y-4">
+               <!-- Avatar, Name & Role -->
+               <div class="flex items-center gap-3.5">
+                 ${avatarHtml}
+                 <div>
+                   <h4 class="text-sm font-black text-slate-900 dark:text-slate-100 leading-tight">${member.name}</h4>
+                   <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">${member.role}</p>
+                 </div>
+               </div>
+
+               <!-- General details -->
+               <div class="border-t border-b border-slate-200/60 dark:border-slate-800/80 py-3 space-y-2">
+                 <div class="flex items-start gap-2.5 text-xs">
+                   <i class="fa-solid fa-business-time text-slate-400 mt-0.5 w-4 text-center"></i>
+                   <div>
+                     <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-0.5">Horário de Atendimento</span>
+                     <p class="text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed">${member.atendimento}</p>
+                   </div>
+                 </div>
+                 
+                 <div class="flex items-center gap-2.5 text-xs">
+                   <i class="fa-solid fa-envelope text-slate-400 w-4 text-center"></i>
+                   <a href="mailto:${member.email}" class="text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:underline font-medium">${member.email}</a>
+                 </div>
+
+                 <div class="flex items-center gap-2.5 text-xs">
+                   <i class="fa-solid fa-phone text-slate-400 w-4 text-center"></i>
+                   <span class="text-slate-600 dark:text-slate-300 font-medium">Ramal: ${member.phone}</span>
+                 </div>
+               </div>
+
+               <!-- Main responsibilities -->
+               <div class="space-y-2">
+                 <h5 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Principais Processos & Atribuições</h5>
+                 <ul class="space-y-1.5">
+                   ${responsibilitiesList}
+                 </ul>
+               </div>
+
+               <!-- Action buttons -->
+               <div class="flex gap-2.5 pt-1">
+                 <a href="mailto:${member.email}" class="flex-1 py-2.5 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900/40 text-slate-700 dark:text-slate-200 rounded-xl text-center text-xs font-bold border border-slate-200 dark:border-slate-800 transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+                   <i class="fa-solid fa-envelope"></i> E-mail
+                 </a>
+                 ${phoneButton}
+                 ${waButton}
+               </div>
+             </div>
+          `;
+        });
+      } else {
+        teamHtml = `<p class="text-xs text-slate-400 text-center py-10">Membros da equipe não disponíveis.</p>`;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-4 animate-fade-in">
+          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
+            <div class="relative z-10 space-y-1.5">
+              <h4 class="text-sm font-extrabold flex items-center gap-1.5 leading-snug">
+                <i class="fa-solid fa-circle-info text-cogerhGoldAccent"></i>
+                Fale Conosco
+              </h4>
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Consulte as responsabilidades específicas de cada servidor da COGERH-AP para agilizar seu atendimento direto.
+              </p>
+            </div>
+            <!-- Decorative backdrop logo icon -->
+            <i class="fa-solid fa-circle-info text-7xl absolute -right-3 -bottom-3 opacity-10 text-white"></i>
+          </div>
+          <div class="space-y-4">
+            <!-- Onde nos Encontrar (Location & Operating Hours Card) -->
+            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm space-y-4">
+              <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-location-dot text-base text-cogerhGoldAccent"></i>
+                <h4 class="text-sm font-black text-slate-900 dark:text-slate-100">Onde nos Encontrar</h4>
+              </div>
+              
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">UTFPR - Campus Apucarana
+Bloco Administrativo (Bloco B)
+Sala da COGERH
+Rua Marcílio Dias, 635 - Apucarana - PR</p>
+              
+              <div class="border-t border-slate-100 dark:border-slate-800/80 my-2"></div>
+              
+              <div class="flex items-start gap-2.5">
+                <i class="fa-solid fa-clock text-xs text-cogerhSlatePrimary dark:text-cogerhGoldAccent mt-0.5"></i>
+                <div>
+                  <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-1">Horário de Atendimento</span>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Segunda a Sexta-Feira, das 08:00 às 12:00 e das 13:00 às 17:00</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section Title: Membros da Coordenação -->
+            <div class="pt-2">
+              <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
+                <i class="fa-solid fa-users text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+                Membros da Coordenação
+              </h3>
+            </div>
+
+            ${teamHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // ----------------------------------------------------
+    // SCREEN 5: CANAIS OFICIAIS (SOCIAL / LINKS)
+    // ----------------------------------------------------
+    function renderCanaisScreen(container) {
+      container.innerHTML = `
+        <div class="space-y-4 animate-fade-in">
+          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
+            <div class="relative z-10 space-y-1.5">
+              <h3 class="text-sm font-extrabold flex items-center gap-1.5 leading-snug">
+                <i class="fa-solid fa-share-nodes text-cogerhGoldAccent"></i>
+                Canais de Comunicação
+              </h3>
+              <p class="text-xs text-slate-200 leading-relaxed">Acesse diretamente os canais de atendimento da COGERH, os portais de serviços federais e informativos oficiais da UTFPR.</p>
+            </div>
+            <!-- Decorative backdrop logo icon -->
+            <i class="fa-solid fa-share-nodes text-7xl absolute -right-3 -bottom-3 opacity-10 text-white"></i>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3.5">
+            <!-- Atendimento por WhatsApp -->
+            <a href="https://wa.me/554331621206" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-brands fa-whatsapp"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Atendimento por WhatsApp</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Canal direto de mensagens com a equipe da COGERH</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- Atendimento por Telefone -->
+            <a href="tel:4331621205" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-950/20 text-blue-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Atendimento por Telefone</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">(43) 3162-1205</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- E-mail Institucional -->
+            <a href="mailto:cogerh-ap@utfpr.edu.br" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-slate-50 dark:bg-slate-900 text-slate-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">E-mail Institucional da COGERH</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">cogerh-ap@utfpr.edu.br</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- Instagram da COGERH -->
+            <a href="https://www.instagram.com/cogerh.apucarana" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-pink-50 dark:bg-pink-950/20 text-pink-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-brands fa-instagram"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Instagram da COGERH</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Acompanhe novidades e comunicados no nosso Instagram</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- Portal da UTFPR -->
+            <a href="https://www.utfpr.edu.br" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-amber-50 dark:bg-amber-950/20 text-amber-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-solid fa-globe"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal da UTFPR</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Portal oficial da Universidade Tecnológica Federal do Paraná</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+
+            <!-- Portal do Servidor Federal -->
+            <a href="https://www.gov.br/servidor" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+                <i class="fa-solid fa-circle-user"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal do Servidor Federal</h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Acesse o portal de informações do Governo Federal</p>
+              </div>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    // ----------------------------------------------------
+    // GOOGLE SHEETS LIVE DATA SYNC ENGINE (Browser Side CSV Parser)
+    // ----------------------------------------------------
+    function toggleSettingsModal(visible) {
+      const modal = document.getElementById("settings-modal");
+      if (visible) {
+        modal.classList.remove("hidden");
+        document.getElementById("spreadsheet-id-input").value = state.spreadsheetId;
+        updateModalLabels();
+        updateNotificationUI();
+      } else {
+        modal.classList.add("hidden");
+        document.getElementById("sync-error-box").classList.add("hidden");
+        document.getElementById("sync-success-box").classList.add("hidden");
+      }
+    }
+
+    // PWA BACKGROUD SYNC & NOTIFICATION HELPERS
+    async function toggleNotificationPermission() {
+      if (!('Notification' in window)) {
+        alert('Seu navegador não suporta notificações de sistema.');
+        return;
+      }
+      
+      if (Notification.permission === 'granted') {
+        updateNotificationUI();
+        return;
+      }
+      
+      const permission = await Notification.requestPermission();
+      updateNotificationUI();
+      
+      if (permission === 'granted') {
+        await registerPeriodicSync();
+        await saveSyncDataToCache();
+        alert('Notificações ativadas! O aplicativo agora enviará avisos importantes quando o celular estiver conectado.');
+      }
+    }
+
+    async function triggerTestNotification() {
+      try {
+        if (Notification.permission !== 'granted') {
+          alert('Permissão de notificação não concedida. Status atual: ' + Notification.permission);
+          return;
+        }
+        
+        const options = {
+          body: 'Este é um teste de aviso para validar o sistema de alertas em segundo plano do PWA!',
+          icon: './cogerh_logo.png',
+          badge: './cogerh_logo.png',
+          vibrate: [100, 50, 100],
+          data: { noticeId: 'test' }
+        };
+
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          if (reg && typeof reg.showNotification === 'function') {
+            await reg.showNotification('Teste de Notificação COGERH', options);
+            console.log('Notificação disparada com sucesso via Service Worker.');
+            return;
+          }
+        }
+        
+        // Fallback standard Notification
+        if (typeof Notification === 'function') {
+          new Notification('Teste de Notificação COGERH', options);
+          console.log('Notificação disparada com sucesso via construtor padrão.');
+        } else {
+          alert('Seu navegador não possui suporte para exibir notificações diretamente.');
+        }
+      } catch (err) {
+        console.error('Erro ao disparar notificação de teste:', err);
+        alert('Falha ao acionar a notificação: ' + err.message + '\n\nCertifique-se de que o aplicativo foi instalado na tela inicial e as notificações do sistema estão ativadas nas configurações do celular.');
+      }
+    }
+
+    function updateNotificationUI() {
+      const toggleBtn = document.getElementById("notification-toggle-btn");
+      const testBox = document.getElementById("notification-test-box");
+      
+      if (!toggleBtn) return;
+      
+      if (!('Notification' in window)) {
+        toggleBtn.textContent = "Incompatível";
+        toggleBtn.disabled = true;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg cursor-not-allowed";
+        return;
+      }
+      
+      if (Notification.permission === "granted") {
+        toggleBtn.textContent = "Ativo";
+        toggleBtn.disabled = true;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg cursor-default";
+        testBox.classList.remove("hidden");
+      } else if (Notification.permission === "denied") {
+        toggleBtn.textContent = "Bloqueado";
+        toggleBtn.disabled = true;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg cursor-not-allowed";
+        testBox.classList.add("hidden");
+      } else {
+        toggleBtn.textContent = "Ativar";
+        toggleBtn.disabled = false;
+        toggleBtn.className = "px-3.5 py-1.5 text-[11px] font-bold bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 rounded-lg hover:opacity-90 active:scale-95 transition";
+        testBox.classList.add("hidden");
+      }
+    }
+
+    async function registerPeriodicSync() {
+      if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.periodicSync.register('sync-notices', {
+            minInterval: 30 * 60 * 1000 // 30 minutes
+          });
+          console.log('Periodic Background Sync registrado com sucesso!');
+        } catch (err) {
+          console.warn('Periodic Sync falhou ou não pôde ser ativado automaticamente (requer engajamento):', err);
+        }
+      } else {
+        console.log('Periodic Sync não suportado. Usando fallback ativo.');
+      }
+    }
+
+    function initForegroundPolling() {
+      // Run background notice checks active fallback (every 30 minutes)
+      setInterval(async () => {
+        console.log('Executando verificação de novos avisos em primeiro plano...');
+        await checkNewNoticesInForeground();
+      }, 30 * 60 * 1000);
+
+      // Instantly check for new notices when user opens/returns to the app (visibility change)
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible') {
+          console.log('Aplicativo em primeiro plano. Verificando novos avisos imediatamente...');
+          await checkNewNoticesInForeground();
+        }
+      });
+    }
+
+    async function checkNewNoticesInForeground() {
+      if (Notification.permission !== 'granted') return;
+      
+      try {
+        const defaultId = state.spreadsheetId || PRESETS.spreadsheetId;
+        const csvNotices = await downloadSheetCsv(defaultId, "avisos");
+        if (!csvNotices) return;
+        
+        const rowsNotices = parseCsvText(csvNotices);
+        const latestNotices = [];
+        rowsNotices.forEach(row => {
+          if (row.length < 3) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return;
+          
+          const title = row[1]?.trim() || "";
+          const content = row[2]?.trim() || "";
+          const date = row[3]?.trim() || "";
+          const priorityText = row[4]?.trim()?.toLowerCase() || "";
+          const isPriority = priorityText === "true" || priorityText === "sim" || priorityText === "1" || priorityText === "yes";
+          const category = row[5]?.trim() || "Geral";
+          
+          latestNotices.push({ id, title, content, date, isPriority, category });
+        });
+        
+        // Compare
+        const localIds = new Set(state.notices.map(n => n.id));
+        const newNotices = latestNotices.filter(n => !localIds.has(n.id));
+        
+        if (newNotices.length > 0) {
+          console.log('Novos avisos detectados no primeiro plano:', newNotices);
+          
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            for (const notice of newNotices.slice(0, 3)) {
+              reg.showNotification(notice.title || 'Novo Aviso COGERH', {
+                body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
+                icon: './cogerh_logo.png',
+                badge: './cogerh_logo.png',
+                tag: 'notice-' + notice.id,
+                data: { noticeId: notice.id },
+                vibrate: [100, 50, 100],
+                requireInteraction: notice.isPriority
+              });
+            }
+          } else {
+            for (const notice of newNotices.slice(0, 3)) {
+              new Notification(notice.title || 'Novo Aviso COGERH', {
+                body: notice.content || 'Acesse o aplicativo para ver mais detalhes.',
+                icon: './cogerh_logo.png'
+              });
+            }
+          }
+          
+          // Update state
+          state.notices = [...latestNotices];
+          localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
+          await saveSyncDataToCache();
+          renderCurrentScreen();
+        }
+      } catch (err) {
+        console.error('Erro ao verificar avisos no primeiro plano:', err);
+      }
+    }
+
+    async function saveSyncDataToCache() {
+      try {
+        if ('caches' in window) {
+          const cache = await caches.open('cogerh-sync-data');
+          const data = {
+            spreadsheetId: state.spreadsheetId || PRESETS.spreadsheetId,
+            notices: state.notices || []
+          };
+          await cache.put(
+            new Request('./pwa-sync-data.json'),
+            new Response(JSON.stringify(data), {
+              headers: { 'Content-Type': 'application/json' }
+            })
+          );
+          console.log('Dados de sincronização salvos com sucesso na Cache Storage do PWA.');
+        }
+      } catch (err) {
+        console.error('Erro ao salvar dados de sincronização para cache do sw:', err);
+      }
+    }
+
+    function updateModalLabels() {
+      document.getElementById("sync-time-lbl").textContent = state.lastSyncTime;
+      const statusLbl = document.getElementById("sync-status-lbl");
+      if (state.lastSyncSuccess) {
+        statusLbl.textContent = "Conectado";
+        statusLbl.className = "font-bold text-emerald-500";
+      } else {
+        statusLbl.textContent = "Sem dados sincronizados";
+        statusLbl.className = "font-bold text-amber-500";
+      }
+    }
+
+    function resetToDefaultSheet() {
+      document.getElementById("spreadsheet-id-input").value = PRESETS.spreadsheetId;
+    }
+
+    // Advanced quote-safe CSV Parser
+    function parseCsvText(csvText) {
+      let results = [];
+      let currentLine = [];
+      let currentField = '';
+      let inQuotes = false;
+      let i = 0;
+      while (i < csvText.length) {
+        let char = csvText[i];
+        if (char === '"') {
+          if (inQuotes && i + 1 < csvText.length && csvText[i+1] === '"') {
+            currentField += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',') {
+          if (inQuotes) {
+            currentField += char;
+          } else {
+            currentLine.push(currentField);
+            currentField = '';
+          }
+        } else if (char === '\n' || char === '\r') {
+          if (inQuotes) {
+            currentField += char;
+          } else {
+            if (char === '\r' && i + 1 < csvText.length && csvText[i+1] === '\n') {
+              i++;
+            }
+            currentLine.push(currentField);
+            results.push(currentLine);
+            currentLine = [];
+            currentField = '';
+          }
+        } else {
+          currentField += char;
+        }
+        i++;
+      }
+      if (currentField !== '' || currentLine.length > 0) {
+        currentLine.push(currentField);
+        results.push(currentLine);
+      }
+      return results;
+    }
+
+    async function downloadSheetCsv(sheetId, sheetName) {
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const text = await response.text();
+        if (text.trim().length > 0 && !text.includes("<!DOCTYPE html>")) {
+          return text;
+        }
+        return null;
+      } catch (e) {
+        console.error("Erro no download da aba: " + sheetName, e);
+        return null;
+      }
+    }
+
+    async function startSyncAndSave() {
+      const inputVal = document.getElementById("spreadsheet-id-input").value.trim();
+      let extractedId = inputVal;
+      
+      // Extract from share link if provided
+      if (inputVal.includes("/spreadsheets/d/")) {
+        const match = inputVal.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) extractedId = match[1];
+      }
+      
+      if (!extractedId) {
+        showSyncError("ID da planilha inválido ou vazio.");
+        return;
+      }
+
+      const syncBtn = document.getElementById("save-sync-btn");
+      const errBox = document.getElementById("sync-error-box");
+      const succBox = document.getElementById("sync-success-box");
+      
+      errBox.classList.add("hidden");
+      succBox.classList.add("hidden");
+      syncBtn.disabled = true;
+      syncBtn.textContent = "Sincronizando...";
+
+      try {
+        // Fetch sheets parallel
+        const [csvProc, csvNotices, csvAgenda, csvTeam, csvManuals] = await Promise.all([
+          downloadSheetCsv(extractedId, "procedimentos"),
+          downloadSheetCsv(extractedId, "avisos"),
+          downloadSheetCsv(extractedId, "agenda"),
+          downloadSheetCsv(extractedId, "equipe"),
+          downloadSheetCsv(extractedId, "manuais")
+        ]);
+
+        if (!csvProc || !csvNotices || !csvAgenda || !csvTeam) {
+          throw new Error("Não foi possível sincronizar as abas obrigatórias da planilha. Verifique se a planilha é pública e possui as abas: 'procedimentos', 'avisos', 'agenda' e 'equipe'.");
+        }
+
+        // Process Procedimentos
+        const rowsProc = parseCsvText(csvProc);
+        const parsedProc = [];
+        rowsProc.forEach(row => {
+          if (row.length < 4) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return; // Header skip
+          
+          const title = row[1]?.trim() || "";
+          const categoriesText = row[2]?.trim() || "";
+          const categories = categoriesText ? categoriesText.split(/[,;|]/).map(c => c.trim()).filter(c => c.length > 0) : [];
+          const description = row[3]?.trim() || "";
+          const stepsText = row[4]?.trim() || "";
+          const responsible = row[5]?.trim() || "COGERH";
+          const systemUsed = row[6]?.trim() || "SEI";
+          const link = row[7]?.trim() || "https://www.utfpr.edu.br";
+          
+          const stepByStep = stepsText.includes("|") 
+            ? stepsText.split("|").map(s => s.trim()).filter(s => s.length > 0)
+            : stepsText.split("\n").map(s => s.trim()).filter(s => s.length > 0);
+
+          parsedProc.push({ id, title, categories, description, stepByStep, responsible, systemUsed, link });
+        });
+
+        // Process Avisos
+        const rowsNotices = parseCsvText(csvNotices);
+        const parsedNotices = [];
+        rowsNotices.forEach(row => {
+          if (row.length < 3) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return;
+          
+          const title = row[1]?.trim() || "";
+          const content = row[2]?.trim() || "";
+          const date = row[3]?.trim() || "";
+          const priorityText = row[4]?.trim()?.toLowerCase() || "";
+          const isPriority = priorityText === "true" || priorityText === "sim" || priorityText === "1" || priorityText === "yes";
+          const category = row[5]?.trim() || "Geral";
+
+          parsedNotices.push({ id, title, content, date, isPriority, category });
+        });
+
+        // Process Agenda
+        const rowsAgenda = parseCsvText(csvAgenda);
+        const parsedAgenda = [];
+        rowsAgenda.forEach(row => {
+          if (row.length < 3) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return;
+
+          const title = row[1]?.trim() || "";
+          const date = row[2]?.trim() || "";
+          const description = row[3]?.trim() || "";
+          const type = row[4]?.trim() || "Eventos";
+          const endDate = row[5]?.trim() || null;
+
+          parsedAgenda.push({ id, title, date, description, type, endDate });
+        });
+
+        // Process Equipe
+        const rowsTeam = parseCsvText(csvTeam);
+        const parsedTeam = [];
+        if (rowsTeam.length > 0) {
+          // Identify headers dynamically like Kotlin code
+          let nameCol = 0, roleCol = 1, emailCol = 2, phoneCol = 3, respCol = 4, atendCol = 5, waCol = 6, photoCol = -1;
+          const headers = rowsTeam[0].map(h => h.trim().toLowerCase());
+          headers.forEach((h, index) => {
+            if (h === "nome" || h === "name") nameCol = index;
+            else if (h === "cargo" || h === "role") roleCol = index;
+            else if (h === "email" || h === "e-mail") emailCol = index;
+            else if (h === "ramal" || h === "phone" || h === "telefone") phoneCol = index;
+            else if (h.includes("respons") || h === "processos") respCol = index;
+            else if (h === "atendimento" || h.includes("atend") || h === "bio") atendCol = index;
+            else if (h === "whatsapp" || h === "whats" || h.includes("celular")) waCol = index;
+            else if (h === "foto" || h === "photo" || h === "imagem" || h === "image") photoCol = index;
+          });
+
+          rowsTeam.forEach((row, idx) => {
+            if (idx === 0) return; // Header
+            const name = row[nameCol]?.trim() || "";
+            if (!name || name.toLowerCase() === "nome" || name.toLowerCase() === "name") return;
+
+            const role = row[roleCol]?.trim() || "";
+            const email = row[emailCol]?.trim() || "";
+            const phone = row[phoneCol]?.trim() || "";
+            const respText = row[respCol]?.trim() || "";
+            const atendimento = row[atendCol]?.trim() || "";
+            const whatsapp = row[waCol]?.trim() || "";
+            const photoUrl = photoCol !== -1 ? row[photoCol]?.trim() || "" : "";
+            
+            const responsibilities = respText.includes("|")
+              ? respText.split("|").map(r => r.trim()).filter(r => r.length > 0)
+              : respText.split("\n").map(r => r.trim()).filter(r => r.length > 0);
+
+            parsedTeam.push({ name, role, email, phone, responsibilities, atendimento, whatsapp, photoUrl });
+          });
+        }
+
+        // Process Manuais (Optional tab)
+        const parsedManuals = [];
+        if (csvManuals) {
+          const rowsMan = parseCsvText(csvManuals);
+          if (rowsMan.length > 0) {
+            let idCol = 0, titleCol = 1, catCol = 2, descCol = 3, linkCol = 4;
+            const headers = rowsMan[0].map(h => h.trim().toLowerCase());
+            headers.forEach((h, index) => {
+              if (h === "id") idCol = index;
+              else if (h === "titulo" || h === "title" || h === "título") titleCol = index;
+              else if (h === "categoria" || h === "category") catCol = index;
+              else if (h === "descricao" || h === "description" || h === "descrição") descCol = index;
+              else if (h === "link" || h === "url") linkCol = index;
+            });
+
+            rowsMan.forEach((row, idx) => {
+              if (idx === 0) return;
+              const title = row[titleCol]?.trim() || "";
+              if (!title || title.toLowerCase() === "title" || title.toLowerCase() === "titulo") return;
+
+              const id = row[idCol]?.trim() || `m_${idx}`;
+              const category = row[catCol]?.trim() || "Geral";
+              const description = row[descCol]?.trim() || "";
+              const link = row[linkCol]?.trim() || "https://www.utfpr.edu.br";
+
+              parsedManuals.push({ id, title, category, description, link });
+            });
+          }
+        }
+
+        // Apply and Save!
+        state.spreadsheetId = extractedId;
+        state.procedures = parsedProc.length > 0 ? parsedProc : PRESETS.procedures;
+        state.notices = parsedNotices.length > 0 ? parsedNotices : PRESETS.notices;
+        state.agenda = parsedAgenda.length > 0 ? parsedAgenda : PRESETS.agenda;
+        state.team = parsedTeam.length > 0 ? parsedTeam : PRESETS.team;
+        if (parsedManuals.length > 0) state.manuals = parsedManuals;
+
+        const dateStr = new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", {hour: '2-digit', minute:'2-digit'});
+        state.lastSyncTime = dateStr;
+        state.lastSyncSuccess = true;
+
+        // Save Cache
+        localStorage.setItem("cogerh_sheet_id", state.spreadsheetId);
+        localStorage.setItem("cogerh_last_sync_time", state.lastSyncTime);
+        localStorage.setItem("cogerh_last_sync_success", "true");
+        localStorage.setItem("cogerh_data_procedures", JSON.stringify(state.procedures));
+        localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
+        localStorage.setItem("cogerh_data_agenda", JSON.stringify(state.agenda));
+        localStorage.setItem("cogerh_data_team", JSON.stringify(state.team));
+        localStorage.setItem("cogerh_data_manuals", JSON.stringify(state.manuals));
+
+        // Sync with Service Worker Cache
+        await saveSyncDataToCache();
+
+        showSyncSuccess("Sincronização realizada com sucesso!");
+        updateModalLabels();
+        renderCurrentScreen();
+
+        // Auto close settings on success after 1s
+        setTimeout(() => {
+          toggleSettingsModal(false);
+        }, 1200);
+
+      } catch (err) {
+        showSyncError(err.message || "Erro inesperado ao realizar download da planilha. Por favor, tente novamente.");
+      } finally {
+        syncBtn.disabled = false;
+        syncBtn.textContent = "Sincronizar";
+      }
+    }
+
+    function showSyncError(msg) {
+      const errBox = document.getElementById("sync-error-box");
+      errBox.textContent = msg;
+      errBox.classList.remove("hidden");
+    }
+
+    function showSyncSuccess(msg) {
+      const succBox = document.getElementById("sync-success-box");
+      succBox.textContent = msg;
+      succBox.classList.remove("hidden");
+    }
+
+    async function autoSyncFromDefaultSheet() {
+      const defaultId = PRESETS.spreadsheetId;
+      try {
+        console.log("Iniciando sincronização automática com a planilha padrão...");
+        const [csvProc, csvNotices, csvAgenda, csvTeam, csvManuals] = await Promise.all([
+          downloadSheetCsv(defaultId, "procedimentos"),
+          downloadSheetCsv(defaultId, "avisos"),
+          downloadSheetCsv(defaultId, "agenda"),
+          downloadSheetCsv(defaultId, "equipe"),
+          downloadSheetCsv(defaultId, "manuais")
+        ]);
+
+        if (!csvProc || !csvNotices || !csvAgenda || !csvTeam) {
+          console.warn("Abas obrigatórias não encontradas na planilha de sincronização automática.");
+          return;
+        }
+
+        // Process Procedimentos
+        const rowsProc = parseCsvText(csvProc);
+        const parsedProc = [];
+        rowsProc.forEach(row => {
+          if (row.length < 4) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return; // Header skip
+          
+          const title = row[1]?.trim() || "";
+          const categoriesText = row[2]?.trim() || "";
+          const categories = categoriesText ? categoriesText.split(/[,;|]/).map(c => c.trim()).filter(c => c.length > 0) : [];
+          const description = row[3]?.trim() || "";
+          const stepsText = row[4]?.trim() || "";
+          const responsible = row[5]?.trim() || "COGERH";
+          const systemUsed = row[6]?.trim() || "SEI";
+          const link = row[7]?.trim() || "https://www.utfpr.edu.br";
+          
+          const stepByStep = stepsText.includes("|") 
+            ? stepsText.split("|").map(s => s.trim()).filter(s => s.length > 0)
+            : stepsText.split("\n").map(s => s.trim()).filter(s => s.length > 0);
+
+          parsedProc.push({ id, title, categories, description, stepByStep, responsible, systemUsed, link });
+        });
+
+        // Process Avisos
+        const rowsNotices = parseCsvText(csvNotices);
+        const parsedNotices = [];
+        rowsNotices.forEach(row => {
+          if (row.length < 3) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return;
+          
+          const title = row[1]?.trim() || "";
+          const content = row[2]?.trim() || "";
+          const date = row[3]?.trim() || "";
+          const priorityText = row[4]?.trim()?.toLowerCase() || "";
+          const isPriority = priorityText === "true" || priorityText === "sim" || priorityText === "1" || priorityText === "yes";
+          const category = row[5]?.trim() || "Geral";
+
+          parsedNotices.push({ id, title, content, date, isPriority, category });
+        });
+
+        // Process Agenda
+        const rowsAgenda = parseCsvText(csvAgenda);
+        const parsedAgenda = [];
+        rowsAgenda.forEach(row => {
+          if (row.length < 3) return;
+          const id = row[0]?.trim() || "";
+          if (!id || id.toLowerCase() === "id") return;
+
+          const title = row[1]?.trim() || "";
+          const date = row[2]?.trim() || "";
+          const description = row[3]?.trim() || "";
+          const type = row[4]?.trim() || "Eventos";
+          const endDate = row[5]?.trim() || null;
+
+          parsedAgenda.push({ id, title, date, description, type, endDate });
+        });
+
+        // Process Equipe
+        const rowsTeam = parseCsvText(csvTeam);
+        const parsedTeam = [];
+        if (rowsTeam.length > 0) {
+          let nameCol = 0, roleCol = 1, emailCol = 2, phoneCol = 3, respCol = 4, atendCol = 5, waCol = 6, photoCol = -1;
+          const headers = rowsTeam[0].map(h => h.trim().toLowerCase());
+          headers.forEach((h, index) => {
+            if (h === "nome" || h === "name") nameCol = index;
+            else if (h === "cargo" || h === "role") roleCol = index;
+            else if (h === "email" || h === "e-mail") emailCol = index;
+            else if (h === "ramal" || h === "phone" || h === "telefone") phoneCol = index;
+            else if (h.includes("respons") || h === "processos") respCol = index;
+            else if (h === "atendimento" || h.includes("atend") || h === "bio") atendCol = index;
+            else if (h === "whatsapp" || h === "whats" || h.includes("celular")) waCol = index;
+            else if (h === "foto" || h === "photo" || h === "imagem" || h === "image") photoCol = index;
+          });
+
+          rowsTeam.forEach((row, idx) => {
+            if (idx === 0) return; // Header
+            const name = row[nameCol]?.trim() || "";
+            if (!name || name.toLowerCase() === "nome" || name.toLowerCase() === "name") return;
+
+            const role = row[roleCol]?.trim() || "";
+            const email = row[emailCol]?.trim() || "";
+            const phone = row[phoneCol]?.trim() || "";
+            const respText = row[respCol]?.trim() || "";
+            const atendimento = row[atendCol]?.trim() || "";
+            const whatsapp = row[waCol]?.trim() || "";
+            const photoUrl = photoCol !== -1 ? row[photoCol]?.trim() || "" : "";
+            
+            const responsibilities = respText.includes("|")
+              ? respText.split("|").map(r => r.trim()).filter(r => r.length > 0)
+              : respText.split("\n").map(r => r.trim()).filter(r => r.length > 0);
+
+            parsedTeam.push({ name, role, email, phone, responsibilities, atendimento, whatsapp, photoUrl });
+          });
+        }
+
+        // Process Manuais
+        const parsedManuals = [];
+        if (csvManuals) {
+          const rowsMan = parseCsvText(csvManuals);
+          if (rowsMan.length > 0) {
+            let idCol = 0, titleCol = 1, catCol = 2, descCol = 3, linkCol = 4;
+            const headers = rowsMan[0].map(h => h.trim().toLowerCase());
+            headers.forEach((h, index) => {
+              if (h === "id") idCol = index;
+              else if (h === "titulo" || h === "title" || h === "título") titleCol = index;
+              else if (h === "categoria" || h === "category") catCol = index;
+              else if (h === "descricao" || h === "description" || h === "descrição") descCol = index;
+              else if (h === "link" || h === "url") linkCol = index;
+            });
+
+            rowsMan.forEach((row, idx) => {
+              if (idx === 0) return;
+              const title = row[titleCol]?.trim() || "";
+              if (!title || title.toLowerCase() === "title" || title.toLowerCase() === "titulo") return;
+
+              const id = row[idCol]?.trim() || `m_${idx}`;
+              const category = row[catCol]?.trim() || "Geral";
+              const description = row[descCol]?.trim() || "";
+              const link = row[linkCol]?.trim() || "https://www.utfpr.edu.br";
+
+              parsedManuals.push({ id, title, category, description, link });
+            });
+          }
+        }
+
+        // Apply and Save!
+        state.spreadsheetId = defaultId;
+        state.procedures = parsedProc.length > 0 ? parsedProc : state.procedures;
+        state.notices = parsedNotices.length > 0 ? parsedNotices : state.notices;
+        state.agenda = parsedAgenda.length > 0 ? parsedAgenda : state.agenda;
+        state.team = parsedTeam.length > 0 ? parsedTeam : state.team;
+        if (parsedManuals.length > 0) state.manuals = parsedManuals;
+
+        const dateStr = new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", {hour: '2-digit', minute:'2-digit'});
+        state.lastSyncTime = dateStr;
+        state.lastSyncSuccess = true;
+
+        // Save Cache
+        localStorage.setItem("cogerh_sheet_id", state.spreadsheetId);
+        localStorage.setItem("cogerh_last_sync_time", state.lastSyncTime);
+        localStorage.setItem("cogerh_last_sync_success", "true");
+        localStorage.setItem("cogerh_data_procedures", JSON.stringify(state.procedures));
+        localStorage.setItem("cogerh_data_notices", JSON.stringify(state.notices));
+        localStorage.setItem("cogerh_data_agenda", JSON.stringify(state.agenda));
+        localStorage.setItem("cogerh_data_team", JSON.stringify(state.team));
+        localStorage.setItem("cogerh_data_manuals", JSON.stringify(state.manuals));
+
+        // Sync with Service Worker Cache
+        await saveSyncDataToCache();
+
+        console.log("Sincronização automática de dados realizada com sucesso!");
+        renderCurrentScreen();
+      } catch (err) {
+        console.error("Erro na sincronização automática de dados: ", err);
+      }
+    }
+  </script>
+</body>
+</html>
