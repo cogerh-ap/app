@@ -76,9 +76,6 @@
         <!-- Left Logo matching the native design layout -->
         <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 object-contain shrink-0" />
         
-        <!-- Center Logo (UTFPR) -->
-        <img id="header-utfpr-logo-img" src="utfpr_logo.svg" alt="Logo UTFPR" class="h-12 object-contain shrink-0 transition-transform hover:scale-105" />
-        
         <!-- Theme Selection Action Button (right) -->
         <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
           <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
@@ -590,21 +587,7 @@
         };
       }
 
-      // Adjust UTFPR logo path dynamically
-      const utfprLogoImg = document.getElementById("header-utfpr-logo-img");
-      if (utfprLogoImg) {
-        const path = window.location.pathname;
-        if (path.endsWith("/pwa")) {
-          utfprLogoImg.src = "pwa/utfpr_logo.svg";
-        } else {
-          utfprLogoImg.src = "utfpr_logo.svg";
-        }
-        utfprLogoImg.onerror = function() {
-          if (this.src !== window.location.origin + "/pwa/utfpr_logo.svg") {
-            this.src = "/pwa/utfpr_logo.svg";
-          }
-        };
-      }
+
 
       updateNavigationUI();
       renderCurrentScreen();
@@ -1003,8 +986,30 @@
               </div>
             </div>
           </div>
+
+          <!-- UTFPR Logo footer section -->
+          <div class="flex flex-col items-center justify-center pt-8 pb-4">
+            <img id="home-utfpr-logo-img" src="utfpr_logo.svg" alt="Logo UTFPR" class="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200" />
+            <p class="text-[9px] text-slate-400 dark:text-slate-500 font-bold mt-2 uppercase tracking-widest">UTFPR Apucarana</p>
+          </div>
         </div>
       `;
+
+      // Adjust Home UTFPR logo path dynamically
+      const homeUtfprLogoImg = document.getElementById("home-utfpr-logo-img");
+      if (homeUtfprLogoImg) {
+        const path = window.location.pathname;
+        if (path.endsWith("/pwa")) {
+          homeUtfprLogoImg.src = "pwa/utfpr_logo.svg";
+        } else {
+          homeUtfprLogoImg.src = "utfpr_logo.svg";
+        }
+        homeUtfprLogoImg.onerror = function() {
+          if (this.src !== window.location.origin + "/pwa/utfpr_logo.svg") {
+            this.src = "/pwa/utfpr_logo.svg";
+          }
+        };
+      }
     }
 
     // ----------------------------------------------------
