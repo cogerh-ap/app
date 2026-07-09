@@ -72,23 +72,17 @@
     
     <!-- HEADER -->
     <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50">
-      <div class="flex items-center justify-between min-h-[56px]">
+      <div class="flex items-center justify-between min-h-[56px] w-full">
         <!-- Left Logo matching the native design layout -->
-        <div class="flex items-center justify-start w-1/3 shrink-0">
-          <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-full object-contain" />
-        </div>
+        <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 object-contain shrink-0" />
         
         <!-- Center Logo (UTFPR) -->
-        <div class="flex items-center justify-center w-1/3 shrink-0">
-          <img id="header-utfpr-logo-img" src="utfpr_logo.svg" alt="Logo UTFPR" class="h-14 object-contain transition-transform hover:scale-105" />
-        </div>
+        <img id="header-utfpr-logo-img" src="utfpr_logo.svg" alt="Logo UTFPR" class="h-12 object-contain shrink-0 transition-transform hover:scale-105" />
         
         <!-- Theme Selection Action Button (right) -->
-        <div class="flex items-center justify-end w-1/3 shrink-0">
-          <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95">
-            <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
-          </button>
-        </div>
+        <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
+          <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
+        </button>
       </div>
     </header>
 
