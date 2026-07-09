@@ -567,6 +567,17 @@
       manuals: JSON.parse(localStorage.getItem("cogerh_data_manuals")) || PRESETS.manuals
     };
 
+    // Helper to generate the UTFPR logo footer for all screens
+    function getUtfprLogoHtml(id) {
+      const src = window.location.pathname.endsWith("/pwa") ? "pwa/utfpr_logo.svg" : "utfpr_logo.svg";
+      return `
+        <!-- UTFPR Logo footer section -->
+        <div class="flex flex-col items-center justify-center pt-8 pb-4">
+          <img id="${id}-utfpr-logo-img" src="${src}" alt="Logo UTFPR" class="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200" onerror="if (this.src !== window.location.origin + '/pwa/utfpr_logo.svg') this.src = '/pwa/utfpr_logo.svg';" />
+        </div>
+      `;
+    }
+
     // INITS
     document.addEventListener("DOMContentLoaded", () => {
       applyTheme();
@@ -987,28 +998,9 @@
             </div>
           </div>
 
-          <!-- UTFPR Logo footer section -->
-          <div class="flex flex-col items-center justify-center pt-8 pb-4">
-            <img id="home-utfpr-logo-img" src="utfpr_logo.svg" alt="Logo UTFPR" class="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200" />
-          </div>
+          ${getUtfprLogoHtml('home')}
         </div>
       `;
-
-      // Adjust Home UTFPR logo path dynamically
-      const homeUtfprLogoImg = document.getElementById("home-utfpr-logo-img");
-      if (homeUtfprLogoImg) {
-        const path = window.location.pathname;
-        if (path.endsWith("/pwa")) {
-          homeUtfprLogoImg.src = "pwa/utfpr_logo.svg";
-        } else {
-          homeUtfprLogoImg.src = "utfpr_logo.svg";
-        }
-        homeUtfprLogoImg.onerror = function() {
-          if (this.src !== window.location.origin + "/pwa/utfpr_logo.svg") {
-            this.src = "/pwa/utfpr_logo.svg";
-          }
-        };
-      }
     }
 
     // ----------------------------------------------------
@@ -1171,6 +1163,8 @@
           <div class="space-y-4">
             ${cardsHtml}
           </div>
+
+          ${getUtfprLogoHtml('proc')}
         </div>
       `;
     }
@@ -1246,6 +1240,8 @@
           <div class="grid grid-cols-1 gap-4">
             ${listHtml}
           </div>
+
+          ${getUtfprLogoHtml('man')}
         </div>
       `;
     }
@@ -1405,6 +1401,8 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
 
             ${teamHtml}
           </div>
+
+          ${getUtfprLogoHtml('eq')}
         </div>
       `;
     }
@@ -1500,6 +1498,8 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
               <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
             </a>
           </div>
+
+          ${getUtfprLogoHtml('can')}
         </div>
       `;
     }
