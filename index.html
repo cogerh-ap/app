@@ -74,8 +74,13 @@
     <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50">
       <div class="flex items-center justify-between min-h-[56px]">
         <!-- Left Logo matching the native design layout -->
-        <div class="flex items-center">
+        <div class="flex items-center shrink-0">
           <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 max-w-[70%] object-contain" />
+        </div>
+        
+        <!-- Center Logo (UTFPR) -->
+        <div class="flex items-center justify-center flex-1 px-4">
+          <img id="header-utfpr-logo-img" src="utfpr_logo.svg" alt="Logo UTFPR" class="h-11 w-11 object-contain transition-transform hover:scale-105" />
         </div>
         
         <!-- Theme Selection Action Button (right) -->
@@ -585,6 +590,22 @@
         logoImg.onerror = function() {
           if (this.src !== window.location.origin + "/pwa/cogerh_logo.png") {
             this.src = "/pwa/cogerh_logo.png";
+          }
+        };
+      }
+
+      // Adjust UTFPR logo path dynamically
+      const utfprLogoImg = document.getElementById("header-utfpr-logo-img");
+      if (utfprLogoImg) {
+        const path = window.location.pathname;
+        if (path.endsWith("/pwa")) {
+          utfprLogoImg.src = "pwa/utfpr_logo.svg";
+        } else {
+          utfprLogoImg.src = "utfpr_logo.svg";
+        }
+        utfprLogoImg.onerror = function() {
+          if (this.src !== window.location.origin + "/pwa/utfpr_logo.svg") {
+            this.src = "/pwa/utfpr_logo.svg";
           }
         };
       }
@@ -1291,12 +1312,20 @@
                  </div>
                </div>
 
+               <!-- Main responsibilities -->
+               <div class="space-y-2">
+                 <h5 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Principais Processos & Atribuições</h5>
+                 <ul class="space-y-1.5">
+                   ${responsibilitiesList}
+                 </ul>
+               </div>
+
                <!-- General details -->
                <div class="border-t border-b border-slate-200/60 dark:border-slate-800/80 py-3 space-y-2">
                  <div class="flex items-start gap-2.5 text-xs">
                    <i class="fa-solid fa-business-time text-slate-400 mt-0.5 w-4 text-center"></i>
                    <div>
-                     <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-0.5">Horário de Atendimento</span>
+                     <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-0.5">Atendimento</span>
                      <p class="text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed">${member.atendimento}</p>
                    </div>
                  </div>
@@ -1310,14 +1339,6 @@
                    <i class="fa-solid fa-phone text-slate-400 w-4 text-center"></i>
                    <span class="text-slate-600 dark:text-slate-300 font-medium">Ramal: ${member.phone}</span>
                  </div>
-               </div>
-
-               <!-- Main responsibilities -->
-               <div class="space-y-2">
-                 <h5 class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Principais Processos & Atribuições</h5>
-                 <ul class="space-y-1.5">
-                   ${responsibilitiesList}
-                 </ul>
                </div>
 
                <!-- Action buttons -->
