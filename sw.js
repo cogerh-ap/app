@@ -7,6 +7,7 @@ const ASSETS = [
   './icon.svg',
   './cogerh_logo.png',
   './utfpr_logo.svg',
+  './utfpr_logo_b.svg',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];

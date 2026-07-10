@@ -569,11 +569,18 @@
 
     // Helper to generate the UTFPR logo footer for all screens
     function getUtfprLogoHtml(id) {
-      const src = window.location.pathname.endsWith("/pwa") ? "pwa/utfpr_logo.svg" : "utfpr_logo.svg";
+      let isDark = false;
+      if (state.themeMode === "dark") {
+        isDark = true;
+      } else if (state.themeMode === "system") {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      const filename = isDark ? "utfpr_logo.svg" : "utfpr_logo_b.svg";
+      const src = window.location.pathname.endsWith("/pwa") ? `pwa/${filename}` : filename;
       return `
         <!-- UTFPR Logo footer section -->
         <div class="flex flex-col items-center justify-center pt-8 pb-4">
-          <img id="${id}-utfpr-logo-img" src="${src}" alt="Logo UTFPR" class="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200" onerror="if (this.src !== window.location.origin + '/pwa/utfpr_logo.svg') this.src = '/pwa/utfpr_logo.svg';" />
+          <img id="${id}-utfpr-logo-img" src="${src}" alt="Logo UTFPR" class="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200" onerror="if (this.src !== window.location.origin + '/pwa/${filename}') this.src = '/pwa/${filename}';" />
         </div>
       `;
     }
@@ -713,6 +720,18 @@
       } else {
         themeIcon.className = "fa-solid fa-sliders text-lg text-cogerhGoldAccent";
       }
+
+      // Update all UTFPR logos dynamically depending on Light / Dark mode
+      const logoFilename = isDark ? "utfpr_logo.svg" : "utfpr_logo_b.svg";
+      const newLogoSrc = window.location.pathname.endsWith("/pwa") ? `pwa/${logoFilename}` : logoFilename;
+      document.querySelectorAll('[id$="-utfpr-logo-img"]').forEach(img => {
+        img.src = newLogoSrc;
+        img.onerror = function() {
+          if (this.src !== window.location.origin + "/pwa/" + logoFilename) {
+            this.src = "/pwa/" + logoFilename;
+          }
+        };
+      });
     }
 
     // NOTICE DETAIL MODAL & SHARE LOGIC
