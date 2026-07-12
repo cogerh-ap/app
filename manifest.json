@@ -4,7 +4,7 @@
   "description": "Aplicativo de Gestão de Pessoas da COGERH do Campus Apucarana da UTFPR.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#F5F7FA",
+  "background_color": "#3A3F4B",
   "theme_color": "#343A45",
   "orientation": "portrait-primary",
   "icons": [
