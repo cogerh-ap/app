@@ -954,19 +954,29 @@
           const badgeClass = isDeadline 
             ? "bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-900/40" 
             : "bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/40";
+          const displayType = item.type === "Deadlines" ? "Prazo" : item.type;
           
           agendaHtml += `
             <div class="relative pl-6 pb-4 border-l border-slate-200 dark:border-slate-800 last:pb-0">
               <!-- Timeline Bullet -->
               <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${dotColor} shadow-sm ring-4 ring-lightBg dark:ring-darkBg"></span>
               
-              <div class="flex items-start justify-between gap-2">
-                <span class="text-xs font-bold text-slate-900 dark:text-slate-100">${item.title}</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wider ${badgeClass}">
-                  ${item.date}${item.endDate ? ' - ' + item.endDate : ''}
+              <!-- First row: Date/Period on the left, Category Badge on the right -->
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                  <i class="fa-regular fa-calendar text-[10px] text-cogerhGoldAccent"></i>
+                  <span>${item.date}${item.endDate ? ' - ' + item.endDate : ''}</span>
+                </div>
+                <span class="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${badgeClass}">
+                  ${displayType}
                 </span>
               </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${item.description}</p>
+
+              <!-- Second row: Event name -->
+              <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">${item.title}</h4>
+
+              <!-- Third row: Description -->
+              <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">${item.description}</p>
             </div>
           `;
         });
@@ -1092,7 +1102,7 @@
 
           cardsHtml += `
             <!-- CARD (Solid background, beautifully designed with unified background) -->
-            <div class="bg-white dark:bg-cogerhSlateDark rounded-2xl border border-slate-200/60 dark:border-slate-800 p-5 shadow-sm transition hover:shadow-md">
+            <div data-procedure-id="${p.id}" class="bg-white dark:bg-cogerhSlateDark rounded-2xl border border-slate-200/60 dark:border-slate-800 p-5 shadow-sm transition hover:shadow-md">
               
               <!-- Category and System Tags -->
               <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -1117,7 +1127,7 @@
               </button>
 
               <!-- Detailed Section -->
-              <div class="transition-max-height duration-300 mt-4 space-y-4 border-t border-slate-200/60 dark:border-slate-800/80 pt-4" style="${displayStyle}">
+              <div class="detailed-section transition-max-height duration-300 mt-4 space-y-4 border-t border-slate-200/60 dark:border-slate-800/80 pt-4" style="${displayStyle}">
                 
                 <!-- Steps list -->
                 <div class="space-y-3">
@@ -1199,9 +1209,56 @@
       renderCurrentScreen();
     }
 
+    function updateProcedureCardDOM(cardEl, isExpanded) {
+      if (!cardEl) return;
+      const btn = cardEl.querySelector('button[onclick^="toggleProcedure"]');
+      const details = cardEl.querySelector('.detailed-section');
+      
+      if (btn) {
+        const span = btn.querySelector('span');
+        const icon = btn.querySelector('i');
+        if (span) {
+          span.textContent = isExpanded ? 'Esconder detalhes' : 'Toque para ver o passo a passo completo';
+        }
+        if (icon) {
+          icon.className = `fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} text-[10px]`;
+        }
+      }
+      
+      if (details) {
+        if (isExpanded) {
+          details.style.maxHeight = "2000px";
+          details.style.opacity = "1";
+          details.style.overflow = "";
+          details.style.marginTop = "";
+          details.style.paddingTop = "";
+          details.style.borderTopWidth = "";
+        } else {
+          details.style.maxHeight = "0px";
+          details.style.opacity = "0";
+          details.style.overflow = "hidden";
+          details.style.marginTop = "0px";
+          details.style.paddingTop = "0px";
+          details.style.borderTopWidth = "0px";
+        }
+      }
+    }
+
     function toggleProcedure(id) {
+      const prevId = state.expandedProcedureId;
       state.expandedProcedureId = state.expandedProcedureId === id ? null : id;
-      renderCurrentScreen();
+      
+      // Collapse the previously expanded card if any
+      if (prevId && prevId !== id) {
+        const prevCard = document.querySelector(`[data-procedure-id="${prevId}"]`);
+        updateProcedureCardDOM(prevCard, false);
+      }
+      
+      // Expand / Collapse the clicked card
+      const currentCard = document.querySelector(`[data-procedure-id="${id}"]`);
+      if (currentCard) {
+        updateProcedureCardDOM(currentCard, state.expandedProcedureId === id);
+      }
     }
 
     // ----------------------------------------------------
