@@ -963,8 +963,8 @@
               
               <!-- First row: Date/Period on the left, Category Badge on the right -->
               <div class="flex items-center justify-between gap-2 mb-1">
-                <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                  <i class="fa-regular fa-calendar text-[10px] text-cogerhGoldAccent"></i>
+                <div class="flex items-center gap-1.5 text-[11px] font-extrabold text-amber-700 dark:text-amber-400">
+                  <i class="fa-regular fa-calendar text-[10px] text-amber-600 dark:text-amber-400"></i>
                   <span>${item.date}${item.endDate ? ' - ' + item.endDate : ''}</span>
                 </div>
                 <span class="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${badgeClass}">
@@ -1121,7 +1121,7 @@
               <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${p.description}</p>
               
               <!-- Interactive Expansion trigger - clean transparent outline instead of dual grey colors -->
-              <button onclick="toggleProcedure('${p.id}')" class="w-full flex items-center justify-center gap-1.5 mt-4 text-xs font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:bg-slate-50 dark:hover:bg-slate-900/30 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl transition active:scale-98">
+              <button onclick="toggleProcedure(this)" class="w-full flex items-center justify-center gap-1.5 mt-4 text-xs font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent hover:bg-slate-50 dark:hover:bg-slate-900/30 py-2 bg-transparent border border-slate-200 dark:border-slate-800 rounded-xl transition active:scale-98">
                 <span>${isExpanded ? 'Esconder detalhes' : 'Toque para ver o passo a passo completo'}</span>
                 <i class="fa-solid ${expandIcon} text-[10px]"></i>
               </button>
@@ -1211,7 +1211,7 @@
 
     function updateProcedureCardDOM(cardEl, isExpanded) {
       if (!cardEl) return;
-      const btn = cardEl.querySelector('button[onclick^="toggleProcedure"]');
+      const btn = cardEl.querySelector('button');
       const details = cardEl.querySelector('.detailed-section');
       
       if (btn) {
@@ -1229,10 +1229,10 @@
         if (isExpanded) {
           details.style.maxHeight = "2000px";
           details.style.opacity = "1";
-          details.style.overflow = "";
-          details.style.marginTop = "";
-          details.style.paddingTop = "";
-          details.style.borderTopWidth = "";
+          details.style.overflow = "visible";
+          details.style.marginTop = "1rem";
+          details.style.paddingTop = "1rem";
+          details.style.borderTopWidth = "1px";
         } else {
           details.style.maxHeight = "0px";
           details.style.opacity = "0";
@@ -1244,21 +1244,27 @@
       }
     }
 
-    function toggleProcedure(id) {
+    function toggleProcedure(btn) {
+      const cardEl = btn.closest('[data-procedure-id]');
+      if (!cardEl) return;
+      
+      const id = cardEl.getAttribute('data-procedure-id');
       const prevId = state.expandedProcedureId;
       state.expandedProcedureId = state.expandedProcedureId === id ? null : id;
       
       // Collapse the previously expanded card if any
       if (prevId && prevId !== id) {
-        const prevCard = document.querySelector(`[data-procedure-id="${prevId}"]`);
-        updateProcedureCardDOM(prevCard, false);
+        const cards = document.querySelectorAll('[data-procedure-id]');
+        for (let card of cards) {
+          if (card.getAttribute('data-procedure-id') === prevId) {
+            updateProcedureCardDOM(card, false);
+            break;
+          }
+        }
       }
       
       // Expand / Collapse the clicked card
-      const currentCard = document.querySelector(`[data-procedure-id="${id}"]`);
-      if (currentCard) {
-        updateProcedureCardDOM(currentCard, state.expandedProcedureId === id);
-      }
+      updateProcedureCardDOM(cardEl, state.expandedProcedureId === id);
     }
 
     // ----------------------------------------------------
