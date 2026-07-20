@@ -235,3 +235,38 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+
+// Listening to standard FCM / Web Push notifications from Cloud
+self.addEventListener('push', (event) => {
+  console.log('Push notification received inside Service Worker.');
+  
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { notification: { title: 'Novo Comunicado COGERH', body: event.data.text() } };
+    }
+  }
+  
+  // Extract fields from FCM standard payload formats (supports legacy and v1 payload nesting)
+  const title = (data.notification && data.notification.title) || (data.data && data.data.title) || data.title || 'Novo Comunicado COGERH';
+  const body = (data.notification && data.notification.body) || (data.data && data.data.body) || data.body || 'Acesse o aplicativo para ver mais detalhes.';
+  
+  // Parse any nested or flat noticeId parameter to deep-link on click
+  const noticeId = (data.data && data.data.noticeId) || data.noticeId || '';
+  
+  const options = {
+    body: body,
+    icon: './icon.svg',
+    badge: './favicon.svg',
+    tag: noticeId ? 'notice-' + noticeId : 'general-fcm',
+    data: { noticeId: noticeId },
+    vibrate: [100, 50, 100],
+    requireInteraction: true
+  };
+  
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});

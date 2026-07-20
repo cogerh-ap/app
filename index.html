@@ -20,6 +20,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+  <!-- Firebase Compat SDK for FCM Web Notifications -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -170,6 +174,67 @@
           <div id="sync-error-box" class="hidden text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-xl border border-red-200 dark:border-red-900/50"></div>
           <div id="sync-success-box" class="hidden text-xs bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl border border-emerald-200 dark:border-emerald-900/50"></div>
 
+          <!-- FCM ADVANCED CONFIGURATION -->
+          <div class="border-t border-slate-100 dark:border-slate-800/80 pt-3 mt-1 text-left">
+            <button type="button" onclick="toggleFcmConfigSection()" class="w-full flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-bell text-cogerhGoldAccent"></i>
+                CONFIGURAR NOTIFICAÇÕES PUSH (FCM)
+              </span>
+              <i id="fcm-chevron" class="fa-solid fa-chevron-down transition-transform duration-200 text-[10px]"></i>
+            </button>
+            
+            <div id="fcm-config-section" class="hidden mt-3 space-y-3">
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Configure as credenciais do seu projeto Firebase para ativar as notificações push instantâneas via Google Sheets.
+              </p>
+              
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Firebase Config (Objeto JSON)</label>
+                <textarea id="fcm-config-input" rows="3" placeholder='{ "apiKey": "...", "projectId": "...", ... }' class="w-full text-[10px] font-mono bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-2 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition"></textarea>
+              </div>
+
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Chave VAPID Web (Web Push Key)</label>
+                <input type="text" id="fcm-vapid-input" placeholder="Cole a chave VAPID do console Firebase" class="w-full text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-2 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition">
+              </div>
+
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">URL Web App do Apps Script</label>
+                <input type="text" id="fcm-script-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-2 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition">
+              </div>
+
+              <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 space-y-1.5 text-[10px]">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Status do Registro:</span>
+                  <span id="fcm-sync-status" class="font-bold text-slate-400">Não Configurado</span>
+                </div>
+                <div class="space-y-1 text-left">
+                  <label class="block text-slate-500">Token deste Dispositivo:</label>
+                  <div class="flex gap-1.5">
+                    <input type="text" id="fcm-token-display" readonly class="flex-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[9px] font-mono rounded px-2 py-1 select-all outline-none" value="Inativo (Obtenha salvando a config)">
+                    <button type="button" onclick="copyFcmToken()" class="px-2 py-1 bg-slate-200 dark:bg-slate-800 hover:opacity-90 active:scale-95 text-slate-700 dark:text-slate-300 rounded font-bold transition shrink-0">
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex gap-2">
+                <button type="button" onclick="saveFcmConfig()" class="flex-1 bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 py-2 text-[10px] font-bold rounded-lg transition active:scale-95 shadow-sm">
+                  Salvar Configuração FCM
+                </button>
+              </div>
+
+              <div class="border-t border-slate-100 dark:border-slate-800/80 pt-2.5 mt-2.5">
+                <button type="button" onclick="openAppsScriptModal()" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Ver Tutorial e Código Google Apps Script
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="flex gap-3 pt-2">
             <button onclick="resetToDefaultSheet()" class="flex-1 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-800 transition active:scale-95">
               Padrão
@@ -284,12 +349,202 @@
       </div>
     </div>
     
+    <!-- GOOGLE APPS SCRIPT TUTORIAL MODAL -->
+    <div id="apps-script-modal" class="hidden fixed inset-0 z-[60] bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 flex flex-col max-h-[85vh] transform transition scale-100 animate-fade-in">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-code text-amber-500"></i>
+            Tutorial e Código Google Apps Script
+          </h3>
+          <button onclick="closeAppsScriptModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto pr-1 space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed text-left">
+          <p>
+            Para fazer a sua Planilha do Google Sheets disparar notificações push diretamente para os usuários do PWA quando você adicionar/editar avisos ou clicar em um botão, siga estes passos:
+          </p>
+          
+          <div class="space-y-1">
+            <p class="font-bold text-slate-800 dark:text-slate-200">Passo 1: Abrir o Editor de Scripts</p>
+            <p class="pl-2">Na sua Planilha do Google, clique no menu superior em <b>Extensões</b> -> <b>Apps Script</b>.</p>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-bold text-slate-800 dark:text-slate-200">Passo 2: Colar o Código do Script</p>
+            <p class="pl-2">Apague todo o código existente no arquivo <code>Código.gs</code> e cole o código abaixo:</p>
+            <div class="relative">
+              <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto text-[10px] font-mono select-all max-h-48 leading-relaxed"><code>// 1. RECEBER REGISTROS DE TOKENS DO PWA
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    if (data.action === "registerToken") {
+      registerToken(data.token, data.userAgent);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Token registrado!" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function registerToken(token, userAgent) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Tokens");
+  if (!sheet) {
+    sheet = ss.insertSheet("Tokens");
+    sheet.appendRow(["Token", "Data de Registro", "Dispositivo"]);
+    sheet.getRange("A1:C1").setFontWeight("bold").setBackground("#FBCA03");
+  }
+  
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] === token) {
+      sheet.getRange(i + 1, 2).setValue(new Date());
+      sheet.getRange(i + 1, 3).setValue(userAgent || "");
+      return;
+    }
+  }
+  sheet.appendRow([token, new Date(), userAgent || ""]);
+}
+
+// Configurações do Firebase
+var FIREBASE_PROJECT_ID = "SEU_PROJECT_ID_AQUI";
+var LEGACY_SERVER_KEY = "SUA_CHAVE_DE_SERVIDOR_LEGACY_AQUI"; // Encontre nas config. do Cloud Messaging no Firebase
+
+// 2. DISPARAR MENU DE NOTIFICAÇÃO NA PLANILHA
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('COGERH Notificações')
+    .addItem('Disparar Notificação Geral', 'solicitarEnvioNotificacao')
+    .addToUi();
+}
+
+function solicitarEnvioNotificacao() {
+  var ui = SpreadsheetApp.getUi();
+  var titleResponse = ui.prompt('Título da Notificação', 'Insira o título do aviso:', ui.ButtonSet.OK_CANCEL);
+  if (titleResponse.getSelectedButton() !== ui.Button.OK) return;
+  var title = titleResponse.getResponseText().trim();
+  
+  var bodyResponse = ui.prompt('Texto da Notificação', 'Insira o texto da mensagem:', ui.ButtonSet.OK_CANCEL);
+  if (bodyResponse.getSelectedButton() !== ui.Button.OK) return;
+  var body = bodyResponse.getResponseText().trim();
+  
+  if (!title || !body) {
+    ui.alert("O título e corpo não podem ser vazios.");
+    return;
+  }
+  
+  var status = dispararFCM(title, body);
+  ui.alert("Resultado do Envio:\n" + status);
+}
+
+// Envia a mensagem a todos os tokens cadastrados
+function dispararFCM(title, body) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Tokens");
+  if (!sheet) return "Nenhum token cadastrado (aba 'Tokens' não existe ainda).";
+  
+  var data = sheet.getDataRange().getValues();
+  var tokens = [];
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0]) tokens.push(data[i][0]);
+  }
+  
+  if (tokens.length === 0) return "Nenhum token ativo encontrado na aba 'Tokens'.";
+  
+  var success = 0;
+  var errors = 0;
+  
+  if (LEGACY_SERVER_KEY) {
+    for (var i = 0; i < tokens.length; i++) {
+      var payload = {
+        "to": tokens[i],
+        "notification": {
+          "title": title,
+          "body": body,
+          "icon": "https://raw.githubusercontent.com/diegomaronese/cogerh-app/main/pwa/icon.svg",
+          "click_action": "https://cogerh-ap.web.app/pwa/"
+        }
+      };
+      
+      var options = {
+        "method": "post",
+        "contentType": "application/json",
+        "headers": { "Authorization": "key=" + LEGACY_SERVER_KEY },
+        "payload": JSON.stringify(payload),
+        "muteHttpExceptions": true
+      };
+      
+      try {
+        var res = UrlFetchApp.fetch("https://fcm.googleapis.com/fcm/send", options);
+        if (res.getResponseCode() === 200) success++;
+        else errors++;
+      } catch(e) {
+        errors++;
+      }
+    }
+    return "Enviado via FCM Legacy. Sucessos: " + success + " | Falhas: " + errors;
+  }
+  
+  return "Erro: Configure a chave de servidor legacy (LEGACY_SERVER_KEY) no Apps Script.";
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <p class="font-bold text-slate-800 dark:text-slate-200">Passo 3: Salvar e Implantar como Web App (CRÍTICO)</p>
+            <p class="pl-2">
+              1. Clique no ícone do <b>Disquete</b> para salvar o projeto.<br>
+              2. Clique no botão azul <b>Implantar</b> -> <b>Nova implantação</b>.<br>
+              3. Clique na engrenagem ao lado de "Selecione o tipo" e escolha <b>App da Web</b>.<br>
+              4. Em "Executar como", selecione <b>Eu (seu e-mail)</b>.<br>
+              5. Em "Quem tem acesso", selecione obrigatoriamente <b>Qualquer pessoa</b>.<br>
+              6. Clique em <b>Implantar</b> e autorize os acessos da sua conta Google.<br>
+              7. Copie a <b>URL do aplicativo da Web</b> gerada (ela termina em <code>/exec</code>) e cole-a no campo de configurações do PWA.
+            </p>
+          </div>
+
+          <div class="space-y-1 font-bold text-amber-600 dark:text-amber-400">
+            ⚠️ Ativação de Chaves no Firebase:
+            <p class="font-normal text-slate-600 dark:text-slate-300 pl-2 mt-0.5">
+              No Console Firebase, vá em <b>Configurações do Projeto</b> -> <b>Cloud Messaging</b>. Em "Web push credentials", clique em "Generate key pair" para obter a chave VAPID. Copie o valor e cole-o no campo Chave VAPID no PWA.<br>
+              Ative também a API FCM legado caso prefira enviar direto pelo Google Sheets usando o tutorial simplificado acima.
+            </p>
+          </div>
+        </div>
+        
+        <div class="flex justify-end pt-3 border-t border-slate-100 dark:border-slate-800 mt-4">
+          <button onclick="closeAppsScriptModal()" class="bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 font-bold px-5 py-2 rounded-xl text-xs shadow-md transition active:scale-95">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+    
   </div>
 
   <script>
     // PRESET DATA REPOSITORY (Fallbacks / Cache initializer)
     const PRESETS = {
       spreadsheetId: "1UphCH_ZboQdlbPHe5z6kNceZqer8ReAx2gNbIOKUfWY",
+      
+      // CONFIGURAÇÕES DO FIREBASE CLOUD MESSAGING (FCM) PADRÃO DO APLICATIVO
+      // Cole aqui as suas credenciais reais do Firebase para ativar as notificações para todos automaticamente
+      firebaseConfig: {
+        apiKey: "AIzaSyBx4TJHv8edD8xNk8z0G6ZlSXx6qV9I7H8",
+        authDomain: "cogerh-ap.firebaseapp.com",
+        projectId: "cogerh-ap",
+        storageBucket: "cogerh-ap.firebasestorage.app",
+        messagingSenderId: "804356204093",
+        appId: "1:804356204093:web:bc58dc098b79791ae1ac54"
+      },
+      fcmVapidKey: "BD2ujee9OvohZP07uVM5OQl9zV-V8cB09SKyM7V8OifEm216zRFIzC8izaQxT1YCJaKJS8Jh4NUvzi2fwk6yPuQ",
+      appsScriptUrl: "https://script.google.com/macros/s/AKfycbyeMFl4Bb9nmD2_jn2YXNfEFY5mBcfLSA3yymQC6uNhVOKMFJ_jwZEGH7w5bPt4LPOE/exec",
+
       categories: [
         "Todos", "Carreira", "Benefícios", "Cadastro", "Férias", 
         "Licenças e Afastamentos", "Capacitação", "Movimentação", "Saúde", "Aposentadoria", "Avaliação"
@@ -610,6 +865,7 @@
       updateNavigationUI();
       renderCurrentScreen();
       initServiceWorker();
+      initFirebase();
       autoSyncFromDefaultSheet();
 
       // Listen for system theme changes dynamically if "system" mode is selected
@@ -1596,6 +1852,7 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         document.getElementById("spreadsheet-id-input").value = state.spreadsheetId;
         updateModalLabels();
         updateNotificationUI();
+        loadFcmConfigFields();
       } else {
         modal.classList.add("hidden");
         document.getElementById("sync-error-box").classList.add("hidden");
@@ -1621,6 +1878,9 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       if (permission === 'granted') {
         await registerPeriodicSync();
         await saveSyncDataToCache();
+        if (fcmMessaging) {
+          registerFCMToken();
+        }
         alert('Notificações ativadas! O aplicativo agora enviará avisos importantes quando o celular estiver conectado.');
       }
     }
@@ -1762,6 +2022,299 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       } catch (err) {
         console.error('Erro ao verificar avisos no primeiro plano:', err);
       }
+    }
+
+    // ----------------------------------------------------
+    // FIREBASE CLOUD MESSAGING (FCM) & PUSH NOTIFICATIONS ENGINE
+    // ----------------------------------------------------
+    let fcmMessaging = null;
+
+    function initFirebase() {
+      let config = null;
+      const configStr = localStorage.getItem("cogerh_firebase_config");
+      
+      if (configStr) {
+        try {
+          config = JSON.parse(configStr);
+        } catch (e) {
+          console.error("FCM: Erro ao analisar JSON do Firebase de localStorage:", e);
+        }
+      }
+      
+      // Fallback para as configurações padrão inseridas no código
+      if (!config && PRESETS.firebaseConfig && PRESETS.firebaseConfig.apiKey && PRESETS.firebaseConfig.apiKey !== "COLE_SUA_API_KEY_AQUI") {
+        config = PRESETS.firebaseConfig;
+        console.log("FCM: Usando configuração do Firebase pré-definida no código (PRESETS).");
+      }
+
+      if (!config) {
+        console.log("FCM: Nenhuma configuração do Firebase ativa ou pré-definida.");
+        return;
+      }
+
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(config);
+        }
+
+        if (firebase.messaging.isSupported()) {
+          fcmMessaging = firebase.messaging();
+          console.log("FCM: Firebase Cloud Messaging inicializado com sucesso!");
+
+          // Listen to foreground push messages while the app is active
+          fcmMessaging.onMessage((payload) => {
+            console.log("FCM: Mensagem recebida em primeiro plano:", payload);
+            const title = payload.notification?.title || "Novo Comunicado COGERH";
+            const body = payload.notification?.body || "Abra o aplicativo para mais detalhes.";
+            const noticeId = payload.data?.noticeId || "";
+            
+            // Show custom in-app Toast notification
+            showInAppPushToast(title, body, noticeId);
+          });
+
+          // Auto-request or auto-get token if notification permission is already granted
+          if (Notification.permission === 'granted') {
+            registerFCMToken();
+          }
+        } else {
+          console.warn("FCM: Este navegador não suporta notificações Firebase Cloud Messaging.");
+        }
+      } catch (e) {
+        console.error("FCM: Erro durante a inicialização do Firebase:", e);
+      }
+    }
+
+    async function registerFCMToken() {
+      if (!fcmMessaging) return;
+
+      let vapidKey = localStorage.getItem("cogerh_firebase_vapid_key");
+      if (!vapidKey && PRESETS.fcmVapidKey && PRESETS.fcmVapidKey !== "COLE_SUA_CHAVE_VAPID_WEB_PUSH_AQUI") {
+        vapidKey = PRESETS.fcmVapidKey;
+      }
+
+      let appsScriptUrl = localStorage.getItem("cogerh_apps_script_url");
+      if (!appsScriptUrl && PRESETS.appsScriptUrl && PRESETS.appsScriptUrl !== "COLE_SUA_URL_DO_APPS_SCRIPT_AQUI") {
+        appsScriptUrl = PRESETS.appsScriptUrl;
+      }
+
+      if (!vapidKey) {
+        console.warn("FCM: Chave VAPID Web Push não configurada no aplicativo.");
+        const display = document.getElementById("fcm-token-display");
+        if (display) display.value = "Chave VAPID não configurada.";
+        return;
+      }
+
+      try {
+        const currentToken = await fcmMessaging.getToken({ vapidKey: vapidKey });
+        if (currentToken) {
+          console.log('FCM Token do dispositivo:', currentToken);
+          localStorage.setItem("cogerh_fcm_token", currentToken);
+
+          const display = document.getElementById("fcm-token-display");
+          if (display) display.value = currentToken;
+
+          const statusEl = document.getElementById("fcm-sync-status");
+          if (statusEl) {
+            statusEl.textContent = "Token Gerado";
+            statusEl.className = "font-bold text-amber-500";
+          }
+
+          if (appsScriptUrl) {
+            sendTokenToAppsScript(appsScriptUrl, currentToken);
+          } else {
+            console.log("FCM: URL do Apps Script não configurada. Token gerado localmente.");
+          }
+        } else {
+          console.warn('FCM: Nenhum token de registro disponível. Solicite permissão.');
+        }
+      } catch (err) {
+        console.error('FCM: Erro ao obter token do dispositivo:', err);
+        const display = document.getElementById("fcm-token-display");
+        if (display) display.value = "Erro ao obter token: " + err.message;
+      }
+    }
+
+    async function sendTokenToAppsScript(url, token) {
+      const statusEl = document.getElementById("fcm-sync-status");
+      if (statusEl) {
+        statusEl.textContent = "Sincronizando...";
+        statusEl.className = "font-bold text-blue-500 animate-pulse";
+      }
+
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors', // Mode 'no-cors' allows writing to Google Apps Script Web App without CORS redirection errors
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'registerToken',
+            token: token,
+            userAgent: navigator.userAgent
+          })
+        });
+
+        console.log('FCM: Token registrado com sucesso na planilha via Apps Script.');
+        if (statusEl) {
+          statusEl.textContent = "Sincronizado na Planilha";
+          statusEl.className = "font-bold text-emerald-500";
+        }
+      } catch (e) {
+        console.error('FCM: Falha ao enviar token ao Apps Script:', e);
+        if (statusEl) {
+          statusEl.textContent = "Falha de Conexão";
+          statusEl.className = "font-bold text-red-500";
+        }
+      }
+    }
+
+    function toggleFcmConfigSection() {
+      const section = document.getElementById("fcm-config-section");
+      const chevron = document.getElementById("fcm-chevron");
+      if (section.classList.contains("hidden")) {
+        section.classList.remove("hidden");
+        chevron.style.transform = "rotate(180deg)";
+      } else {
+        section.classList.add("hidden");
+        chevron.style.transform = "rotate(0deg)";
+      }
+    }
+
+    function openAppsScriptModal() {
+      document.getElementById("apps-script-modal").classList.remove("hidden");
+    }
+
+    function closeAppsScriptModal() {
+      document.getElementById("apps-script-modal").classList.add("hidden");
+    }
+
+    function copyFcmToken() {
+      const tokenInput = document.getElementById("fcm-token-display");
+      if (!tokenInput || tokenInput.value.startsWith("Inativo") || tokenInput.value.startsWith("Configure") || tokenInput.value.startsWith("Chave VAPID") || tokenInput.value.startsWith("Erro")) {
+        showToast("Gerencie as configurações antes de copiar o token.");
+        return;
+      }
+      tokenInput.select();
+      navigator.clipboard.writeText(tokenInput.value);
+      showToast("Token copiado!");
+    }
+
+    function loadFcmConfigFields() {
+      let configStr = localStorage.getItem("cogerh_firebase_config") || "";
+      if (!configStr && PRESETS.firebaseConfig && PRESETS.firebaseConfig.apiKey && PRESETS.firebaseConfig.apiKey !== "COLE_SUA_API_KEY_AQUI") {
+        configStr = JSON.stringify(PRESETS.firebaseConfig, null, 2);
+      }
+
+      let vapidKey = localStorage.getItem("cogerh_firebase_vapid_key") || "";
+      if (!vapidKey && PRESETS.fcmVapidKey && PRESETS.fcmVapidKey !== "COLE_SUA_CHAVE_VAPID_WEB_PUSH_AQUI") {
+        vapidKey = PRESETS.fcmVapidKey;
+      }
+
+      let appsScriptUrl = localStorage.getItem("cogerh_apps_script_url") || "";
+      if (!appsScriptUrl && PRESETS.appsScriptUrl && PRESETS.appsScriptUrl !== "COLE_SUA_URL_DO_APPS_SCRIPT_AQUI") {
+        appsScriptUrl = PRESETS.appsScriptUrl;
+      }
+
+      const token = localStorage.getItem("cogerh_fcm_token") || "";
+
+      document.getElementById("fcm-config-input").value = configStr;
+      document.getElementById("fcm-vapid-input").value = vapidKey;
+      document.getElementById("fcm-script-input").value = appsScriptUrl;
+
+      const display = document.getElementById("fcm-token-display");
+      const statusEl = document.getElementById("fcm-sync-status");
+
+      const activeAppsScriptUrl = appsScriptUrl || (PRESETS.appsScriptUrl && PRESETS.appsScriptUrl !== "COLE_SUA_URL_DO_APPS_SCRIPT_AQUI" ? PRESETS.appsScriptUrl : "");
+
+      if (token) {
+        display.value = token;
+        if (statusEl) {
+          statusEl.textContent = activeAppsScriptUrl ? "Sincronizado na Planilha" : "Token Ativo (Local)";
+          statusEl.className = "font-bold text-emerald-500";
+        }
+      } else {
+        const hasVapid = vapidKey || (PRESETS.fcmVapidKey && PRESETS.fcmVapidKey !== "COLE_SUA_CHAVE_VAPID_WEB_PUSH_AQUI");
+        display.value = hasVapid ? "Inativo (Autorize as notificações para obter)" : "Inativo (Salve as configurações para obter)";
+        if (statusEl) {
+          statusEl.textContent = "Não Configurado";
+          statusEl.className = "font-bold text-slate-400";
+        }
+      }
+    }
+
+    function saveFcmConfig() {
+      const configVal = document.getElementById("fcm-config-input").value.trim();
+      const vapidVal = document.getElementById("fcm-vapid-input").value.trim();
+      const scriptVal = document.getElementById("fcm-script-input").value.trim();
+
+      if (configVal) {
+        try {
+          JSON.parse(configVal); // Validate JSON format
+        } catch (e) {
+          showToast("JSON do Firebase inválido. Verifique o formato.");
+          return;
+        }
+      }
+
+      localStorage.setItem("cogerh_firebase_config", configVal);
+      localStorage.setItem("cogerh_firebase_vapid_key", vapidVal);
+      localStorage.setItem("cogerh_apps_script_url", scriptVal);
+      localStorage.removeItem("cogerh_fcm_token"); // Reset current token to force regeneration
+
+      showToast("Configurações salvas com sucesso!");
+
+      // Reinitialize Firebase and regenerate/sync token
+      initFirebase();
+      if (Notification.permission === 'granted') {
+        registerFCMToken();
+      } else {
+        toggleNotificationPermission();
+      }
+    }
+
+    function showInAppPushToast(title, body, noticeId) {
+      // Custom elegant in-app push message toast with deep linking on click
+      let container = document.getElementById("in-app-toast-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "in-app-toast-container";
+        container.className = "fixed bottom-24 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm mx-auto";
+        document.body.appendChild(container);
+      }
+      
+      const toast = document.createElement("div");
+      toast.className = "flex gap-3 bg-slate-900/95 dark:bg-slate-950/95 text-white p-4 rounded-2xl shadow-2xl border border-slate-800/80 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-auto cursor-pointer hover:scale-[1.02] active:scale-95";
+      
+      toast.innerHTML = `
+        <div class="w-8 h-8 bg-cogerhGoldAccent text-slate-950 rounded-xl flex items-center justify-center text-sm shadow-inner shrink-0">
+          <i class="fa-solid fa-bell animate-bounce"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <h4 class="text-xs font-extrabold text-slate-100">${title}</h4>
+          <p class="text-[10px] text-slate-300 mt-0.5 leading-normal line-clamp-2">${body}</p>
+        </div>
+      `;
+      
+      toast.onclick = () => {
+        toast.remove();
+        if (noticeId) {
+          openNoticeDetail(noticeId);
+        }
+      };
+      
+      container.appendChild(toast);
+      
+      // Animate entry
+      setTimeout(() => {
+        toast.classList.remove("translate-y-4", "opacity-0");
+      }, 50);
+      
+      // Auto-remove after 6 seconds
+      setTimeout(() => {
+        toast.classList.add("translate-y-4", "opacity-0");
+        setTimeout(() => toast.remove(), 300);
+      }, 6000);
     }
 
     async function saveSyncDataToCache() {
