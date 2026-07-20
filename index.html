@@ -411,11 +411,18 @@ function registerToken(token, userAgent) {
   sheet.appendRow([token, new Date(), userAgent || ""]);
 }
 
-// Configurações do Firebase
-var FIREBASE_PROJECT_ID = "SEU_PROJECT_ID_AQUI";
-var LEGACY_SERVER_KEY = "SUA_CHAVE_DE_SERVIDOR_LEGACY_AQUI"; // Encontre nas config. do Cloud Messaging no Firebase
+// 2. CONFIGURAÇÃO DA CONTA DE SERVIÇO DO FIREBASE (FCM HTTP v1)
+// Acesse o Console do Firebase -> Configurações do Projeto -> Contas de Serviço -> clique em "Gerar nova chave privada".
+// Abra o arquivo .json baixado, copie o conteúdo e cole-o substituindo o objeto 'SERVICE_ACCOUNT' abaixo por inteiro.
+var SERVICE_ACCOUNT = {
+  "type": "service_account",
+  "project_id": "cogerh-ap",
+  "private_key_id": "COLE_SUA_PRIVATE_KEY_ID_AQUI",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nCOLE_SUA_PRIVATE_KEY_AQUI\n-----END PRIVATE KEY-----\n",
+  "client_email": "COLE_SEU_CLIENT_EMAIL_AQUI"
+};
 
-// 2. DISPARAR MENU DE NOTIFICAÇÃO NA PLANILHA
+// 3. MENU DE NOTIFICAÇÃO NA PLANILHA
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('COGERH Notificações')
@@ -425,6 +432,12 @@ function onOpen() {
 
 function solicitarEnvioNotificacao() {
   var ui = SpreadsheetApp.getUi();
+  
+  if (SERVICE_ACCOUNT.private_key.indexOf("COLE_SUA") !== -1) {
+    ui.alert("Erro: Antes de disparar, você precisa colar as credenciais da sua Conta de Serviço do Firebase (geradas nas Configurações do Projeto -> Contas de Serviço) na variável 'SERVICE_ACCOUNT' do script.");
+    return;
+  }
+
   var titleResponse = ui.prompt('Título da Notificação', 'Insira o título do aviso:', ui.ButtonSet.OK_CANCEL);
   if (titleResponse.getSelectedButton() !== ui.Button.OK) return;
   var title = titleResponse.getResponseText().trim();
@@ -442,7 +455,7 @@ function solicitarEnvioNotificacao() {
   ui.alert("Resultado do Envio:\n" + status);
 }
 
-// Envia a mensagem a todos os tokens cadastrados
+// Envia a mensagem a todos os tokens cadastrados usando a API FCM V1 (HTTP v1)
 function dispararFCM(title, body) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("Tokens");
@@ -458,39 +471,114 @@ function dispararFCM(title, body) {
   
   var success = 0;
   var errors = 0;
+  var lastError = "";
   
-  if (LEGACY_SERVER_KEY) {
+  try {
+    var accessToken = getAccessToken_(SERVICE_ACCOUNT);
+    var url = "https://fcm.googleapis.com/v1/projects/" + SERVICE_ACCOUNT.project_id + "/messages:send";
+    
     for (var i = 0; i < tokens.length; i++) {
       var payload = {
-        "to": tokens[i],
-        "notification": {
-          "title": title,
-          "body": body,
-          "icon": "https://raw.githubusercontent.com/diegomaronese/cogerh-app/main/pwa/icon.svg",
-          "click_action": "https://cogerh-ap.web.app/pwa/"
+        "message": {
+          "token": tokens[i],
+          "notification": {
+            "title": title,
+            "body": body
+          },
+          "webpush": {
+            "notification": {
+              "title": title,
+              "body": body,
+              "icon": "https://raw.githubusercontent.com/diegomaronese/cogerh-app/main/pwa/icon.svg"
+            },
+            "fcm_options": {
+              "link": "https://cogerh-ap.web.app/pwa/"
+            }
+          }
         }
       };
       
       var options = {
         "method": "post",
         "contentType": "application/json",
-        "headers": { "Authorization": "key=" + LEGACY_SERVER_KEY },
+        "headers": {
+          "Authorization": "Bearer " + accessToken
+        },
         "payload": JSON.stringify(payload),
         "muteHttpExceptions": true
       };
       
       try {
-        var res = UrlFetchApp.fetch("https://fcm.googleapis.com/fcm/send", options);
-        if (res.getResponseCode() === 200) success++;
-        else errors++;
-      } catch(e) {
+        var res = UrlFetchApp.fetch(url, options);
+        var code = res.getResponseCode();
+        if (code === 200 || code === 201) {
+          success++;
+        } else {
+          errors++;
+          lastError = res.getContentText();
+        }
+      } catch (e) {
         errors++;
+        lastError = e.toString();
       }
     }
-    return "Enviado via FCM Legacy. Sucessos: " + success + " | Falhas: " + errors;
+    
+    var resultText = "Enviado via FCM HTTP v1.\n- Sucedidos: " + success + "\n- Falhas: " + errors;
+    if (errors > 0) {
+      resultText += "\nÚltimo erro recebido: " + lastError;
+    }
+    return resultText;
+  } catch (authErr) {
+    return "Erro de Autenticação do Firebase: " + authErr.message;
   }
+}
+
+// Gera o token de acesso OAuth2 usando a Conta de Serviço (RS256)
+function getAccessToken_(serviceAccount) {
+  var header = JSON.stringify({
+    "alg": "RS256",
+    "typ": "JWT"
+  });
   
-  return "Erro: Configure a chave de servidor legacy (LEGACY_SERVER_KEY) no Apps Script.";
+  var now = Math.floor(Date.now() / 1000);
+  var payload = JSON.stringify({
+    "iss": serviceAccount.client_email,
+    "scope": "https://www.googleapis.com/auth/firebase.messaging",
+    "aud": "https://oauth2.googleapis.com/token",
+    "exp": now + 3600,
+    "iat": now
+  });
+  
+  var toSign = base64EncodeSafe_(header) + "." + base64EncodeSafe_(payload);
+  var signatureBytes = Utilities.computeRsaSha256Signature(toSign, serviceAccount.private_key);
+  var signature = base64EncodeSafeBytes_(signatureBytes);
+  var jwt = toSign + "." + signature;
+  
+  var options = {
+    "method": "post",
+    "payload": {
+      "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      "assertion": jwt
+    },
+    "muteHttpExceptions": true
+  };
+  
+  var response = UrlFetchApp.fetch("https://oauth2.googleapis.com/token", options);
+  var data = JSON.parse(response.getContentText());
+  if (data.error) {
+    throw new Error("Falha no token OAuth2: " + (data.error_description || data.error));
+  }
+  return data.access_token;
+}
+
+function base64EncodeSafe_(string) {
+  var encoded = Utilities.base64EncodeWebSafe(string);
+  return encoded.replace(/=+$/, "");
+}
+
+function base64EncodeSafeBytes_(bytes) {
+  var encoded = Utilities.base64EncodeWebSafe(bytes);
+  return encoded.replace(/=+$/, "");
 }</code></pre>
             </div>
           </div>
@@ -512,7 +600,7 @@ function dispararFCM(title, body) {
             ⚠️ Ativação de Chaves no Firebase:
             <p class="font-normal text-slate-600 dark:text-slate-300 pl-2 mt-0.5">
               No Console Firebase, vá em <b>Configurações do Projeto</b> -> <b>Cloud Messaging</b>. Em "Web push credentials", clique em "Generate key pair" para obter a chave VAPID. Copie o valor e cole-o no campo Chave VAPID no PWA.<br>
-              Ative também a API FCM legado caso prefira enviar direto pelo Google Sheets usando o tutorial simplificado acima.
+              Para o disparo de notificações funcionar, gere uma Conta de Serviço em <b>Configurações do Projeto</b> -> <b>Contas de Serviço</b>, clique em <b>Gerar nova chave privada</b>, abra o arquivo JSON baixado e substitua o objeto <code>SERVICE_ACCOUNT</code> do script pelo conteúdo copiado.
             </p>
           </div>
         </div>
@@ -543,7 +631,7 @@ function dispararFCM(title, body) {
         appId: "1:804356204093:web:bc58dc098b79791ae1ac54"
       },
       fcmVapidKey: "BD2ujee9OvohZP07uVM5OQl9zV-V8cB09SKyM7V8OifEm216zRFIzC8izaQxT1YCJaKJS8Jh4NUvzi2fwk6yPuQ",
-      appsScriptUrl: "https://script.google.com/macros/s/AKfycbyeMFl4Bb9nmD2_jn2YXNfEFY5mBcfLSA3yymQC6uNhVOKMFJ_jwZEGH7w5bPt4LPOE/exec",
+      appsScriptUrl: "https://script.google.com/macros/s/AKfycbyf3TcfMi3Zux1bnnzGSEZRoCmoB1kB32A79sHwPfQsPHQ6V4ZaC-VM2TkoVnYYdahc/exec",
 
       categories: [
         "Todos", "Carreira", "Benefícios", "Cadastro", "Férias", 
@@ -2029,7 +2117,7 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
     // ----------------------------------------------------
     let fcmMessaging = null;
 
-    function initFirebase() {
+    async function initFirebase() {
       let config = null;
       const configStr = localStorage.getItem("cogerh_firebase_config");
       
@@ -2059,6 +2147,18 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
 
         if (firebase.messaging.isSupported()) {
           fcmMessaging = firebase.messaging();
+          
+          // Associar com o Service Worker ativo para garantir o recebimento das push
+          if ('serviceWorker' in navigator) {
+            try {
+              const registration = await navigator.serviceWorker.ready;
+              fcmMessaging.useServiceWorker(registration);
+              console.log("FCM: Associado ao Service Worker ativo via ready promise.");
+            } catch (swErr) {
+              console.warn("FCM: Falha ao obter Service Worker ativo:", swErr);
+            }
+          }
+          
           console.log("FCM: Firebase Cloud Messaging inicializado com sucesso!");
 
           // Listen to foreground push messages while the app is active
