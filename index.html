@@ -86,10 +86,18 @@
         <!-- Left Logo matching the native design layout -->
         <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 object-contain shrink-0" />
         
-        <!-- Theme Selection Action Button (right) -->
-        <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
-          <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
-        </button>
+        <!-- Action Buttons (right) -->
+        <div class="flex items-center gap-1">
+          <!-- Configuration & Sync Modal Button -->
+          <button onclick="toggleSettingsModal(true)" title="Configurações e Sincronização" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0 flex items-center justify-center">
+            <i class="fa-solid fa-gear text-lg"></i>
+          </button>
+
+          <!-- Theme Selection Action Button -->
+          <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0 flex items-center justify-center">
+            <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
+          </button>
+        </div>
       </div>
     </header>
 
