@@ -382,18 +382,44 @@
             <p class="font-bold text-slate-800 dark:text-slate-200">Passo 2: Colar o Código do Script</p>
             <p class="pl-2">Apague todo o código existente no arquivo <code>Código.gs</code> e cole o código abaixo:</p>
             <div class="relative">
-              <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto text-[10px] font-mono select-all max-h-48 leading-relaxed"><code>// 1. RECEBER REGISTROS DE TOKENS DO PWA
+              <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto text-[10px] font-mono select-all max-h-48 leading-relaxed"><code>// 1. RECEBER REGISTROS DE TOKENS DO PWA (Suporta POST e GET)
 function doPost(e) {
+  return handleTokenRegistration(e);
+}
+
+function doGet(e) {
+  if (e && e.parameter && (e.parameter.action === "registerToken" || e.parameter.token)) {
+    return handleTokenRegistration(e);
+  }
+  return ContentService.createTextOutput("COGERH Apps Script Ativo!");
+}
+
+function handleTokenRegistration(e) {
   try {
-    var data = JSON.parse(e.postData.contents);
-    if (data.action === "registerToken") {
-      registerToken(data.token, data.userAgent);
+    var token = "";
+    var userAgent = "";
+
+    if (e && e.parameter && e.parameter.token) {
+      token = e.parameter.token;
+      userAgent = e.parameter.userAgent || "";
+    } else if (e && e.postData && e.postData.contents) {
+      try {
+        var data = JSON.parse(e.postData.contents);
+        token = data.token || "";
+        userAgent = data.userAgent || "";
+      } catch (pErr) {}
+    }
+
+    if (token) {
+      registerToken(token, userAgent);
       return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Token registrado!" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Nenhum token recebido." }))
+      .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
-        .setMimeType(ContentService.MimeType.JSON);
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
@@ -2271,8 +2297,12 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       }
 
       try {
-        // 'text/plain' é CORS-safelisted, ideal para 'no-cors' sem disparar preflight OPTIONS no navegador
-        await fetch(url, {
+        const encodedToken = encodeURIComponent(token);
+        const encodedUA = encodeURIComponent(navigator.userAgent || "");
+        const queryUrl = url + (url.includes('?') ? '&' : '?') + `action=registerToken&token=${encodedToken}&userAgent=${encodedUA}`;
+
+        // 1. Tentar envio via POST (com parâmetros na URL para preservar os dados caso o navegador converta POST no-cors para GET durante o 302)
+        await fetch(queryUrl, {
           method: 'POST',
           mode: 'no-cors',
           headers: {
@@ -2285,7 +2315,10 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
           })
         });
 
-        console.log('FCM: Token registrado com sucesso na planilha via Apps Script.');
+        // 2. Tentar envio em segundo plano via GET garantido
+        fetch(queryUrl, { mode: 'no-cors' }).catch(() => {});
+
+        console.log('FCM: Token enviado com sucesso para a planilha via Apps Script.');
         if (statusEl) {
           statusEl.textContent = "Sincronizado na Planilha";
           statusEl.className = "font-bold text-emerald-500";
