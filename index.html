@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script>
+    // Se o app estiver rodando no GitHub Pages e faltar a barra final (que quebra os caminhos relativos do PWA e SW)
+    if (window.location.hostname.includes('github.io') && !window.location.pathname.endsWith('/') && !window.location.pathname.includes('.')) {
+      window.location.replace(window.location.protocol + '//' + window.location.host + window.location.pathname + '/' + window.location.search + window.location.hash);
+    }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>COGERH-AP | Gestão de Pessoas</title>
@@ -1957,6 +1963,12 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       
       if (Notification.permission === 'granted') {
         updateNotificationUI();
+        if (fcmMessaging) {
+          registerFCMToken();
+          alert('As notificações já estão ativadas! O aplicativo está re-sincronizando o token de notificações com a planilha do Google Sheets neste instante...');
+        } else {
+          alert('As notificações já estão ativadas!');
+        }
         return;
       }
       
@@ -2193,6 +2205,11 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       }
 
       let appsScriptUrl = localStorage.getItem("cogerh_apps_script_url");
+      // Se for a URL antiga, atualiza automaticamente para a nova
+      if (appsScriptUrl && appsScriptUrl.includes("AKfycbyeMFl4Bb9nmD2_jn2YXNfEFY5mBcfLSA3yymQC6uNhVOKMFJ_jwZEGH7w5bPt4LPOE")) {
+        appsScriptUrl = PRESETS.appsScriptUrl;
+        localStorage.setItem("cogerh_apps_script_url", PRESETS.appsScriptUrl);
+      }
       if (!appsScriptUrl && PRESETS.appsScriptUrl && PRESETS.appsScriptUrl !== "COLE_SUA_URL_DO_APPS_SCRIPT_AQUI") {
         appsScriptUrl = PRESETS.appsScriptUrl;
       }
@@ -2205,7 +2222,19 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       }
 
       try {
-        const currentToken = await fcmMessaging.getToken({ vapidKey: vapidKey });
+        // Obter registro do Service Worker ativo (crucial para subpastas do GitHub Pages)
+        let tokenOptions = { vapidKey: vapidKey };
+        if ('serviceWorker' in navigator) {
+          try {
+            const registration = await navigator.serviceWorker.ready;
+            tokenOptions.serviceWorkerRegistration = registration;
+            console.log("FCM: Usando registro ativo do Service Worker no getToken.");
+          } catch (swErr) {
+            console.warn("FCM: Não pôde associar Service Worker ativo ao obter token:", swErr);
+          }
+        }
+
+        const currentToken = await fcmMessaging.getToken(tokenOptions);
         if (currentToken) {
           console.log('FCM Token do dispositivo:', currentToken);
           localStorage.setItem("cogerh_fcm_token", currentToken);
@@ -2242,11 +2271,12 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       }
 
       try {
+        // 'text/plain' é CORS-safelisted, ideal para 'no-cors' sem disparar preflight OPTIONS no navegador
         await fetch(url, {
           method: 'POST',
-          mode: 'no-cors', // Mode 'no-cors' allows writing to Google Apps Script Web App without CORS redirection errors
+          mode: 'no-cors',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'text/plain'
           },
           body: JSON.stringify({
             action: 'registerToken',

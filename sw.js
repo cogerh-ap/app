@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cogerh-pwa-cache-v1';
+const CACHE_NAME = 'cogerh-pwa-cache-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -37,6 +37,26 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Para requisições de navegação (HTML principal), tenta sempre a rede primeiro para atualizações instantâneas
+  if (event.request.mode === 'navigate' || event.request.url.endsWith('/index.html') || event.request.url.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match('./index.html') || caches.match('./');
+        })
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -56,10 +76,6 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       }).catch(() => {
-        // Fallback for document fetch or other issues when offline
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
         return new Response('Offline mode. Conexão indisponível.');
       });
     })
