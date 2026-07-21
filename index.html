@@ -382,7 +382,19 @@
             <p class="font-bold text-slate-800 dark:text-slate-200">Passo 2: Colar o Código do Script</p>
             <p class="pl-2">Apague todo o código existente no arquivo <code>Código.gs</code> e cole o código abaixo:</p>
             <div class="relative">
-              <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto text-[10px] font-mono select-all max-h-48 leading-relaxed"><code>// 1. RECEBER REGISTROS DE TOKENS DO PWA (Suporta POST e GET)
+              <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg overflow-x-auto text-[10px] font-mono select-all max-h-48 leading-relaxed"><code>// ==========================================
+// SCRIPT DE INTEGRAÇÃO COGERH-AP & FIREBASE
+// ==========================================
+
+// 1. MENU PERSONALIZADO NA PLANILHA (Executado ao abrir a planilha)
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('COGERH Notificações')
+    .addItem('Disparar Notificação Geral', 'solicitarEnvioNotificacao')
+    .addToUi();
+}
+
+// 2. RECEBER REGISTROS DE TOKENS DO PWA (POST e GET)
 function doPost(e) {
   return handleTokenRegistration(e);
 }
@@ -412,7 +424,7 @@ function handleTokenRegistration(e) {
 
     if (token) {
       registerToken(token, userAgent);
-      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Token registrado!" }))
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Token registrado com sucesso!" }))
         .setMimeType(ContentService.MimeType.JSON);
     }
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Nenhum token recebido." }))
@@ -443,30 +455,21 @@ function registerToken(token, userAgent) {
   sheet.appendRow([token, new Date(), userAgent || ""]);
 }
 
-// 2. CONFIGURAÇÃO DA CONTA DE SERVIÇO DO FIREBASE (FCM HTTP v1)
-// Acesse o Console do Firebase -> Configurações do Projeto -> Contas de Serviço -> clique em "Gerar nova chave privada".
-// Abra o arquivo .json baixado, copie o conteúdo e cole-o substituindo o objeto 'SERVICE_ACCOUNT' abaixo por inteiro.
+// 3. CREDENCIAIS DA CONTA DE SERVIÇO DO FIREBASE (FCM HTTP v1)
 var SERVICE_ACCOUNT = {
   "type": "service_account",
   "project_id": "cogerh-ap",
-  "private_key_id": "COLE_SUA_PRIVATE_KEY_ID_AQUI",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nCOLE_SUA_PRIVATE_KEY_AQUI\n-----END PRIVATE KEY-----\n",
-  "client_email": "COLE_SEU_CLIENT_EMAIL_AQUI"
+  "private_key_id": "5906470f776de3c576e4bc021b14e0b6cbf7c3c6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCzOc2ioOwBJq13\n6AghDmKpVQAmCk+ISADHx/8yyXP91+3Lh0IgCNXmEw/SfhtFlMuieXg5qKXHOhgT\nUWyGsiDYFFFjGcNGBWalEMVBqC6NbzbuQf2drTYWn/XpCzo8Ih2i2sEAsMokYn8Z\nzPEgZPcQpK6L3OxQWd+1RS1vulRY7cbRjSMM0WYXT9wUwscowmJAnfO//F+JBJDNnVS4J8HFdkiXl\npcsQMQyHPdk0+0KOA7QAX+rmkXvHt4tA5YK4j6po4XjxWg0BAkGAD5MXyA41obkv\nf7niIOhnAgMBAAECggEAOgTC0Fw2ujKqoi/ffc/52WY2W5on3+6rLgFM2ESFw42E\nocfh/JvPnqDaFOKU8oP2Hd0jscqqC+H/DDXmI36Dil+dby7WW5MBBPt2V8hZdZik\nmCGNt97sLQvQYAYt7mx+2orlQtN4RKoMCi6hekKlBmLBTG6So3pMpJJF4JWRXckb\nmnxOYvryIcsTmn7GEkjLxKzkKMXd6f2wcZLv/U/l9k902GByOfBeWw/QT7AmDuz3\nw6QGAxwz9zbMiwusWGF56/v+MCd+rqHbTvJvzFarYOdrkO2pwplxucGupnYDYWNv\nnhSVSoH0biw21ydxpymyOjD/0I2qb9QRg5Q8EU5PqQKBgQDcGTLMueInaNvim0Ar\nR4fiBgqSQL2lE+Iicge7Q51azD9BF58fYog0pnv19mG/5gW0mS4jacZT9dmBgIW9\nzLu/lodS84fs7nkFagecLkMDghlLiHthmjAnNbgbDXTqournz0GyTO6HecCIOegh\nggMkg9HXkDDxHuaLJ+rNQ+cLzwKBgQDQddulwvgfR90VDVgLB9YOuTctJUFXnoyi\n0FZRmoUFCc3wqzQf1URPHBglvSURgg3tt2cne+QJ3vXncLjGbLlFa3tDd+LxBS03\n9HNLmQwzAU7aeU3S8J06X7116eNnM4Xch/FTaKoDIYLfgU32r8WRljJgtA5eUjg9\njr/U3tOH6QKBgAQwGo5Yrxvu29g4+gSYzNYZJVRZFQKyGShsoQcIJ1NV9ZIof+eZ\n+Vt/G3a3pG6BUvR3wa/80EBCukvDhUfyQFRJ6fNDHP/+HaFjvhdTrgTAEfkk9KwL\nwgTM+d7R57qbNPsKL4bT/enoACjXaTpR/ftQ4spGPRgpbVuSe95B/4BzAoGBAKi0\nGRRnW0KFeChHak9TAitcPYkts1njmFFTZegYszpGmwIAq+hvQh77z5cLIeqvY/JU\nEQllPEG4zS2GjiMXbkD+IP2TEniYBeZY0M4HiFXm4xfwP8lMrRHG1Z+Nr1mf2t+E\nrQshkyWBg1a6YIwZ6DxQX2jfjxlKVPWMhzcRNgOxAoGBAIj3oz0J75/J0QCdmb26\nkSSh84pVd5wIARvg+YA1S3+2V9ixD8RuWiNAcvaIcEWFRtTpOKuRAWYAz6xbVwRy\nwXOH7YbEjspP668jflbg9pm9c3atinyzc/Tj3y1Rn91MByCPvCoyetqYnGOf7sLR\nM6tKpx9mNmBW9nzepv12bmy8\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@cogerh-ap.iam.gserviceaccount.com"
 };
 
-// 3. MENU DE NOTIFICAÇÃO NA PLANILHA
-function onOpen() {
-  var ui = SpreadsheetApp.getUi();
-  ui.createMenu('COGERH Notificações')
-    .addItem('Disparar Notificação Geral', 'solicitarEnvioNotificacao')
-    .addToUi();
-}
-
+// 4. SOLICITAÇÃO E ENVIO DE NOTIFICAÇÕES
 function solicitarEnvioNotificacao() {
   var ui = SpreadsheetApp.getUi();
   
-  if (SERVICE_ACCOUNT.private_key.indexOf("COLE_SUA") !== -1) {
-    ui.alert("Erro: Antes de disparar, você precisa colar as credenciais da sua Conta de Serviço do Firebase (geradas nas Configurações do Projeto -> Contas de Serviço) na variável 'SERVICE_ACCOUNT' do script.");
+  if (!SERVICE_ACCOUNT.private_key || SERVICE_ACCOUNT.private_key.indexOf("COLE_SUA") !== -1) {
+    ui.alert("Erro: Insira as credenciais da Conta de Serviço na variável SERVICE_ACCOUNT.");
     return;
   }
 
@@ -524,7 +527,7 @@ function dispararFCM(title, body) {
               "icon": "https://raw.githubusercontent.com/diegomaronese/cogerh-app/main/pwa/icon.svg"
             },
             "fcm_options": {
-              "link": "https://cogerh-ap.web.app/pwa/"
+              "link": "https://cogerh-ap.github.io/app/"
             }
           }
         }
@@ -626,6 +629,11 @@ function base64EncodeSafeBytes_(bytes) {
               6. Clique em <b>Implantar</b> e autorize os acessos da sua conta Google.<br>
               7. Copie a <b>URL do aplicativo da Web</b> gerada (ela termina em <code>/exec</code>) e cole-a no campo de configurações do PWA.
             </p>
+          </div>
+
+          <div class="p-2.5 bg-blue-50 dark:bg-blue-950/40 rounded-lg border border-blue-200 dark:border-blue-900/60 text-xs text-blue-800 dark:text-blue-300">
+            💡 <b>Para o menu "COGERH Notificações" aparecer na Planilha:</b><br>
+            Aperte <b>F5 (Recarregar)</b> na aba da sua Planilha do Google. O menu <b>COGERH Notificações</b> reaparecerá no topo da planilha (ao lado de 'Ajuda'). Você também pode testar executando a função <code>onOpen</code> direto no editor do Apps Script.
           </div>
 
           <div class="space-y-1 font-bold text-amber-600 dark:text-amber-400">
