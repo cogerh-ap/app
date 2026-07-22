@@ -86,18 +86,10 @@
         <!-- Left Logo matching the native design layout -->
         <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 object-contain shrink-0" />
         
-        <!-- Action Buttons (right) -->
-        <div class="flex items-center gap-1">
-          <!-- Configuration & Sync Modal Button -->
-          <button onclick="toggleSettingsModal(true)" title="Configurações e Sincronização" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0 flex items-center justify-center">
-            <i class="fa-solid fa-gear text-lg"></i>
-          </button>
-
-          <!-- Theme Selection Action Button -->
-          <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0 flex items-center justify-center">
-            <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
-          </button>
-        </div>
+        <!-- Theme Selection Action Button (right) -->
+        <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0 flex items-center justify-center">
+          <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
+        </button>
       </div>
     </header>
 
@@ -676,10 +668,11 @@ function base64EncodeSafeBytes_(bytes) {
         projectId: "cogerh-ap",
         storageBucket: "cogerh-ap.firebasestorage.app",
         messagingSenderId: "804356204093",
-        appId: "1:804356204093:web:bc58dc098b79791ae1ac54"
+        appId: "1:804356204093:web:bc58dc098b79791ae1ac54",
+        measurementId: "G-HEP7PZY3LH"
       },
       fcmVapidKey: "BD2ujee9OvohZP07uVM5OQl9zV-V8cB09SKyM7V8OifEm216zRFIzC8izaQxT1YCJaKJS8Jh4NUvzi2fwk6yPuQ",
-      appsScriptUrl: "https://script.google.com/macros/s/AKfycbyf3TcfMi3Zux1bnnzGSEZRoCmoB1kB32A79sHwPfQsPHQ6V4ZaC-VM2TkoVnYYdahc/exec",
+      appsScriptUrl: "https://script.google.com/macros/s/AKfycbw5sp0cQVRsfwEi1jgLGwh8M6iVwu7zWnxkbwE-9rfOsWz74lWa8SwFkLLIjzG4wI8q/exec",
 
       categories: [
         "Todos", "Carreira", "Benefícios", "Cadastro", "Férias", 
@@ -2247,13 +2240,9 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       }
 
       let appsScriptUrl = localStorage.getItem("cogerh_apps_script_url");
-      // Se for a URL antiga, atualiza automaticamente para a nova
-      if (appsScriptUrl && appsScriptUrl.includes("AKfycbyeMFl4Bb9nmD2_jn2YXNfEFY5mBcfLSA3yymQC6uNhVOKMFJ_jwZEGH7w5bPt4LPOE")) {
+      if (!appsScriptUrl || appsScriptUrl !== PRESETS.appsScriptUrl) {
         appsScriptUrl = PRESETS.appsScriptUrl;
         localStorage.setItem("cogerh_apps_script_url", PRESETS.appsScriptUrl);
-      }
-      if (!appsScriptUrl && PRESETS.appsScriptUrl && PRESETS.appsScriptUrl !== "COLE_SUA_URL_DO_APPS_SCRIPT_AQUI") {
-        appsScriptUrl = PRESETS.appsScriptUrl;
       }
 
       if (!vapidKey) {
