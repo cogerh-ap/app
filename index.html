@@ -67,22 +67,11 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 transition-colors duration-200">
 
-  <!-- OneSignal Web Push SDK -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "547baca0-44e5-4bdc-928e-a94451db63c6",
-      });
-    });
-  </script>
-
   <!-- Mobile-first Container Frame for Desktop Premium feel -->
-  <div class="max-w-xl mx-auto h-screen h-[100dvh] flex flex-col bg-lightBg dark:bg-darkBg text-slate-800 dark:text-slate-200 shadow-2xl relative overflow-hidden">
+  <div class="max-w-xl mx-auto min-h-screen flex flex-col bg-lightBg dark:bg-darkBg text-slate-800 dark:text-slate-200 shadow-2xl relative">
     
     <!-- HEADER -->
-    <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50 shrink-0">
+    <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50">
       <div class="flex items-center justify-between min-h-[56px] w-full">
         <!-- Left Logo matching the native design layout -->
         <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 object-contain shrink-0" />
@@ -842,23 +831,6 @@
     }
 
     // NAVIGATION
-    function scrollToTop() {
-      const appContent = document.getElementById("app-content");
-      if (appContent) {
-        appContent.scrollTop = 0;
-      }
-      window.scrollTo(0, 0);
-      if (document.documentElement) {
-        document.documentElement.scrollTop = 0;
-      }
-      if (document.body) {
-        document.body.scrollTop = 0;
-      }
-      if (document.scrollingElement) {
-        document.scrollingElement.scrollTop = 0;
-      }
-    }
-
     function switchTab(tabIndex) {
       state.currentTab = tabIndex;
       state.searchQuery = ""; // Reset search query on change
@@ -866,18 +838,7 @@
       state.expandedProcedureId = null;
       updateNavigationUI();
       renderCurrentScreen();
-
-      // Always reset scroll to the top of the session page
-      scrollToTop();
-      requestAnimationFrame(() => {
-        scrollToTop();
-      });
-      setTimeout(() => {
-        scrollToTop();
-      }, 0);
-      setTimeout(() => {
-        scrollToTop();
-      }, 50);
+      document.getElementById("app-content").scrollTop = 0;
     }
 
     function updateNavigationUI() {
@@ -1246,7 +1207,6 @@
       state.selectedCategory = category;
       state.expandedProcedureId = null;
       renderCurrentScreen();
-      scrollToTop();
     }
 
     function updateProcedureCardDOM(cardEl, isExpanded) {
@@ -1645,19 +1605,24 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
 
     // PWA BACKGROUD SYNC & NOTIFICATION HELPERS
     async function toggleNotificationPermission() {
-      await OneSignalDeferred.push(async function(OneSignal) {
-        // Abre o prompt nativo ou customizado para o usuário aceitar receber os avisos
-        await OneSignal.Slidedown.promptPush();
-    
-        // Atualiza a interface do seu botão após a permissão
-        const isSupported = OneSignal.Notifications.isPushSupported();
-        const hasPermission = OneSignal.Notifications.permission === "granted";
-    
-        if (hasPermission) {
-          showToast("Notificações da COGERH ativadas com sucesso!");
-          updateNotificationUI();
-        }
-      });
+      if (!('Notification' in window)) {
+        alert('Seu navegador não suporta notificações de sistema.');
+        return;
+      }
+      
+      if (Notification.permission === 'granted') {
+        updateNotificationUI();
+        return;
+      }
+      
+      const permission = await Notification.requestPermission();
+      updateNotificationUI();
+      
+      if (permission === 'granted') {
+        await registerPeriodicSync();
+        await saveSyncDataToCache();
+        alert('Notificações ativadas! O aplicativo agora enviará avisos importantes quando o celular estiver conectado.');
+      }
     }
 
     async function triggerTestNotification() {
