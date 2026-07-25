@@ -488,11 +488,13 @@ function inscreverTokenNoTopico_(token, topicName) {
 }
 
 // 3. CREDENCIAIS DA CONTA DE SERVIÇO DO FIREBASE (FCM HTTP v1)
+// ⚠️ ATENÇÃO: Substitua o campo 'private_key' abaixo pela chave privada REAL do seu projeto Firebase!
+// Como obter: Firebase Console -> Configurações do Projeto -> Contas de Serviço -> Gerar nova chave privada
 var SERVICE_ACCOUNT = {
   "type": "service_account",
   "project_id": "cogerh-ap",
-  "private_key_id": "5906470f776de3c576e4bc021b14e0b6cbf7c3c6",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCzOc2ioOwBJq13\n6AghDmKpVQAmCk+ISADHx/8yyXP91+3Lh0IgCNXmEw/SfhtFlMuieXg5qKXHOhgT\nUWyGsiDYFFFjGcNGBWalEMVBqC6NbzbuQf2drTYWn/XpCzo8Ih2i2sEAsMokYn8Z\nzPEgZPcQpK6L3OxQWd+1RS1vulRY7cbRjSMM0WYXT9wUwscowmJAnfO//F+JBJDNnVS4J8HFdkiXl\npcsQMQyHPdk0+0KOA7QAX+rmkXvHt4tA5YK4j6po4XjxWg0BAkGAD5MXyA41obkv\nf7niIOhnAgMBAAECggEAOgTC0Fw2ujKqoi/ffc/52WY2W5on3+6rLgFM2ESFw42E\nocfh/JvPnqDaFOKU8oP2Hd0jscqqC+H/DDXmI36Dil+dby7WW5MBBPt2V8hZdZik\nmCGNt97sLQvQYAYt7mx+2orlQtN4RKoMCi6hekKlBmLBTG6So3pMpJJF4JWRXckb\nmnxOYvryIcsTmn7GEkjLxKzkKMXd6f2wcZLv/U/l9k902GByOfBeWw/QT7AmDuz3\nw6QGAxwz9zbMiwusWGF56/v+MCd+rqHbTvJvzFarYOdrkO2pwplxucGupnYDYWNv\nnhSVSoH0biw21ydxpymyOjD/0I2qb9QRg5Q8EU5PqQKBgQDcGTLMueInaNvim0Ar\nR4fiBgqSQL2lE+Iicge7Q51azD9BF58fYog0pnv19mG/5gW0mS4jacZT9dmBgIW9\nzLu/lodS84fs7nkFagecLkMDghlLiHthmjAnNbgbDXTqournz0GyTO6HecCIOegh\nggMkg9HXkDDxHuaLJ+rNQ+cLzwKBgQDQddulwvgfR90VDVgLB9YOuTctJUFXnoyi\n0FZRmoUFCc3wqzQf1URPHBglvSURgg3tt2cne+QJ3vXncLjGbLlFa3tDd+LxBS03\n9HNLmQwzAU7aeU3S8J06X7116eNnM4Xch/FTaKoDIYLfgU32r8WRljJgtA5eUjg9\njr/U3tOH6QKBgAQwGo5Yrxvu29g4+gSYzNYZJVRZFQKyGShsoQcIJ1NV9ZIof+eZ\n+Vt/G3a3pG6BUvR3wa/80EBCukvDhUfyQFRJ6fNDHP/+HaFjvhdTrgTAEfkk9KwL\nwgTM+d7R57qbNPsKL4bT/enoACjXaTpR/ftQ4spGPRgpbVuSe95B/4BzAoGBAKi0\nGRRnW0KFeChHak9TAitcPYkts1njmFFTZegYszpGmwIAq+hvQh77z5cLIeqvY/JU\nEQllPEG4zS2GjiMXbkD+IP2TEniYBeZY0M4HiFXm4xfwP8lMrRHG1Z+Nr1mf2t+E\nrQshkyWBg1a6YIwZ6DxQX2jfjxlKVPWMhzcRNgOxAoGBAIj3oz0J75/J0QCdmb26\nkSSh84pVd5wIARvg+YA1S3+2V9ixD8RuWiNAcvaIcEWFRtTpOKuRAWYAz6xbVwRy\nwXOH7YbEjspP668jflbg9pm9c3atinyzc/Tj3y1Rn91MByCPvCoyetqYnGOf7sLR\nM6tKpx9mNmBW9nzepv12bmy8\n-----END PRIVATE KEY-----\n",
+  "private_key_id": "SUA_PRIVATE_KEY_ID_AQUI",
+  "private_key": "COLE_AQUI_A_SUA_PRIVATE_KEY_DO_ARQUIVO_JSON_DO_FIREBASE",
   "client_email": "firebase-adminsdk-fbsvc@cogerh-ap.iam.gserviceaccount.com"
 };
 
@@ -500,8 +502,17 @@ var SERVICE_ACCOUNT = {
 function solicitarEnvioNotificacao() {
   var ui = SpreadsheetApp.getUi();
   
-  if (!SERVICE_ACCOUNT.private_key || SERVICE_ACCOUNT.private_key.indexOf("COLE_SUA") !== -1) {
-    ui.alert("Erro: Insira as credenciais da Conta de Serviço na variável SERVICE_ACCOUNT.");
+  if (!SERVICE_ACCOUNT.private_key || SERVICE_ACCOUNT.private_key.indexOf("COLE_") !== -1 || SERVICE_ACCOUNT.private_key.indexOf("SUA_") !== -1 || SERVICE_ACCOUNT.private_key.length < 50) {
+    ui.alert(
+      "⚠️ Configuração do Firebase Incompleta no Apps Script\n\n" +
+      "Você precisa colar a sua 'private_key' real no objeto SERVICE_ACCOUNT (linha 493 do script).\n\n" +
+      "PASSO A PASSO:\n" +
+      "1. Abra o Firebase Console (https://console.firebase.google.com)\n" +
+      "2. Vá em Configurações do Projeto ⚙️ -> Contas de Serviço\n" +
+      "3. Clique no botão 'Gerar nova chave privada'\n" +
+      "4. Abra o arquivo JSON baixado e copie todo o texto da propriedade 'private_key'\n" +
+      "5. Cole o texto dentro das aspas do campo 'private_key' no SERVICE_ACCOUNT no Apps Script."
+    );
     return;
   }
 
@@ -524,7 +535,13 @@ function solicitarEnvioNotificacao() {
 
 // Envia a mensagem a todos os dispositivos inscritos no Tópico 'geral' e para os Tokens salvos
 function dispararFCM(title, body) {
-  var accessToken = getAccessToken_(SERVICE_ACCOUNT);
+  var accessToken = "";
+  try {
+    accessToken = getAccessToken_(SERVICE_ACCOUNT);
+  } catch (authErr) {
+    return authErr.message;
+  }
+
   var url = "https://fcm.googleapis.com/v1/projects/" + SERVICE_ACCOUNT.project_id + "/messages:send";
   
   var topicSuccess = false;
@@ -618,8 +635,34 @@ function dispararFCM(title, body) {
   return msg;
 }
 
+// Formata a chave privada RSA garantindo a formatação PEM estrita (PKCS#8) exigida pelo Apps Script
+function formatRsaKey_(key) {
+  if (!key) return "";
+  var str = key.toString().replace(/\\n/g, "\n").replace(/\r/g, "").trim();
+  
+  // Extrai apenas o corpo em Base64 removendo cabeçalhos e qualquer espaço/quebra em branco
+  var cleanBody = str
+    .replace(/-----BEGIN [A-Z ]+-----/g, "")
+    .replace(/-----END [A-Z ]+-----/g, "")
+    .replace(/\s+/g, "");
+    
+  // Re-organiza a chave em blocos padrão PEM de 64 caracteres por linha
+  var lines = [];
+  for (var i = 0; i < cleanBody.length; i += 64) {
+    lines.push(cleanBody.substring(i, i + 64));
+  }
+  
+  return "-----BEGIN PRIVATE KEY-----\n" + lines.join("\n") + "\n-----END PRIVATE KEY-----";
+}
+
 // Gera o token de acesso OAuth2 usando a Conta de Serviço (RS256)
 function getAccessToken_(serviceAccount) {
+  if (!serviceAccount || !serviceAccount.private_key || serviceAccount.private_key.indexOf("COLE_") !== -1 || serviceAccount.private_key.indexOf("SUA_") !== -1) {
+    throw new Error("❌ A chave privada (private_key) da Conta de Serviço não foi inserida no SERVICE_ACCOUNT.");
+  }
+
+  var formattedKey = formatRsaKey_(serviceAccount.private_key);
+
   var header = JSON.stringify({
     "alg": "RS256",
     "typ": "JWT"
@@ -635,7 +678,14 @@ function getAccessToken_(serviceAccount) {
   });
   
   var toSign = base64EncodeSafe_(header) + "." + base64EncodeSafe_(payload);
-  var signatureBytes = Utilities.computeRsaSha256Signature(toSign, serviceAccount.private_key);
+  
+  var signatureBytes;
+  try {
+    signatureBytes = Utilities.computeRsaSha256Signature(toSign, formattedKey);
+  } catch (sigErr) {
+    throw new Error("❌ Erro de formato da chave RSA no Apps Script.\nVerifique se o texto da private_key está completo.\nDetalhes: " + sigErr.message);
+  }
+
   var signature = base64EncodeSafeBytes_(signatureBytes);
   var jwt = toSign + "." + signature;
   
@@ -651,7 +701,7 @@ function getAccessToken_(serviceAccount) {
   var response = UrlFetchApp.fetch("https://oauth2.googleapis.com/token", options);
   var data = JSON.parse(response.getContentText());
   if (data.error) {
-    throw new Error("Falha no token OAuth2: " + (data.error_description || data.error));
+    throw new Error("❌ Falha na Autenticação OAuth2 Google: " + (data.error_description || data.error));
   }
   return data.access_token;
 }
@@ -722,7 +772,7 @@ function base64EncodeSafeBytes_(bytes) {
         measurementId: "G-HEP7PZY3LH"
       },
       fcmVapidKey: "BD2ujee9OvohZP07uVM5OQl9zV-V8cB09SKyM7V8OifEm216zRFIzC8izaQxT1YCJaKJS8Jh4NUvzi2fwk6yPuQ",
-      appsScriptUrl: "https://script.google.com/macros/s/AKfycbxD6A6N5RbmbDDs_fc02MGOPkQ9wUcAciCGtc-4RtxIKlo35s7uxfERZaB3Nmw2ThJd/exec",
+      appsScriptUrl: "https://script.google.com/macros/s/AKfycbzpn5Ni_OmyZ4qEmbek3l_F6f3Yeuc_w3sPFXICzYEtQrOVIoWzrHDLu5bjpi_URBtk/exec",
 
       categories: [
         "Todos", "Carreira", "Benefícios", "Cadastro", "Férias", 
