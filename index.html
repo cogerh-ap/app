@@ -868,6 +868,21 @@
     }
 
     // NAVIGATION
+    function resetScrollToTop() {
+      const content = document.getElementById("app-content");
+      if (content) content.scrollTop = 0;
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      requestAnimationFrame(() => {
+        if (content) content.scrollTop = 0;
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
+    }
+
     function switchTab(tabIndex) {
       state.currentTab = tabIndex;
       state.searchQuery = ""; // Reset search query on change
@@ -875,7 +890,7 @@
       state.expandedProcedureId = null;
       updateNavigationUI();
       renderCurrentScreen();
-      document.getElementById("app-content").scrollTop = 0;
+      resetScrollToTop();
     }
 
     function updateNavigationUI() {
