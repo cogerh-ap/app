@@ -1,3 +1,10 @@
+// OneSignal Web Push Integration
+try {
+  importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
+} catch (e) {
+  console.warn('OneSignal SW import skipped or running offline:', e);
+}
+
 const CACHE_NAME = 'cogerh-pwa-cache-v1';
 const ASSETS = [
   './',

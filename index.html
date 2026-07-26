@@ -19,6 +19,29 @@
   <!-- Tailwind CSS & FontAwesome Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- OneSignal Web Push SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      const defaultAppId = "547baca0-44e5-4bdc-928e-a94451db63c6";
+      const savedAppId = localStorage.getItem("cogerh_onesignal_app_id") || defaultAppId;
+      if (savedAppId) {
+        try {
+          await OneSignal.init({
+            appId: savedAppId,
+            notifyButton: { enable: false },
+            allowLocalhostAsSecureOrigin: true,
+            serviceWorkerParam: { scope: "./" },
+            serviceWorkerPath: "OneSignalSDKWorker.js",
+          });
+        } catch(err) {
+          console.warn("OneSignal Initialization Info:", err);
+        }
+      }
+    });
+  </script>
   
   <script>
     tailwind.config = {
@@ -154,6 +177,16 @@
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">ID da Planilha ou Link</label>
             <input type="text" id="spreadsheet-id-input" placeholder="Cole o ID da planilha ou link de compartilhamento" class="w-full text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition">
+          </div>
+
+          <!-- ONESIGNAL PUSH NOTIFICATION CONFIG -->
+          <div class="border-t border-slate-100 dark:border-slate-800/80 pt-3 mt-1">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-bell text-cogerhGoldAccent"></i>
+              OneSignal App ID (Notificações Push)
+            </label>
+            <input type="text" id="onesignal-appid-input" placeholder="Ex: e3a89341-xxxx-xxxx-xxxx-xxxxxxxxxxxx" class="w-full text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition">
+            <p class="text-[10px] text-slate-400 mt-1">Insira seu App ID do OneSignal para enviar alertas para Android, iOS e Windows.</p>
           </div>
           
           <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 space-y-1.5">
@@ -1594,6 +1627,10 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       if (visible) {
         modal.classList.remove("hidden");
         document.getElementById("spreadsheet-id-input").value = state.spreadsheetId;
+        const osInput = document.getElementById("onesignal-appid-input");
+        if (osInput) {
+          osInput.value = localStorage.getItem("cogerh_onesignal_app_id") || "547baca0-44e5-4bdc-928e-a94451db63c6";
+        }
         updateModalLabels();
         updateNotificationUI();
       } else {
@@ -1605,6 +1642,17 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
 
     // PWA BACKGROUD SYNC & NOTIFICATION HELPERS
     async function toggleNotificationPermission() {
+      if (window.OneSignalDeferred && window.OneSignal) {
+        try {
+          await window.OneSignal.Notifications.requestPermission();
+          updateNotificationUI();
+          alert('Notificações Push do OneSignal solicitadas com sucesso!');
+          return;
+        } catch (e) {
+          console.warn("Falha ao solicitar via OneSignal SDK, usando fallback padrão:", e);
+        }
+      }
+
       if (!('Notification' in window)) {
         alert('Seu navegador não suporta notificações de sistema.');
         return;
@@ -2044,6 +2092,10 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
 
         // Save Cache
         localStorage.setItem("cogerh_sheet_id", state.spreadsheetId);
+        const osAppIdInput = document.getElementById("onesignal-appid-input");
+        if (osAppIdInput && osAppIdInput.value.trim()) {
+          localStorage.setItem("cogerh_onesignal_app_id", osAppIdInput.value.trim());
+        }
         localStorage.setItem("cogerh_last_sync_time", state.lastSyncTime);
         localStorage.setItem("cogerh_last_sync_success", "true");
         localStorage.setItem("cogerh_data_procedures", JSON.stringify(state.procedures));
