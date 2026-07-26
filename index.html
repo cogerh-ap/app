@@ -29,11 +29,15 @@
       const savedAppId = localStorage.getItem("cogerh_onesignal_app_id") || defaultAppId;
       if (savedAppId) {
         try {
+          const scopePath = window.location.pathname.endsWith('/') 
+            ? window.location.pathname 
+            : window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+
           await OneSignal.init({
             appId: savedAppId,
             notifyButton: { enable: false },
             allowLocalhostAsSecureOrigin: true,
-            serviceWorkerParam: { scope: "./" },
+            serviceWorkerParam: { scope: scopePath },
             serviceWorkerPath: "OneSignalSDKWorker.js",
           });
         } catch(err) {
