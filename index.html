@@ -275,7 +275,7 @@
           <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
             <div class="space-y-0.5 max-w-[70%]">
               <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 block">Alertas de Novos Avisos</span>
-              <span class="text-[10px] text-slate-500 dark:text-slate-400 leading-normal block">Atualiza a cada 30 min e emite notificações de novos comunicados.</span>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400 leading-normal block">Ative as notificações para receber os avisos e comunicados da COGERH.</span>
             </div>
             <button onclick="toggleNotificationPermission()" id="notification-toggle-btn" class="px-3.5 py-1.5 text-[11px] font-bold bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 rounded-lg hover:opacity-90 active:scale-95 transition">
               Ativar
@@ -284,11 +284,8 @@
           
           <div id="notification-test-box" class="hidden flex items-center justify-between mt-2.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-2.5 rounded-xl">
             <span class="text-[10px] text-amber-800 dark:text-amber-300 leading-normal">
-              Sincronização em segundo plano (30 min) ativada com sucesso!
+              Notificações em segundo plano ativadas com sucesso!
             </span>
-            <button onclick="triggerTestNotification()" class="text-[9px] font-extrabold uppercase text-amber-900 dark:text-amber-400 border border-amber-200 dark:border-amber-900 px-2.5 py-1 rounded bg-white dark:bg-slate-900 hover:bg-amber-50 active:scale-95 transition">
-              Testar
-            </button>
           </div>
         </div>
 
