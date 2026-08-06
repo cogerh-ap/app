@@ -1,20 +1,19 @@
 /**
- * GOOGLE APPS SCRIPT - Notificação Automática de Avisos via OneSignal
+ * GOOGLE APPS SCRIPT - Notificação de Avisos via OneSignal (Disparo Manual)
  * 
- * INSTRUÇÕES DE INSTALAÇÃO:
- * 1. Abra a sua Planilha Google vinculada ao PWA COGERH.
- * 2. No menu superior, acesse: Extensões -> Apps Script.
- * 3. Cole o código abaixo substituindo o conteúdo existente no editor.
- * 4. Substitua a constante ONESIGNAL_REST_API_KEY pela sua chave da API REST do OneSignal:
- *    (Para encontrar no OneSignal: Dashboard -> Settings -> Keys & IDs -> REST API Key).
- * 5. Salve o projeto no ícone do disquete.
- * 6. Configure o Acionador (Trigger):
- *    - Clique no ícone de relógio ("Acionadores" / "Triggers") na barra lateral esquerda.
- *    - Clique no botão "+ Adicionar acionador" (no canto inferior direito).
- *    - Escolha a função para executar: onNewNoticeAdded
- *    - Selecione a fonte do evento: De uma planilha
- *    - Selecione o tipo de evento: "Ao alterar" (onChange) ou "Ao editar" (onEdit) / "Ao enviar formulário".
- *    - Salve e conceda as permissões solicitadas pela Conta Google.
+ * COMO USAR O BOTÃO / MENU NA PLANILHA:
+ * 
+ * OPÇÃO A (Menu Superior Automático):
+ * 1. Ao abrir a planilha, um menu chamado "📢 Notificações COGERH" aparecerá no topo da planilha.
+ * 2. Selecione a linha do aviso desejado na aba "avisos" (ou deixe na última linha).
+ * 3. Clique em: "📢 Notificações COGERH" -> "Enviar Notificação do Aviso Selecionado".
+ * 
+ * OPÇÃO B (Botão na Planilha):
+ * 1. Na planilha, acesse: Inserir -> Desenho -> Desenhe um botão (ex: "Enviar Notificação") e clique em Salvar.
+ * 2. Clique nos 3 pontinhos no canto do botão inserido e escolha "Atribuir script".
+ * 3. Digite exatamente o nome da função: dispararNotificacaoManual
+ * 
+ * CREDENCIAIS ONESIGNAL:
  */
 
 // ID da Aplicação no OneSignal
@@ -27,30 +26,46 @@ const ONESIGNAL_REST_API_KEY = "pobzlqqfueawfqgsstua6ekbe";
 const PWA_APP_URL = "https://cogerh-ap.github.io/app/"; 
 
 /**
- * Função principal chamada automaticamente quando um novo aviso é adicionado na aba "avisos"
+ * Cria o menu personalizado no topo do Google Sheets ao abrir a planilha
  */
-function onNewNoticeAdded(e) {
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu("📢 Notificações COGERH")
+    .addItem("Enviar Notificação (Aviso Selecionado/Último)", "dispararNotificacaoManual")
+    .addItem("Testar Conexão OneSignal", "testNotification")
+    .addToUi();
+}
+
+/**
+ * Função principal para disparar a notificação MANUALMENTE (vinculada ao botão ou menu).
+ * Pergunta confirmação ao usuário e exibe alerta na tela com o resultado.
+ */
+function dispararNotificacaoManual() {
+  const ui = SpreadsheetApp.getUi();
+  
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = ss.getSheetByName("avisos") || ss.getSheetByName("Avisos");
     
     if (!sheet) {
-      Logger.log("Aba 'avisos' não foi encontrada na planilha.");
+      ui.alert("Erro", "A aba 'avisos' não foi encontrada nesta planilha.", ui.ButtonSet.OK);
       return;
-    }
-
-    // Se o evento foi disparado por uma alteração, verifica se foi na aba 'avisos'
-    if (e && e.range) {
-      const editedSheet = e.range.getSheet();
-      if (editedSheet.getName().toLowerCase() !== "avisos") {
-        return;
-      }
     }
 
     const lastRow = sheet.getLastRow();
     if (lastRow <= 1) {
-      Logger.log("Nenhum aviso encontrado além da linha de cabeçalho.");
+      ui.alert("Aviso", "Nenhum aviso encontrado na planilha além da linha de cabeçalho.", ui.ButtonSet.OK);
       return;
+    }
+
+    // Identificar a linha a ser enviada (linha selecionada se estiver na aba avisos e > 1, senão a última linha)
+    let targetRow = lastRow;
+    const activeSheet = ss.getActiveSheet();
+    if (activeSheet && activeSheet.getName().toLowerCase() === "avisos") {
+      const activeRow = activeSheet.getActiveCell().getRow();
+      if (activeRow > 1 && activeRow <= lastRow) {
+        targetRow = activeRow;
+      }
     }
 
     // Identificar dinamicamente os índices das colunas 'title' e 'content' na Linha 1
@@ -67,27 +82,43 @@ function onNewNoticeAdded(e) {
       }
     }
 
-    // Padrão de segurança: Coluna B (2) = title, Coluna C (3) = content
     if (titleColIndex === -1) titleColIndex = 2;
     if (contentColIndex === -1) contentColIndex = 3;
 
-    // Obter valores da última linha inserida
-    const title = sheet.getRange(lastRow, titleColIndex).getValue().toString().trim();
-    const content = sheet.getRange(lastRow, contentColIndex).getValue().toString().trim();
+    // Obter valores da linha alvo
+    const title = sheet.getRange(targetRow, titleColIndex).getValue().toString().trim();
+    const content = sheet.getRange(targetRow, contentColIndex).getValue().toString().trim();
 
     if (!title && !content) {
-      Logger.log("Título e Conteúdo estão vazios na última linha.");
+      ui.alert("Atenção", `A linha ${targetRow} da aba 'avisos' está sem título e conteúdo.`, ui.ButtonSet.OK);
       return;
     }
 
-    Logger.log("Disparando notificação - Título: '" + title + "' | Conteúdo: '" + content + "'");
+    // Confirmação antes de enviar
+    const confirmMessage = `Deseja enviar a notificação referente à Linha ${targetRow}?\n\n📌 TÍTULO: ${title}\n💬 CONTEÚDO: ${content}`;
+    const response = ui.alert("Confirmar Envio de Notificação", confirmMessage, ui.ButtonSet.YES_NO);
+
+    if (response !== ui.Button.YES) {
+      ui.alert("Cancelado", "Envio de notificação cancelado pelo usuário.", ui.ButtonSet.OK);
+      return;
+    }
 
     // Enviar notificação para o OneSignal
     sendOneSignalNotification(title, content);
 
+    ui.alert("Sucesso! 🎉", `Notificação enviada com sucesso para todos os usuários do PWA!\n\nAviso (Linha ${targetRow}): "${title}"`, ui.ButtonSet.OK);
+
   } catch (err) {
-    Logger.log("Erro ao executar onNewNoticeAdded: " + err.toString());
+    ui.alert("Erro no Envio", "Ocorreu uma falha ao enviar a notificação:\n\n" + err.toString(), ui.ButtonSet.OK);
+    Logger.log("Erro ao executar dispararNotificacaoManual: " + err.toString());
   }
+}
+
+/**
+ * Função legada de envio automático (pode ser mantida ou utilizada se desejar)
+ */
+function onNewNoticeAdded(e) {
+  dispararNotificacaoManual();
 }
 
 /**
@@ -118,7 +149,6 @@ function sendOneSignalNotification(title, content) {
     "method": "post",
     "contentType": "application/json; charset=utf-8",
     "headers": {
-      // O erro 401 ocorria devido à ausência ou incorreção deste cabeçalho de autorização
       "Authorization": "Key " + ONESIGNAL_REST_API_KEY
     },
     "payload": JSON.stringify(payload),
@@ -144,3 +174,4 @@ function sendOneSignalNotification(title, content) {
 function testNotification() {
   sendOneSignalNotification("Aviso de Teste COGERH", "Notificação de teste validando a integração com o OneSignal.");
 }
+

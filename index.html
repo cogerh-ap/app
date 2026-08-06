@@ -1105,6 +1105,10 @@
     // SCREEN 2: PROCESSOS (PROCEDURES) - Dynamic Solid Cards
     // ----------------------------------------------------
     function renderProcessosScreen(container) {
+      // Save current scroll position of category chips bar if it exists
+      const prevChipsContainer = document.getElementById("proc-category-chips-container");
+      const savedScrollLeft = prevChipsContainer ? prevChipsContainer.scrollLeft : 0;
+
       // Create Filter Chips Header
       let chipsHtml = "";
       PRESETS.categories.forEach(cat => {
@@ -1253,7 +1257,7 @@
           </div>
 
           <!-- HORIZONTAL CATEGORY CHIPS SCROLL -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 custom-scrollbar">
+          <div id="proc-category-chips-container" class="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 custom-scrollbar">
             ${chipsHtml}
           </div>
 
@@ -1265,6 +1269,12 @@
           ${getUtfprLogoHtml('proc')}
         </div>
       `;
+
+      // Restore horizontal scroll position of category chips bar
+      const newChipsContainer = document.getElementById("proc-category-chips-container");
+      if (newChipsContainer && savedScrollLeft > 0) {
+        newChipsContainer.scrollLeft = savedScrollLeft;
+      }
     }
 
     function searchProcedures(query) {
