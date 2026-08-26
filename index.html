@@ -375,30 +375,11 @@
           </div>
 
           <!-- Google Login Options -->
-          <div class="space-y-3 pt-1">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Entrar com sua Conta Google</label>
+          <div class="space-y-4 pt-1">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center">Autenticação com Conta Google</label>
             
             <!-- Google GIS Button Container -->
             <div id="google-signin-btn-container" class="flex justify-center w-full min-h-[44px]"></div>
-
-            <!-- Direct Google Email Login Field (Integrated with Apps Script API) -->
-            <div class="relative flex py-1 items-center">
-              <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-              <span class="flex-shrink mx-3 text-[10px] uppercase font-bold text-slate-400">ou informe sua conta Google</span>
-              <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-            </div>
-
-            <div class="space-y-2">
-              <div class="relative">
-                <input type="email" id="auth-email-input" placeholder="seu.email@administrativo.utfpr.edu.br ou @gmail.com" class="w-full text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition" onkeydown="if(event.key==='Enter') verifyUserEmailAuth()">
-                <i class="fa-solid fa-envelope text-slate-400 absolute left-3 top-3 text-xs"></i>
-              </div>
-
-              <button onclick="verifyUserEmailAuth()" id="auth-submit-btn" class="w-full bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 py-2.5 text-xs font-bold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                <span>Verificar Autorização & Acessar</span>
-              </button>
-            </div>
           </div>
 
           <!-- Alert / Status Boxes -->
@@ -2705,27 +2686,15 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       }
     }
 
-    function verifyUserEmailAuth() {
-      const emailInput = document.getElementById("auth-email-input");
-      if (!emailInput || !emailInput.value.trim()) {
-        showToast("Por favor, digite seu e-mail Google.");
-        return;
-      }
-      const email = emailInput.value.trim();
-      validateUserAccess(email, "", "");
-    }
-
     async function validateUserAccess(email, name, picture) {
       if (!email) return;
 
       const normalizedEmail = email.toLowerCase().trim();
       const statusLoading = document.getElementById("auth-status-loading");
       const statusError = document.getElementById("auth-status-error");
-      const authBtn = document.getElementById("auth-submit-btn");
 
       if (statusLoading) statusLoading.classList.remove("hidden");
       if (statusError) statusError.classList.add("hidden");
-      if (authBtn) authBtn.disabled = true;
 
       let authorized = false;
       let userRole = "Membro da Equipe COGERH-AP";
@@ -2843,7 +2812,6 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       }
 
       if (statusLoading) statusLoading.classList.add("hidden");
-      if (authBtn) authBtn.disabled = false;
 
       if (authorized) {
         handleAuthSuccess(normalizedEmail, userName, userPicture, userRole);
