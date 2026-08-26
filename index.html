@@ -20,6 +20,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- Google Identity Services (GIS) for Google Account Login -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <!-- OneSignal Web Push SDK -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
@@ -94,68 +97,87 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 transition-colors duration-200">
 
-  <!-- Mobile-first Container Frame for Desktop Premium feel -->
-  <div class="max-w-xl mx-auto min-h-screen flex flex-col bg-lightBg dark:bg-darkBg text-slate-800 dark:text-slate-200 shadow-2xl relative">
+  <!-- Responsive Container Frame (Mobile vertical & Tablet/Desktop horizontal) -->
+  <div class="w-full max-w-7xl mx-auto min-h-screen flex flex-col bg-lightBg dark:bg-darkBg text-slate-800 dark:text-slate-200 shadow-2xl relative transition-all duration-200">
     
     <!-- HEADER -->
-    <header class="bg-cogerhSlatePrimary text-white py-3 px-4 shadow-md sticky top-0 z-50">
-      <div class="flex items-center justify-between min-h-[56px] w-full">
+    <header class="bg-cogerhSlatePrimary text-white py-3 px-4 md:px-8 shadow-md sticky top-0 z-50 transition-all">
+      <div class="flex items-center justify-between min-h-[56px] w-full max-w-7xl mx-auto">
         <!-- Left Logo matching the native design layout -->
-        <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-14 object-contain shrink-0" />
+        <div class="flex items-center">
+          <img id="header-logo-img" src="cogerh_logo.png" alt="Logo COGERH" class="h-12 md:h-14 object-contain shrink-0" />
+        </div>
         
-        <!-- Theme Selection Action Button (right) -->
-        <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
-          <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
-        </button>
+        <!-- Action Buttons (Restricted Area Lock & Theme Buttons) -->
+        <div class="flex items-center gap-1.5">
+          <!-- Restricted Area Lock Button (Left of Theme Button) -->
+          <button onclick="openAuthModal()" id="header-auth-btn" title="Área Restrita (Equipe COGERH)" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0 relative">
+            <i id="header-auth-icon" class="fa-solid fa-lock text-lg"></i>
+            <span id="header-auth-badge" class="hidden absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-cogerhSlatePrimary"></span>
+          </button>
+          
+          <!-- Theme Selection Action Button (right) -->
+          <button onclick="openThemeModal()" title="Configurar Aparência" class="text-cogerhGoldAccent hover:scale-110 p-2.5 rounded-full hover:bg-slate-700/40 transition active:scale-95 shrink-0">
+            <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
+          </button>
+        </div>
       </div>
     </header>
 
-    <!-- MAIN INTERACTIVE CONTENT AREA (Scrollable) -->
-    <main id="app-content" class="flex-1 overflow-y-auto px-4 py-5 pb-24 custom-scrollbar">
+    <!-- MAIN INTERACTIVE CONTENT AREA (Scrollable & Responsive) -->
+    <main id="app-content" class="flex-1 overflow-y-auto px-4 md:px-8 lg:px-10 py-5 md:py-7 pb-24 md:pb-28 custom-scrollbar">
       <!-- Dynamic Screen Content will render here -->
     </main>
 
-    <!-- PERSISTENT BOTTOM NAVIGATION BAR -->
-    <nav class="bg-white dark:bg-cogerhSlateDark border-t border-slate-200 dark:border-slate-800 py-2 px-2 shadow-lg fixed bottom-0 left-0 right-0 max-w-xl mx-auto z-40">
-      <div class="grid grid-cols-5 text-center">
-        <!-- Início Tab -->
+    <!-- PERSISTENT RESPONSIVE NAVIGATION BAR (Bottom Mobile & Floating Capsule Desktop/Tablet) -->
+    <nav class="bg-white/95 dark:bg-cogerhSlateDark/95 backdrop-blur-md border-t md:border border-slate-200 dark:border-slate-800 py-2 px-2 md:px-4 shadow-lg md:shadow-2xl fixed bottom-0 md:bottom-4 left-0 right-0 max-w-full md:max-w-2xl lg:max-w-3xl mx-auto md:rounded-2xl z-40 transition-all duration-300">
+      <div id="nav-tabs-grid" class="grid grid-cols-5 text-center transition-all duration-200">
+        <!-- Início Tab (0) -->
         <button onclick="switchTab(0)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
-          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+          <div class="nav-icon-container px-3 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
             <i class="fa-solid fa-house text-lg text-slate-500 dark:text-slate-400"></i>
           </div>
           <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Início</span>
         </button>
         
-        <!-- Processos Tab -->
+        <!-- Processos Tab (1) -->
         <button onclick="switchTab(1)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
-          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+          <div class="nav-icon-container px-3 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
             <i class="fa-solid fa-file-invoice text-lg text-slate-500 dark:text-slate-400"></i>
           </div>
           <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Processos</span>
         </button>
         
-        <!-- Manuais Tab -->
+        <!-- Manuais Tab (2) -->
         <button onclick="switchTab(2)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
-          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+          <div class="nav-icon-container px-3 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
             <i class="fa-solid fa-book-open text-lg text-slate-500 dark:text-slate-400"></i>
           </div>
           <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Manuais</span>
         </button>
         
-        <!-- Equipe Tab -->
+        <!-- Equipe Tab (3) -->
         <button onclick="switchTab(3)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
-          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+          <div class="nav-icon-container px-3 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
             <i class="fa-solid fa-user-group text-lg text-slate-500 dark:text-slate-400"></i>
           </div>
           <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Equipe</span>
         </button>
         
-        <!-- Canais Tab -->
+        <!-- Canais Tab (4) -->
         <button onclick="switchTab(4)" class="nav-tab-btn flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
-          <div class="nav-icon-container px-4 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+          <div class="nav-icon-container px-3 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
             <i class="fa-solid fa-share-nodes text-lg text-slate-500 dark:text-slate-400"></i>
           </div>
           <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Canais</span>
+        </button>
+
+        <!-- Restrito Tab (5) - Visible ONLY for authorized team members -->
+        <button id="restricted-nav-tab" onclick="switchTab(5)" class="nav-tab-btn hidden flex flex-col items-center justify-center gap-1 group active:scale-95 transition">
+          <div class="nav-icon-container px-3 py-1 rounded-full bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/40 transition duration-150">
+            <i class="fa-solid fa-shield-halved text-lg text-slate-500 dark:text-slate-400"></i>
+          </div>
+          <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Restrito</span>
         </button>
       </div>
     </nav>
@@ -317,6 +339,171 @@
           <a id="notice-detail-link-btn" href="#" target="_blank" rel="noopener noreferrer" class="hidden flex items-center gap-1 bg-cogerhGoldAccent hover:bg-yellow-400 text-slate-950 font-bold px-2.5 py-1.5 rounded-xl text-[11px] shadow-sm transition active:scale-95 shrink-0">
             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Mais informações
           </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTHENTICATION / RESTRICTED LOGIN MODAL -->
+    <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-cogerhGoldAccent/15 text-cogerhGoldAccent flex items-center justify-center">
+              <i id="auth-modal-icon" class="fa-solid fa-lock text-base"></i>
+            </div>
+            <div>
+              <h3 id="auth-modal-title" class="text-base font-bold text-slate-900 dark:text-slate-100">Área Restrita da Equipe</h3>
+              <p class="text-[10px] text-slate-400">Autenticação Google / Google Apps Script</p>
+            </div>
+          </div>
+          <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+
+        <!-- Content Area: Dynamic State Views -->
+        <div id="auth-view-guest" class="space-y-4">
+          <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200/60 dark:border-slate-800/60 space-y-2">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+              <i class="fa-solid fa-shield-halved text-cogerhGoldAccent"></i>
+              <span>Acesso Exclusivo à Equipe COGERH-AP</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Esta área contém links, planilhas gerenciais e ferramentas de uso restrito da equipe de Recursos Humanos do Campus Apucarana.
+            </p>
+          </div>
+
+          <!-- Google Login Options -->
+          <div class="space-y-3 pt-1">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Entrar com sua Conta Google</label>
+            
+            <!-- Google GIS Button Container -->
+            <div id="google-signin-btn-container" class="flex justify-center w-full min-h-[44px]"></div>
+
+            <!-- Direct Google Email Login Field (Integrated with Apps Script API) -->
+            <div class="relative flex py-1 items-center">
+              <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+              <span class="flex-shrink mx-3 text-[10px] uppercase font-bold text-slate-400">ou informe sua conta Google</span>
+              <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="relative">
+                <input type="email" id="auth-email-input" placeholder="seu.email@administrativo.utfpr.edu.br ou @gmail.com" class="w-full text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent text-slate-800 dark:text-slate-100 transition" onkeydown="if(event.key==='Enter') verifyUserEmailAuth()">
+                <i class="fa-solid fa-envelope text-slate-400 absolute left-3 top-3 text-xs"></i>
+              </div>
+
+              <button onclick="verifyUserEmailAuth()" id="auth-submit-btn" class="w-full bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 py-2.5 text-xs font-bold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <span>Verificar Autorização & Acessar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert / Status Boxes -->
+          <div id="auth-status-loading" class="hidden text-xs bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 p-3 rounded-xl border border-blue-200 dark:border-blue-900/50 flex items-center gap-2">
+            <i class="fa-solid fa-circle-notch fa-spin text-sm text-cogerhGoldAccent"></i>
+            <span>Consultando permissões na API de Autenticação...</span>
+          </div>
+
+          <div id="auth-status-error" class="hidden text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-xl border border-red-200 dark:border-red-900/50 space-y-1">
+            <div class="flex items-center gap-1.5 font-bold">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span id="auth-error-title">Acesso Não Autorizado</span>
+            </div>
+            <p id="auth-error-desc" class="text-[11px] leading-relaxed text-red-500 dark:text-red-400">Esta conta Google não possui autorização de acesso aos recursos restritos da COGERH.</p>
+          </div>
+        </div>
+
+        <!-- Content Area: Authorized Logged In View -->
+        <div id="auth-view-authorized" class="hidden space-y-4">
+          <div class="bg-emerald-50 dark:bg-emerald-950/25 p-4 rounded-xl border border-emerald-200/60 dark:border-emerald-900/40 flex items-center gap-3.5">
+            <div id="auth-user-avatar" class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-sm shrink-0 overflow-hidden">
+              DM
+            </div>
+            <div class="flex-1 min-h-0">
+              <div class="flex items-center gap-1.5">
+                <h4 id="auth-user-name" class="text-sm font-black text-slate-900 dark:text-slate-100 truncate">Membro Autorizado</h4>
+                <span class="text-[9px] bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold px-1.5 py-0.5 rounded">Equipe</span>
+              </div>
+              <p id="auth-user-email" class="text-xs text-slate-500 dark:text-slate-400 truncate">email@utfpr.edu.br</p>
+              <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5 flex items-center gap-1">
+                <i class="fa-solid fa-circle-check text-[9px]"></i> Acesso à área restrita liberado
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-1">
+            <button onclick="goToRestrictedScreen()" class="w-full bg-cogerhGoldAccent hover:bg-yellow-400 text-slate-950 py-3 text-xs font-black rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>Acessar Painel Restrito da Equipe</span>
+            </button>
+
+            <button onclick="performUserLogout()" class="w-full bg-transparent hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 py-2.5 text-xs font-bold rounded-xl border border-red-200 dark:border-red-900/40 transition active:scale-95 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair da Conta (Logout)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM NOTES & REMINDERS MODAL -->
+    <div id="team-notes-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-cogerhSlateDark w-full max-w-lg rounded-2xl p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transform transition scale-100 max-h-[90vh] flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 dark:text-amber-400 flex items-center justify-center text-sm shrink-0">
+              <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-black text-slate-900 dark:text-slate-100">Notas & Lembretes Compartilhados</h3>
+              <p class="text-[10px] text-slate-400">Visível e editável para toda a equipe COGERH</p>
+            </div>
+          </div>
+          <button onclick="closeTeamNotesModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="space-y-3 py-3.5 flex-1 overflow-y-auto custom-scrollbar">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300">Quadro de Anotações</span>
+            <button onclick="fetchTeamNotesFromCloud(true)" title="Recarregar notas da nuvem" class="text-[11px] font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-lg transition active:scale-95 flex items-center gap-1.5">
+              <i id="icon-refresh-notes" class="fa-solid fa-arrows-rotate text-cogerhGoldAccent"></i>
+              <span>Atualizar</span>
+            </button>
+          </div>
+
+          <textarea 
+            id="team-notes-textarea" 
+            rows="8" 
+            placeholder="Digite aqui lembretes, recados, prazos ou orientações compartilhadas com a equipe..."
+            class="w-full text-xs bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-slate-800 dark:text-slate-200 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent custom-scrollbar transition resize-y leading-relaxed"
+          ></textarea>
+
+          <div class="flex items-center justify-between text-[10px] text-slate-400 flex-wrap gap-1 bg-slate-50 dark:bg-slate-900/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/60">
+            <span id="team-notes-meta" class="truncate">
+              Sincronizado via Google Apps Script & Sheets
+            </span>
+            <span id="team-notes-status" class="text-emerald-500 font-bold hidden flex items-center gap-1">
+              <i class="fa-solid fa-circle-check"></i> Salvo na nuvem!
+            </span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-between gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="closeTeamNotesModal()" class="text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 px-3 py-2 rounded-xl transition">
+            Fechar
+          </button>
+          <button onclick="saveTeamNotesToCloud()" id="btn-save-team-notes" class="text-xs font-bold bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 px-4 py-2 rounded-xl transition active:scale-95 shadow-sm flex items-center gap-1.5">
+            <i id="icon-save-notes" class="fa-solid fa-cloud-arrow-up text-cogerhGoldAccent dark:text-slate-950"></i>
+            <span id="lbl-save-notes">Salvar na Nuvem</span>
+          </button>
         </div>
       </div>
     </div>
@@ -578,6 +765,91 @@
           description: "Normas para afastamento integral para pós-graduação stricto sensu, critérios de seleção para licença capacitação e como registrar cursos internos na COGERH.",
           link: "https://www.utfpr.edu.br"
         }
+      ],
+      restrictedCategories: [
+        "Todos", "Sistemas Internos", "Planilhas de Gestão", "Drives & Pastas", "Modelos & Documentos", "Gestão de Pessoas"
+      ],
+      gasAuthUrl: "https://script.google.com/macros/s/AKfycbxE4I_pLpti5Z7vDvOxEgvWPporYVwHuoPz1eczUE_16SMo_y4SgFm4CO92wReheFxm/exec",
+      authorizedEmails: [
+        "diegomaronese@gmail.com",
+        "diegomaronese@administrativo.utfpr.edu.br",
+        "edilaine@administrativo.utfpr.edu.br",
+        "edna@administrativo.utfpr.edu.br",
+        "marcelia@administrativo.utfpr.edu.br"
+      ],
+      restrictedCards: [
+        {
+          id: "r1",
+          title: "Planilha de Fechamento da Folha & Cronograma Financeiro",
+          category: "Planilhas de Gestão",
+          description: "Controle de prazos de homologação, lançamento de adicionais noturnos, insalubridade, substituições de chefia e espelho de conferência mensal.",
+          link: "https://docs.google.com/spreadsheets/d/1UphCH_ZboQdlbPHe5z6kNceZqer8ReAx2gNbIOKUfWY/edit",
+          tag: "Folha / Mensal",
+          icon: "fa-solid fa-file-invoice-dollar"
+        },
+        {
+          id: "r2",
+          title: "SISGEP / SIAPEnet - Painel Administrativo",
+          category: "Sistemas Internos",
+          description: "Acesso administrativo ao Sistema Integrado de Gestão de Pessoas para consulta de fichas funcionais completas, assentamentos e rubricas financeiras.",
+          link: "https://www.siapenet.gov.br",
+          tag: "Governo Federal",
+          icon: "fa-solid fa-server"
+        },
+        {
+          id: "r3",
+          title: "SISREF - Homologação de Frequência e Ponto Eletrônico",
+          category: "Sistemas Internos",
+          description: "Módulo gerencial da COGERH no SISREF para auditoria de espelhos de ponto, abonos, homologação em lote e tratamento de inconsistências de batidas.",
+          link: "https://sisref.utfpr.edu.br",
+          tag: "Frequência",
+          icon: "fa-solid fa-fingerprint"
+        },
+        {
+          id: "r4",
+          title: "Google Drive Interno - COGERH Apucarana",
+          category: "Drives & Pastas",
+          description: "Repositório em nuvem com as pastas compartilhadas de trabalho da equipe: portarias digitalizadas, atas de reuniões, escalas de trabalho e formulários internos.",
+          link: "https://drive.google.com",
+          tag: "Drive Compartilhado",
+          icon: "fa-brands fa-google-drive"
+        },
+        {
+          id: "r5",
+          title: "Planilha Geral de Férias e Afastamentos do Campus",
+          category: "Planilhas de Gestão",
+          description: "Mapa consolidado das programações de férias de docentes e TAEs do campus para evitar sobreposição em setores essenciais e controle de substitutos.",
+          link: "https://docs.google.com/spreadsheets",
+          tag: "Férias & Escalas",
+          icon: "fa-solid fa-umbrella-beach"
+        },
+        {
+          id: "r6",
+          title: "SEI - Bloco de Assinaturas e Minutas COGERH",
+          category: "Sistemas Internos",
+          description: "Acesso direto aos blocos de processos em tramitação interna, despachos decisórios, minutas de portarias e relatórios da coordenadoria.",
+          link: "https://sei.utfpr.edu.br",
+          tag: "SEI UTFPR",
+          icon: "fa-solid fa-file-signature"
+        },
+        {
+          id: "r7",
+          title: "SouGov Líder & Gestão de Pessoas",
+          category: "Gestão de Pessoas",
+          description: "Painel para validação de atestados médicos, homologação de requerimentos funcionais e acompanhamento de solicitações eletrônicas dos servidores.",
+          link: "https://sougov.economia.gov.br",
+          tag: "SouGov",
+          icon: "fa-solid fa-user-check"
+        },
+        {
+          id: "r8",
+          title: "Repositório de Modelos de Despachos, Portarias e Editais",
+          category: "Modelos & Documentos",
+          description: "Minutas padronizadas de despachos no SEI, editais de redistribuição, relatórios de estágio probatório e modelos de certidões funcionais emitidas pela COGERH.",
+          link: "https://docs.google.com/document",
+          tag: "Documentos Modelo",
+          icon: "fa-solid fa-file-contract"
+        }
       ]
     };
 
@@ -599,6 +871,19 @@
       lastSyncTime: localStorage.getItem("cogerh_last_sync_time") || "Nunca sincronizado",
       lastSyncSuccess: localStorage.getItem("cogerh_last_sync_success") === "true",
       
+      // Restricted Area Authentication State
+      isAuthorized: localStorage.getItem("cogerh_auth_authorized") === "true",
+      authUser: JSON.parse(localStorage.getItem("cogerh_auth_user")) || null,
+      gasAuthUrl: PRESETS.gasAuthUrl,
+      restrictedCards: JSON.parse(localStorage.getItem("cogerh_data_restricted")) || PRESETS.restrictedCards,
+      restrictedSelectedCategory: "Todos",
+      restrictedCategoryScrollLeft: 0,
+      restrictedSearchQuery: "",
+      teamNotes: localStorage.getItem("cogerh_team_notes") || "• Reunião semanal de equipe: Segundas-feiras às 08h30\n• Fechamento mensal da Folha: Todo dia 15 ou dia útil anterior\n• Homologação Sisref: Até dia 05 de cada mês",
+      teamNotesAuthor: localStorage.getItem("cogerh_team_notes_author") || "",
+      teamNotesDate: localStorage.getItem("cogerh_team_notes_date") || "",
+      teamNotesSaving: false,
+
       // Data models cached from localStorage or presets
       procedures: JSON.parse(localStorage.getItem("cogerh_data_procedures")) || PRESETS.procedures,
       notices: JSON.parse(localStorage.getItem("cogerh_data_notices")) || PRESETS.notices,
@@ -901,6 +1186,10 @@
     }
 
     function switchTab(tabIndex) {
+      if (tabIndex === 5 && !state.isAuthorized) {
+        openAuthModal();
+        return;
+      }
       state.currentTab = tabIndex;
       state.searchQuery = ""; // Reset search query on change
       state.selectedCategory = "Todos"; // Reset category
@@ -908,16 +1197,52 @@
       updateNavigationUI();
       renderCurrentScreen();
       resetScrollToTop();
+
+      if (tabIndex === 5 && state.isAuthorized) {
+        fetchTeamNotesFromCloud(false);
+        refreshAuthorizedUserProfile(false);
+      }
     }
 
     function updateNavigationUI() {
+      const grid = document.getElementById("nav-tabs-grid");
+      const restrictedTabBtn = document.getElementById("restricted-nav-tab");
+      const authIcon = document.getElementById("header-auth-icon");
+      const authBadge = document.getElementById("header-auth-badge");
+
+      if (state.isAuthorized) {
+        if (restrictedTabBtn) restrictedTabBtn.classList.remove("hidden");
+        if (grid) {
+          grid.classList.remove("grid-cols-5");
+          grid.classList.add("grid-cols-6");
+        }
+        if (authIcon) {
+          authIcon.className = "fa-solid fa-lock-open text-lg";
+        }
+        if (authBadge) authBadge.classList.remove("hidden");
+      } else {
+        if (restrictedTabBtn) restrictedTabBtn.classList.add("hidden");
+        if (grid) {
+          grid.classList.remove("grid-cols-6");
+          grid.classList.add("grid-cols-5");
+        }
+        if (authIcon) {
+          authIcon.className = "fa-solid fa-lock text-lg";
+        }
+        if (authBadge) authBadge.classList.add("hidden");
+        if (state.currentTab === 5) {
+          state.currentTab = 0;
+        }
+      }
+
       const tabs = document.querySelectorAll(".nav-tab-btn");
       const baseIcons = [
         "fa-solid fa-house text-lg",
         "fa-solid fa-file-invoice text-lg",
         "fa-solid fa-book-open text-lg",
         "fa-solid fa-user-group text-lg",
-        "fa-solid fa-share-nodes text-lg"
+        "fa-solid fa-share-nodes text-lg",
+        "fa-solid fa-shield-halved text-lg"
       ];
       tabs.forEach((tab, index) => {
         const iconContainer = tab.querySelector(".nav-icon-container");
@@ -925,13 +1250,13 @@
         const label = tab.querySelector("span");
         
         if (index === state.currentTab) {
-          iconContainer.className = "nav-icon-container px-4 py-1.5 rounded-full bg-slate-150 dark:bg-slate-800 text-slate-900 dark:text-cogerhGoldAccent transition duration-150";
-          icon.className = `${baseIcons[index]} text-cogerhSlatePrimary dark:text-cogerhGoldAccent`;
-          label.className = "text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent";
+          if (iconContainer) iconContainer.className = "nav-icon-container px-3 py-1.5 rounded-full bg-slate-150 dark:bg-slate-800 text-slate-900 dark:text-cogerhGoldAccent transition duration-150";
+          if (icon) icon.className = `${baseIcons[index]} text-cogerhSlatePrimary dark:text-cogerhGoldAccent`;
+          if (label) label.className = "text-[10px] font-bold text-cogerhSlatePrimary dark:text-cogerhGoldAccent";
         } else {
-          iconContainer.className = "nav-icon-container px-4 py-1.5 rounded-full bg-transparent text-slate-500 dark:text-slate-400 transition duration-150";
-          icon.className = `${baseIcons[index]} text-slate-500 dark:text-slate-400`;
-          label.className = "text-[10px] font-medium text-slate-500 dark:text-slate-400";
+          if (iconContainer) iconContainer.className = "nav-icon-container px-3 py-1.5 rounded-full bg-transparent text-slate-500 dark:text-slate-400 transition duration-150";
+          if (icon) icon.className = `${baseIcons[index]} text-slate-500 dark:text-slate-400`;
+          if (label) label.className = "text-[10px] font-medium text-slate-500 dark:text-slate-400";
         }
       });
     }
@@ -956,6 +1281,9 @@
         case 4:
           renderCanaisScreen(mainContainer);
           break;
+        case 5:
+          renderRestritoScreen(mainContainer);
+          break;
       }
     }
 
@@ -972,7 +1300,7 @@
       if (priorityNotices.length > 0) {
         priorityNotices.forEach(notice => {
           noticesHtml += `
-            <div onclick="openNoticeDetail('${notice.id}')" class="bg-[#FFF9E6] dark:bg-amber-950/15 border-l-4 border-cogerhGoldAccent p-4 rounded-xl shadow-sm mb-4 cursor-pointer hover:shadow-md transition active:scale-98">
+            <div onclick="openNoticeDetail('${notice.id}')" class="w-full bg-[#FFF9E6] dark:bg-amber-950/15 border-l-4 border-cogerhGoldAccent p-4 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition active:scale-98">
               <div class="flex items-start justify-between gap-2">
                 <span class="text-[10px] bg-cogerhGoldAccent text-slate-950 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                   ${notice.category || 'URGENTE'}
@@ -994,7 +1322,7 @@
       if (generalNotices.length > 0) {
         generalNotices.forEach(notice => {
           generalNoticesHtml += `
-            <div onclick="openNoticeDetail('${notice.id}')" class="bg-white dark:bg-cogerhSlateDark p-4 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-800 mb-3.5 cursor-pointer hover:shadow-md transition active:scale-98">
+            <div onclick="openNoticeDetail('${notice.id}')" class="w-full bg-white dark:bg-cogerhSlateDark p-4 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-800 cursor-pointer hover:shadow-md transition active:scale-98">
               <div class="flex items-start justify-between gap-2">
                 <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                   ${notice.category || 'Geral'}
@@ -1054,46 +1382,57 @@
       }
 
       container.innerHTML = `
-        <div class="space-y-5 animate-fade-in">
-          <!-- Welcome Section matching native home card exactly -->
-          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
-            <div class="relative z-10 space-y-3.5">
-              <h2 class="text-lg font-black tracking-tight">Olá, Servidor(a)!</h2>
-              <p class="text-xs text-slate-200 leading-relaxed">
+        <div class="space-y-6 animate-fade-in w-full">
+          <!-- Welcome Hero Section (Responsive padding & layout) -->
+          <div class="w-full bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 md:p-7 rounded-2xl md:rounded-3xl shadow-md relative overflow-hidden">
+            <div class="relative z-10 space-y-3.5 max-w-2xl">
+              <h2 class="text-lg md:text-xl font-black tracking-tight">Olá, Servidor(a)!</h2>
+              <p class="text-xs md:text-sm text-slate-200 leading-relaxed">
                 Este é o canal direto da COGERH Apucarana para você consultar processos, acompanhar notícias e entrar em contato com nossa equipe para tirar dúvidas de forma rápida e intuitiva.
               </p>
-              <div>
-                <button onclick="switchTab(1)" class="bg-cogerhGoldAccent hover:bg-yellow-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow-md transition active:scale-95 flex items-center gap-1.5">
+              <div class="pt-1">
+                <button onclick="switchTab(1)" class="bg-cogerhGoldAccent hover:bg-yellow-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs md:text-sm shadow-md transition active:scale-95 flex items-center gap-2">
                   <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                  Consultar Processos
+                  <span>Consultar Processos & Procedimentos</span>
                 </button>
               </div>
             </div>
             <!-- Decorative backdrop logo icon -->
-            <i class="fa-solid fa-magnifying-glass text-8xl absolute -right-4 -bottom-4 opacity-10 text-white"></i>
+            <i class="fa-solid fa-magnifying-glass text-8xl md:text-9xl absolute -right-4 -bottom-4 opacity-10 text-white pointer-events-none"></i>
           </div>
 
-          <!-- Dynamic Urgent Notices Section -->
-          <div>
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
-              <i class="fa-solid fa-bullhorn text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
-              Avisos e Comunicados
-            </h3>
-            ${noticesHtml}
-            ${generalNoticesHtml}
-          </div>
+          <!-- Main Responsive Content: 2 Equal Dynamic Columns on Desktop & Tablet (Avisos 50%, Agenda 50%) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start w-full">
+            
+            <!-- Left Column: Dynamic Urgent & General Notices (Fluid 50% on larger screens) -->
+            <div class="space-y-4 w-full min-w-0">
+              <div class="flex items-center justify-between">
+                <h3 class="text-base md:text-lg font-extrabold text-slate-900 dark:text-slate-50 flex items-center gap-2 tracking-tight">
+                  <i class="fa-solid fa-bullhorn text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+                  <span>Avisos e Comunicados</span>
+                </h3>
+              </div>
 
-          <!-- Agenda / Deadlines Section -->
-          <div class="space-y-3.5">
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
-              <i class="fa-solid fa-calendar-check text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
-              Agenda e Cronograma da COGERH
-            </h3>
-            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
-              <div class="space-y-4">
-                ${agendaHtml}
+              <!-- Notices List (Cards expand fluidly to the full width of the column) -->
+              <div class="space-y-3.5 w-full">
+                ${noticesHtml}
+                ${generalNoticesHtml}
               </div>
             </div>
+
+            <!-- Right Column: Agenda & Deadlines Section (Fluid 50% on larger screens) -->
+            <div class="space-y-4 w-full min-w-0 md:sticky md:top-24">
+              <h3 class="text-base md:text-lg font-extrabold text-slate-900 dark:text-slate-50 flex items-center gap-2 tracking-tight">
+                <i class="fa-solid fa-calendar-check text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+                <span>Agenda e Cronograma</span>
+              </h3>
+              <div class="w-full bg-white dark:bg-cogerhSlateDark p-5 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
+                <div class="space-y-4 w-full">
+                  ${agendaHtml}
+                </div>
+              </div>
+            </div>
+
           </div>
 
           ${getUtfprLogoHtml('home')}
@@ -1256,13 +1595,13 @@
             <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3.5 top-3.5 text-base"></i>
           </div>
 
-          <!-- HORIZONTAL CATEGORY CHIPS SCROLL -->
-          <div id="proc-category-chips-container" class="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 custom-scrollbar">
+          <!-- HORIZONTAL CATEGORY CHIPS SCROLL (Wraps gracefully on Tablet/Desktop) -->
+          <div id="proc-category-chips-container" class="flex items-center gap-2 overflow-x-auto md:flex-wrap pb-2 -mx-4 px-4 md:mx-0 md:px-0 custom-scrollbar">
             ${chipsHtml}
           </div>
 
-          <!-- LIST OF CARDS -->
-          <div class="space-y-4">
+          <!-- RESPONSIVE GRID OF CARDS (1 col mobile, 2 cols tablet, 3 cols desktop) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 items-start">
             ${cardsHtml}
           </div>
 
@@ -1397,8 +1736,8 @@
             <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3.5 top-3.5 text-base"></i>
           </div>
 
-          <!-- GRID OF MANUALS -->
-          <div class="grid grid-cols-1 gap-4">
+          <!-- RESPONSIVE GRID OF MANUALS (1 col mobile, 2 cols tablet, max 3 cols desktop) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 items-stretch">
             ${listHtml}
           </div>
 
@@ -1514,53 +1853,57 @@
       }
 
       container.innerHTML = `
-        <div class="space-y-4 animate-fade-in">
-          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
-            <div class="relative z-10 space-y-1.5">
-              <h4 class="text-sm font-extrabold flex items-center gap-1.5 leading-snug">
+        <div class="space-y-5 animate-fade-in">
+          <!-- Top Banner -->
+          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 md:p-7 rounded-2xl md:rounded-3xl shadow-md relative overflow-hidden">
+            <div class="relative z-10 space-y-2 max-w-2xl">
+              <h4 class="text-sm md:text-base font-extrabold flex items-center gap-2 leading-snug">
                 <i class="fa-solid fa-circle-info text-cogerhGoldAccent"></i>
                 Fale Conosco
               </h4>
-              <p class="text-xs text-slate-200 leading-relaxed">
+              <p class="text-xs md:text-sm text-slate-200 leading-relaxed">
                 Consulte as responsabilidades específicas de cada servidor da COGERH-AP para agilizar seu atendimento direto.
               </p>
             </div>
             <!-- Decorative backdrop logo icon -->
-            <i class="fa-solid fa-circle-info text-7xl absolute -right-3 -bottom-3 opacity-10 text-white"></i>
+            <i class="fa-solid fa-circle-info text-7xl md:text-8xl absolute -right-3 -bottom-3 opacity-10 text-white pointer-events-none"></i>
           </div>
-          <div class="space-y-4">
-            <!-- Onde nos Encontrar (Location & Operating Hours Card) -->
-            <div class="bg-white dark:bg-cogerhSlateDark p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm space-y-4">
-              <div class="flex items-center gap-2.5">
-                <i class="fa-solid fa-location-dot text-base text-cogerhGoldAccent"></i>
-                <h4 class="text-sm font-black text-slate-900 dark:text-slate-100">Onde nos Encontrar</h4>
-              </div>
-              
-              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">UTFPR - Campus Apucarana
+
+          <!-- Onde nos Encontrar (Location & Operating Hours Card - 2 Columns on Tablet/Desktop) -->
+          <div class="bg-white dark:bg-cogerhSlateDark p-5 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div>
+                <div class="flex items-center gap-2.5 mb-2">
+                  <i class="fa-solid fa-location-dot text-base text-cogerhGoldAccent"></i>
+                  <h4 class="text-sm font-black text-slate-900 dark:text-slate-100">Onde nos Encontrar</h4>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">UTFPR - Campus Apucarana
 Bloco Administrativo (Bloco B)
 Sala da COGERH
 Rua Marcílio Dias, 635 - Apucarana - PR</p>
+              </div>
               
-              <div class="border-t border-slate-100 dark:border-slate-800/80 my-2"></div>
-              
-              <div class="flex items-start gap-2.5">
-                <i class="fa-solid fa-clock text-xs text-cogerhSlatePrimary dark:text-cogerhGoldAccent mt-0.5"></i>
-                <div>
-                  <span class="text-[10px] uppercase font-bold text-slate-400 block leading-none mb-1">Horário de Atendimento</span>
-                  <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Segunda a Sexta-Feira, das 08:00 às 12:00 e das 13:00 às 17:00</p>
+              <div class="border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800/80 pt-3 md:pt-0 md:pl-6">
+                <div class="flex items-center gap-2.5 mb-2">
+                  <i class="fa-solid fa-clock text-base text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+                  <h4 class="text-sm font-black text-slate-900 dark:text-slate-100">Horário de Atendimento</h4>
                 </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Segunda a Sexta-Feira, das 08:00 às 12:00 e das 13:00 às 17:00</p>
               </div>
             </div>
+          </div>
 
-            <!-- Section Title: Membros da Coordenação -->
-            <div class="pt-2">
-              <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-50 mb-3.5 flex items-center gap-2 tracking-tight">
-                <i class="fa-solid fa-users text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
-                Membros da Coordenação
-              </h3>
+          <!-- Section Title: Membros da Coordenação -->
+          <div class="pt-2">
+            <h3 class="text-base md:text-lg font-extrabold text-slate-900 dark:text-slate-50 mb-4 flex items-center gap-2 tracking-tight">
+              <i class="fa-solid fa-users text-lg text-cogerhSlatePrimary dark:text-cogerhGoldAccent"></i>
+              Membros da Coordenação
+            </h3>
+
+            <!-- RESPONSIVE TEAM MEMBERS GRID (1 col mobile, max 2 cols tablet/desktop) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-stretch">
+              ${teamHtml}
             </div>
-
-            ${teamHtml}
           </div>
 
           ${getUtfprLogoHtml('eq')}
@@ -1573,96 +1916,1030 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
     // ----------------------------------------------------
     function renderCanaisScreen(container) {
       container.innerHTML = `
-        <div class="space-y-4 animate-fade-in">
-          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 rounded-2xl shadow-md relative overflow-hidden">
-            <div class="relative z-10 space-y-1.5">
-              <h3 class="text-sm font-extrabold flex items-center gap-1.5 leading-snug">
+        <div class="space-y-5 animate-fade-in">
+          <div class="bg-gradient-to-r from-cogerhSlatePrimary to-slate-700 text-white p-5 md:p-7 rounded-2xl md:rounded-3xl shadow-md relative overflow-hidden">
+            <div class="relative z-10 space-y-2 max-w-2xl">
+              <h3 class="text-sm md:text-base font-extrabold flex items-center gap-2 leading-snug">
                 <i class="fa-solid fa-share-nodes text-cogerhGoldAccent"></i>
                 Canais de Comunicação
               </h3>
-              <p class="text-xs text-slate-200 leading-relaxed">Acesse diretamente os canais de atendimento da COGERH, os portais de serviços federais e informativos oficiais da UTFPR.</p>
+              <p class="text-xs md:text-sm text-slate-200 leading-relaxed">Acesse diretamente os canais de atendimento da COGERH, os portais de serviços federais e informativos oficiais da UTFPR.</p>
             </div>
             <!-- Decorative backdrop logo icon -->
-            <i class="fa-solid fa-share-nodes text-7xl absolute -right-3 -bottom-3 opacity-10 text-white"></i>
+            <i class="fa-solid fa-share-nodes text-7xl md:text-8xl absolute -right-3 -bottom-3 opacity-10 text-white pointer-events-none"></i>
           </div>
 
-          <div class="grid grid-cols-1 gap-3.5">
+          <!-- RESPONSIVE GRID OF CANAIS (1 col mobile, 2 cols tablet, 3 cols desktop) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             <!-- Atendimento por WhatsApp -->
-            <a href="https://wa.me/554331621206" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
-              <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+            <a href="https://wa.me/554331621206" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 md:p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-11 h-11 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 rounded-xl flex items-center justify-center text-xl shadow-inner shrink-0">
                 <i class="fa-brands fa-whatsapp"></i>
               </div>
-              <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Atendimento por WhatsApp</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">Canal direto de mensagens com a equipe da COGERH</p>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 truncate">Atendimento por WhatsApp</h4>
+                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 line-clamp-2">Canal direto de mensagens com a equipe da COGERH</p>
               </div>
-              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs shrink-0"></i>
             </a>
 
             <!-- Atendimento por Telefone -->
-            <a href="tel:4331621205" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
-              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-950/20 text-blue-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+            <a href="tel:4331621205" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 md:p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-11 h-11 bg-blue-50 dark:bg-blue-950/20 text-blue-500 rounded-xl flex items-center justify-center text-xl shadow-inner shrink-0">
                 <i class="fa-solid fa-phone"></i>
               </div>
-              <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Atendimento por Telefone</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">(43) 3162-1205</p>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 truncate">Atendimento por Telefone</h4>
+                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 truncate">(43) 3162-1205</p>
               </div>
-              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs shrink-0"></i>
             </a>
 
             <!-- E-mail Institucional -->
-            <a href="mailto:cogerh-ap@utfpr.edu.br" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
-              <div class="w-10 h-10 bg-slate-50 dark:bg-slate-900 text-slate-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+            <a href="mailto:cogerh-ap@utfpr.edu.br" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 md:p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-11 h-11 bg-slate-50 dark:bg-slate-900 text-slate-500 rounded-xl flex items-center justify-center text-xl shadow-inner shrink-0">
                 <i class="fa-solid fa-envelope"></i>
               </div>
-              <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">E-mail Institucional da COGERH</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">cogerh-ap@utfpr.edu.br</p>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 truncate">E-mail Institucional</h4>
+                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 truncate">cogerh-ap@utfpr.edu.br</p>
               </div>
-              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs shrink-0"></i>
             </a>
 
             <!-- Instagram da COGERH -->
-            <a href="https://www.instagram.com/cogerh.apucarana" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
-              <div class="w-10 h-10 bg-pink-50 dark:bg-pink-950/20 text-pink-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+            <a href="https://www.instagram.com/cogerh.apucarana" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 md:p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-11 h-11 bg-pink-50 dark:bg-pink-950/20 text-pink-500 rounded-xl flex items-center justify-center text-xl shadow-inner shrink-0">
                 <i class="fa-brands fa-instagram"></i>
               </div>
-              <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Instagram da COGERH</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">Acompanhe novidades e comunicados no nosso Instagram</p>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 truncate">Instagram da COGERH</h4>
+                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 line-clamp-2">Acompanhe novidades e comunicados no nosso Instagram</p>
               </div>
-              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs shrink-0"></i>
             </a>
 
             <!-- Portal da UTFPR -->
-            <a href="https://www.utfpr.edu.br" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
-              <div class="w-10 h-10 bg-amber-50 dark:bg-amber-950/20 text-amber-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+            <a href="https://www.utfpr.edu.br" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 md:p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-11 h-11 bg-amber-50 dark:bg-amber-950/20 text-amber-500 rounded-xl flex items-center justify-center text-xl shadow-inner shrink-0">
                 <i class="fa-solid fa-globe"></i>
               </div>
-              <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal da UTFPR</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">Portal oficial da Universidade Tecnológica Federal do Paraná</p>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 truncate">Portal da UTFPR</h4>
+                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 line-clamp-2">Portal oficial da Universidade Tecnológica Federal do Paraná</p>
               </div>
-              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs shrink-0"></i>
             </a>
 
             <!-- Portal do Servidor Federal -->
-            <a href="https://www.gov.br/servidor" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
-              <div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-500 rounded-xl flex items-center justify-center text-lg shadow-inner shrink-0">
+            <a href="https://www.gov.br/servidor" target="_blank" class="flex items-center gap-4 bg-white dark:bg-cogerhSlateDark p-4 md:p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition hover:shadow-md active:scale-98">
+              <div class="w-11 h-11 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-500 rounded-xl flex items-center justify-center text-xl shadow-inner shrink-0">
                 <i class="fa-solid fa-circle-user"></i>
               </div>
-              <div class="flex-1">
-                <h4 class="text-xs font-black text-slate-900 dark:text-slate-100">Portal do Servidor Federal</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">Acesse o portal de informações do Governo Federal</p>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 truncate">Portal do Servidor</h4>
+                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 line-clamp-2">Portal de informações do Governo Federal</p>
               </div>
-              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs"></i>
+              <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-700 text-xs shrink-0"></i>
             </a>
           </div>
 
           ${getUtfprLogoHtml('can')}
         </div>
       `;
+    }
+
+    // ----------------------------------------------------
+    // SCREEN 6: ÁREA RESTRITA (PAINEL DA EQUIPE COGERH)
+    // ----------------------------------------------------
+    function renderRestritoScreen(container) {
+      if (!state.isAuthorized) {
+        container.innerHTML = `
+          <div class="space-y-4 animate-fade-in text-center py-10 px-4">
+            <div class="w-16 h-16 rounded-3xl bg-cogerhGoldAccent/15 text-cogerhGoldAccent flex items-center justify-center text-3xl mx-auto shadow-inner">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-slate-100">Área de Acesso Restrito</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+              Esta tela é exclusiva para membros autorizados da equipe da COGERH-AP. Conecte-se com sua conta Google autorizada para visualizar os links e sistemas internos.
+            </p>
+            <button onclick="openAuthModal()" class="mt-4 bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs shadow-md transition active:scale-95">
+              <i class="fa-solid fa-key mr-1.5"></i> Fazer Login da Equipe
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const allCards = state.restrictedCards || PRESETS.restrictedCards || [];
+
+      // Extract unique categories dynamically from actual cards
+      const uniqueCats = ["Todos"];
+      allCards.forEach(c => {
+        if (c.category && !uniqueCats.includes(c.category)) {
+          uniqueCats.push(c.category);
+        }
+      });
+
+      // Filter cards by category & search query
+      const query = (state.restrictedSearchQuery || "").toLowerCase().trim();
+      const selectedCat = state.restrictedSelectedCategory || "Todos";
+
+      const filteredCards = allCards.filter(card => {
+        const matchesCat = (selectedCat === "Todos") || (card.category === selectedCat);
+        const matchesQuery = !query || 
+          card.title.toLowerCase().includes(query) || 
+          card.description.toLowerCase().includes(query) || 
+          (card.tag && card.tag.toLowerCase().includes(query)) ||
+          card.category.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      // Categories Filter Chips HTML (Optimized for horizontal thumb swipe on mobile & wrapping on tablet/desktop)
+      let categoryChipsHtml = `
+        <div id="restricted-category-chips" onscroll="state.restrictedCategoryScrollLeft = this.scrollLeft" class="flex items-center gap-1.5 overflow-x-auto md:flex-wrap pb-1 custom-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+      `;
+      uniqueCats.forEach(cat => {
+        const isSelected = (state.restrictedSelectedCategory === cat);
+        const count = cat === "Todos" ? allCards.length : allCards.filter(c => c.category === cat).length;
+        const activeClass = isSelected
+          ? "bg-cogerhSlatePrimary text-white dark:bg-cogerhGoldAccent dark:text-slate-950 shadow-sm font-bold scale-[1.02]"
+          : "bg-white dark:bg-cogerhSlateDark text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 font-medium";
+        
+        categoryChipsHtml += `
+          <button onclick="filterRestrictedCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-[11px] whitespace-nowrap transition active:scale-95 shrink-0 flex items-center gap-1.5 ${activeClass}">
+            <span>${cat}</span>
+            <span class="text-[9px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-white/20 dark:bg-slate-950/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}">${count}</span>
+          </button>
+        `;
+      });
+      categoryChipsHtml += `</div>`;
+
+      // Cards List HTML (Mobile Ergonomic & Desktop/Tablet Card Layout)
+      let cardsHtml = "";
+      if (filteredCards.length > 0) {
+        filteredCards.forEach(card => {
+          const iconClass = card.icon || "fa-solid fa-arrow-up-right-from-square";
+          cardsHtml += `
+            <div class="bg-white dark:bg-cogerhSlateDark p-4 md:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between space-y-3">
+              <div class="space-y-3">
+                <!-- Top Category & Tag Pills -->
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                  <span class="text-[9px] uppercase font-bold tracking-wider text-cogerhSlatePrimary dark:text-cogerhGoldAccent bg-slate-100 dark:bg-slate-800/90 px-2 py-0.5 rounded-md">
+                    ${card.category}
+                  </span>
+                  ${card.tag ? `<span class="text-[9px] font-bold text-amber-700 dark:text-cogerhGoldAccent bg-amber-500/10 dark:bg-cogerhGoldAccent/15 px-2 py-0.5 rounded-md border border-amber-500/20">${card.tag}</span>` : ''}
+                </div>
+
+                <!-- Main Title and Icon -->
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-cogerhGoldAccent/15 text-amber-600 dark:text-cogerhGoldAccent flex items-center justify-center text-lg shrink-0 shadow-inner mt-0.5">
+                    <i class="${iconClass}"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug break-words">
+                      ${card.title}
+                    </h4>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+                      ${card.description || "Link de acesso direto da equipe da COGERH."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile Touch-Friendly & Desktop Action Buttons -->
+              <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                <button onclick="copyRestrictedLink('${card.link}', '${card.title}')" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95">
+                  <i class="fa-regular fa-copy text-xs text-slate-400"></i>
+                  <span>Copiar Link</span>
+                </button>
+                <a href="${card.link}" target="_blank" rel="noopener noreferrer" class="py-2 px-3 rounded-xl bg-cogerhSlatePrimary hover:bg-slate-700 text-white dark:bg-cogerhGoldAccent dark:hover:bg-yellow-400 dark:text-slate-950 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
+                  <span>Acessar</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        cardsHtml = `
+          <div class="col-span-full bg-white dark:bg-cogerhSlateDark p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 text-center space-y-3">
+            <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto text-xl">
+              <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <div>
+              <h5 class="text-xs font-bold text-slate-800 dark:text-slate-200">Nenhum recurso encontrado</h5>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Tente ajustar o termo de busca ou selecionar outra categoria.</p>
+            </div>
+            <button onclick="clearRestrictedSearch(); filterRestrictedCategory('Todos');" class="text-xs font-bold text-cogerhGoldAccent hover:underline">
+              Limpar filtros de busca
+            </button>
+          </div>
+        `;
+      }
+
+      const userName = state.authUser?.name || "Membro da Equipe";
+      const userEmail = state.authUser?.email || "";
+      const userRole = state.authUser?.role || "Equipe COGERH-AP";
+      const userPic = state.authUser?.picture || "";
+      const userInitials = (userName || userEmail || "CO").substring(0, 2).toUpperCase();
+
+      container.innerHTML = `
+        <div class="space-y-4 animate-fade-in">
+          <!-- Top Welcome Header for Authorized User (Responsive layout) -->
+          <div class="bg-gradient-to-r from-cogerhSlatePrimary via-slate-800 to-slate-900 text-white p-5 md:p-6 rounded-2xl md:rounded-3xl shadow-md relative overflow-hidden">
+            <div class="relative z-10 space-y-4">
+              <!-- Top bar with status & action buttons -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="text-[10px] md:text-xs uppercase font-bold tracking-wider text-cogerhGoldAccent">Painel da Equipe COGERH</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="syncRestrictedLinksOnly(true)" id="btn-sync-restricted" title="Atualizar links da planilha" class="text-xs font-bold bg-white/10 hover:bg-white/20 active:scale-95 text-white px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+                    <i id="icon-sync-restricted" class="fa-solid fa-arrows-rotate text-cogerhGoldAccent"></i>
+                    <span>Atualizar Links</span>
+                  </button>
+                  <button onclick="openAuthModal()" title="Gerenciar Conta" class="text-xs font-bold bg-white/10 hover:bg-white/20 active:scale-95 text-white px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-shield text-cogerhGoldAccent"></i>
+                    <span>Minha Conta</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- User Info & Quick Stats in Responsive 2-column or flex -->
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <!-- User Monogram / Avatar + Info (md:col-span-7) -->
+                <div class="md:col-span-7 flex items-center gap-3.5">
+                  <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-cogerhGoldAccent/20 border-2 border-cogerhGoldAccent/80 flex items-center justify-center font-black text-cogerhGoldAccent text-base shrink-0 shadow-inner overflow-hidden">
+                    ${userPic ? `<img src="${userPic}" alt="Avatar" class="w-full h-full object-cover">` : userInitials}
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-sm md:text-base font-black text-white leading-tight truncate">
+                      Olá, ${userName}!
+                    </h3>
+                    <p class="text-xs text-slate-300 truncate mt-0.5">
+                      ${userRole}
+                    </p>
+                    <p class="text-[11px] text-cogerhGoldAccent truncate">
+                      ${userEmail}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Quick Status Chips Grid (md:col-span-5) -->
+                <div class="md:col-span-5 grid grid-cols-2 gap-2">
+                  <div class="bg-white/10 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/10 flex items-center gap-2">
+                    <i class="fa-solid fa-link text-cogerhGoldAccent text-sm shrink-0"></i>
+                    <div class="min-w-0">
+                      <span class="text-xs font-bold text-white block truncate">${allCards.length} links</span>
+                    </div>
+                  </div>
+                  <div class="bg-white/10 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/10 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-400 text-sm shrink-0"></i>
+                    <div class="min-w-0">
+                      <span class="text-xs font-bold text-white block truncate">Autorizado</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Decorative backdrop logo icon -->
+            <i class="fa-solid fa-shield-halved text-8xl md:text-9xl absolute -right-4 -bottom-4 opacity-10 text-white pointer-events-none"></i>
+          </div>
+
+          <!-- Team Notes & Reminders Trigger + Search Bar (Responsive 2 columns on Tablet/Desktop) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 items-center">
+            <!-- Team Notes & Reminders Trigger Card/Button -->
+            <div onclick="openTeamNotesModal()" class="h-full bg-white dark:bg-cogerhSlateDark p-3.5 md:p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm hover:border-cogerhGoldAccent/60 dark:hover:border-cogerhGoldAccent/60 transition cursor-pointer active:scale-[0.99] flex items-center justify-between gap-3 group">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 dark:text-amber-400 flex items-center justify-center text-sm shrink-0 group-hover:scale-105 transition">
+                  <i class="fa-solid fa-clipboard-list text-base"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-xs md:text-sm font-black text-slate-900 dark:text-slate-100 group-hover:text-cogerhGoldAccent transition">Notas & Lembretes da Equipe</h4>
+                    <span class="text-[9px] bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded">Compartilhado</span>
+                  </div>
+                  <p id="team-notes-preview-text" class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                    ${state.teamNotes ? (state.teamNotes.split('\n')[0] || 'Ver notas e recados da equipe') : 'Clique para visualizar ou editar lembretes da equipe'}
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 text-slate-400 group-hover:text-cogerhGoldAccent transition text-xs shrink-0 pr-1">
+                <span class="text-[11px] font-bold hidden sm:inline">Abrir</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative">
+              <input 
+                type="text" 
+                id="restricted-search-input" 
+                placeholder="Buscar planilhas, sistemas, SEI, Sisref..." 
+                value="${state.restrictedSearchQuery || ''}"
+                oninput="handleRestrictedSearch(this.value)"
+                class="w-full bg-white dark:bg-cogerhSlateDark text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs md:text-sm rounded-2xl pl-10 pr-9 py-3.5 border border-slate-200/80 dark:border-slate-800 outline-none focus:border-cogerhGoldAccent focus:ring-1 focus:ring-cogerhGoldAccent shadow-sm transition"
+              />
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-4 text-xs md:text-sm text-slate-400"></i>
+              ${state.restrictedSearchQuery ? `
+                <button onclick="clearRestrictedSearch()" class="absolute right-3.5 top-3.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                  <i class="fa-solid fa-circle-xmark text-sm"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Categories Filter Horizontal Chips -->
+          ${categoryChipsHtml}
+
+          <!-- RESPONSIVE GRID OF RESTRICTED CARDS (1 col mobile, 2 cols tablet, 3 cols desktop) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-5 items-stretch">
+            ${cardsHtml}
+          </div>
+
+          ${getUtfprLogoHtml('rest')}
+        </div>
+      `;
+
+      // Restore category chips horizontal scroll position
+      if (state.restrictedCategoryScrollLeft) {
+        const chipsEl = document.getElementById("restricted-category-chips");
+        if (chipsEl) {
+          chipsEl.scrollLeft = state.restrictedCategoryScrollLeft;
+        }
+      }
+    }
+
+    function filterRestrictedCategory(cat) {
+      const chipsContainer = document.getElementById("restricted-category-chips");
+      if (chipsContainer) {
+        state.restrictedCategoryScrollLeft = chipsContainer.scrollLeft;
+      }
+      state.restrictedSelectedCategory = cat;
+      renderRestritoScreen(document.getElementById("app-content"));
+      
+      // Ensure precise restoration after DOM repaint
+      requestAnimationFrame(() => {
+        const newChipsEl = document.getElementById("restricted-category-chips");
+        if (newChipsEl && state.restrictedCategoryScrollLeft) {
+          newChipsEl.scrollLeft = state.restrictedCategoryScrollLeft;
+        }
+      });
+    }
+
+    function handleRestrictedSearch(val) {
+      state.restrictedSearchQuery = val;
+      renderRestritoScreen(document.getElementById("app-content"));
+    }
+
+    function clearRestrictedSearch() {
+      state.restrictedSearchQuery = "";
+      renderRestritoScreen(document.getElementById("app-content"));
+    }
+
+    function copyRestrictedLink(url, title) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast(`Link de "${title}" copiado com sucesso!`);
+      }).catch(() => {
+        showToast("Não foi possível copiar o link.");
+      });
+    }
+
+    /**
+     * Abre a janela modal com as Notas e Lembretes da Equipe
+     */
+    function openTeamNotesModal() {
+      const modal = document.getElementById("team-notes-modal");
+      if (!modal) return;
+
+      const textarea = document.getElementById("team-notes-textarea");
+      if (textarea) textarea.value = state.teamNotes || "";
+
+      const meta = document.getElementById("team-notes-meta");
+      if (meta) {
+        meta.innerHTML = state.teamNotesAuthor 
+          ? `Última edição por <strong class="text-slate-600 dark:text-slate-300">${state.teamNotesAuthor}</strong> em ${state.teamNotesDate}` 
+          : 'Sincronizado via Google Apps Script & Sheets';
+      }
+
+      modal.classList.remove("hidden");
+      fetchTeamNotesFromCloud(false);
+    }
+
+    /**
+     * Fecha a janela modal das Notas e Lembretes da Equipe
+     */
+    function closeTeamNotesModal() {
+      const modal = document.getElementById("team-notes-modal");
+      if (modal) modal.classList.add("hidden");
+
+      // Atualiza o preview no card da tela restrita
+      const previewEl = document.getElementById("team-notes-preview-text");
+      if (previewEl) {
+        previewEl.textContent = state.teamNotes ? (state.teamNotes.split('\n')[0] || 'Ver notas e recados da equipe') : 'Clique para visualizar ou editar lembretes da equipe';
+      }
+    }
+
+    /**
+     * Busca notas compartilhadas da equipe na nuvem (Apps Script / Planilha)
+     */
+    async function fetchTeamNotesFromCloud(notify = false) {
+      const icon = document.getElementById("icon-refresh-notes");
+      if (icon) icon.classList.add("fa-spin");
+
+      const userEmail = state.authUser?.email || "";
+      const gasUrl = state.gasAuthUrl || PRESETS.gasAuthUrl;
+
+      try {
+        let fetched = false;
+
+        // 1. Tenta buscar diretamente via Web App do Apps Script
+        if (gasUrl && userEmail) {
+          try {
+            const endpoint = `${gasUrl}?action=get_notes&email=${encodeURIComponent(userEmail)}&_t=${Date.now()}`;
+            const res = await fetch(endpoint);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.success) {
+                state.teamNotes = data.notes || "";
+                state.teamNotesAuthor = data.authorName || "";
+                state.teamNotesDate = data.updatedAt || "";
+                localStorage.setItem("cogerh_team_notes", state.teamNotes);
+                localStorage.setItem("cogerh_team_notes_author", state.teamNotesAuthor);
+                localStorage.setItem("cogerh_team_notes_date", state.teamNotesDate);
+                fetched = true;
+              }
+            }
+          } catch (e) {
+            console.warn("Falha na consulta direta via Apps Script, tentando leitura via CSV da planilha:", e);
+          }
+        }
+
+        // 2. Se não conseguiu via Apps Script, tenta leitura direta do CSV da aba 'notas_equipe'
+        if (!fetched) {
+          const sheetId = state.spreadsheetId || PRESETS.spreadsheetId;
+          const csv = await downloadSheetCsv(sheetId, "notas_equipe");
+          if (csv) {
+            const rows = parseCsvText(csv);
+            if (rows.length >= 2) {
+              state.teamNotes = rows[1][0] || "";
+              state.teamNotesAuthor = rows[1][1] || "";
+              state.teamNotesDate = rows[1][3] || "";
+              localStorage.setItem("cogerh_team_notes", state.teamNotes);
+              localStorage.setItem("cogerh_team_notes_author", state.teamNotesAuthor);
+              localStorage.setItem("cogerh_team_notes_date", state.teamNotesDate);
+              fetched = true;
+            }
+          }
+        }
+
+        if (fetched) {
+          const textarea = document.getElementById("team-notes-textarea");
+          if (textarea) textarea.value = state.teamNotes;
+          const meta = document.getElementById("team-notes-meta");
+          if (meta) {
+            meta.innerHTML = state.teamNotesAuthor 
+              ? `Última edição por <strong class="text-slate-600 dark:text-slate-300">${state.teamNotesAuthor}</strong> em ${state.teamNotesDate}` 
+              : 'Sincronizado via Google Apps Script & Sheets';
+          }
+          const previewEl = document.getElementById("team-notes-preview-text");
+          if (previewEl) {
+            previewEl.textContent = state.teamNotes ? (state.teamNotes.split('\n')[0] || 'Ver notas e recados da equipe') : 'Clique para visualizar ou editar lembretes da equipe';
+          }
+          if (notify) showToast("Notas da equipe sincronizadas com a nuvem!");
+        } else {
+          if (notify) showToast("Nenhuma nota nova encontrada na nuvem.");
+        }
+      } catch (err) {
+        console.error("Erro ao sincronizar notas da equipe:", err);
+        if (notify) showToast("Erro ao buscar notas compartilhadas.");
+      } finally {
+        if (icon) icon.classList.remove("fa-spin");
+      }
+    }
+
+    /**
+     * Salva as notas na nuvem (Google Apps Script / Planilha) para todos os membros
+     */
+    async function saveTeamNotesToCloud() {
+      const textarea = document.getElementById("team-notes-textarea");
+      if (!textarea) return;
+
+      const newNotes = textarea.value;
+      const userEmail = state.authUser?.email || "";
+      const userName = state.authUser?.name || "Membro da Equipe";
+      const gasUrl = state.gasAuthUrl || PRESETS.gasAuthUrl;
+
+      // Salva localmente de imediato (offline-first)
+      state.teamNotes = newNotes;
+      localStorage.setItem("cogerh_team_notes", state.teamNotes);
+
+      const previewEl = document.getElementById("team-notes-preview-text");
+      if (previewEl) {
+        previewEl.textContent = newNotes ? (newNotes.split('\n')[0] || 'Ver notas e recados da equipe') : 'Clique para visualizar ou editar lembretes da equipe';
+      }
+
+      const btn = document.getElementById("btn-save-team-notes");
+      const icon = document.getElementById("icon-save-notes");
+      const lbl = document.getElementById("lbl-save-notes");
+      const statusEl = document.getElementById("team-notes-status");
+
+      if (btn) btn.disabled = true;
+      if (icon) icon.className = "fa-solid fa-spinner fa-spin text-cogerhGoldAccent dark:text-slate-950";
+      if (lbl) lbl.innerText = "Salvando...";
+
+      try {
+        if (!gasUrl) {
+          throw new Error("URL do Apps Script não configurada.");
+        }
+
+        const endpoint = `${gasUrl}?action=save_notes&email=${encodeURIComponent(userEmail)}&author_name=${encodeURIComponent(userName)}&notes=${encodeURIComponent(newNotes)}&_t=${Date.now()}`;
+        const res = await fetch(endpoint);
+        const data = await res.json();
+
+        if (data && data.success) {
+          state.teamNotes = data.notes !== undefined ? data.notes : newNotes;
+          state.teamNotesAuthor = data.authorName || userName;
+          state.teamNotesDate = data.updatedAt || new Date().toLocaleString("pt-BR");
+          
+          localStorage.setItem("cogerh_team_notes", state.teamNotes);
+          localStorage.setItem("cogerh_team_notes_author", state.teamNotesAuthor);
+          localStorage.setItem("cogerh_team_notes_date", state.teamNotesDate);
+
+          const meta = document.getElementById("team-notes-meta");
+          if (meta) {
+            meta.innerHTML = `Última edição por <strong class="text-slate-600 dark:text-slate-300">${state.teamNotesAuthor}</strong> em ${state.teamNotesDate}`;
+          }
+
+          if (statusEl) {
+            statusEl.classList.remove("hidden");
+            setTimeout(() => statusEl.classList.add("hidden"), 3500);
+          }
+          showToast("Notas salvas na nuvem e compartilhadas com toda a equipe!");
+        } else {
+          showToast(data.message || "Erro ao salvar notas na nuvem.");
+        }
+      } catch (err) {
+        console.error("Erro ao salvar notas no Apps Script:", err);
+        // Fallback status
+        showToast("Salvo no aparelho. Verifique a conexão para envio à nuvem.");
+      } finally {
+        if (btn) btn.disabled = false;
+        if (icon) icon.className = "fa-solid fa-cloud-arrow-up text-cogerhGoldAccent dark:text-slate-950";
+        if (lbl) lbl.innerText = "Salvar na Nuvem";
+      }
+    }
+
+    function saveTeamNotesFromUi() {
+      saveTeamNotesToCloud();
+    }
+
+    /**
+     * Sincroniza o perfil do usuário ativo com o nome na aba 'equipe_autorizada' e a foto na aba 'equipe'
+     */
+    async function refreshAuthorizedUserProfile(rerender = true) {
+      if (!state.isAuthorized || !state.authUser || !state.authUser.email) return;
+      const normalizedEmail = (state.authUser.email || "").trim().toLowerCase();
+      let changed = false;
+
+      try {
+        const sheetId = state.spreadsheetId || PRESETS.spreadsheetId;
+        
+        // 1. Busca nome na aba 'equipe_autorizada'
+        const csvAuth = await downloadSheetCsv(sheetId, "equipe_autorizada");
+        if (csvAuth) {
+          const rowsAuth = parseCsvText(csvAuth);
+          if (rowsAuth.length > 1) {
+            let emailCol = -1, nameCol = -1, roleCol = -1;
+            const headers = rowsAuth[0].map(h => String(h || "").toLowerCase().trim());
+            headers.forEach((h, idx) => {
+              if (h === "email" || h === "e-mail" || h === "e-mails" || h === "usuario" || h === "usuário") emailCol = idx;
+              else if (h === "nome" || h === "name" || h === "servidor" || h === "membro") nameCol = idx;
+              else if (h === "cargo" || h === "role" || h === "funcao" || h === "função" || h === "setor") roleCol = idx;
+            });
+            if (emailCol === -1) emailCol = 0;
+
+            for (let r = 1; r < rowsAuth.length; r++) {
+              if (String(rowsAuth[r][emailCol] || "").trim().toLowerCase() === normalizedEmail) {
+                if (nameCol !== -1 && rowsAuth[r][nameCol] && rowsAuth[r][nameCol].trim()) {
+                  const sheetName = rowsAuth[r][nameCol].trim();
+                  if (state.authUser.name !== sheetName) {
+                    state.authUser.name = sheetName;
+                    changed = true;
+                  }
+                }
+                if (roleCol !== -1 && rowsAuth[r][roleCol] && rowsAuth[r][roleCol].trim()) {
+                  const sheetRole = rowsAuth[r][roleCol].trim();
+                  if (state.authUser.role !== sheetRole) {
+                    state.authUser.role = sheetRole;
+                    changed = true;
+                  }
+                }
+                break;
+              }
+            }
+          }
+        }
+
+        // 2. Busca foto na aba 'equipe' pelo primeiro nome
+        const currentName = state.authUser.name || "";
+        const firstName = currentName.trim().split(" ")[0].toLowerCase();
+        const teamList = state.team || [];
+        
+        if (firstName) {
+          const match = teamList.find(m => (m.name || "").trim().split(" ")[0].toLowerCase() === firstName);
+          if (match && match.photoUrl && state.authUser.picture !== match.photoUrl) {
+            state.authUser.picture = match.photoUrl;
+            changed = true;
+          }
+        }
+
+        if (changed) {
+          localStorage.setItem("cogerh_auth_user", JSON.stringify(state.authUser));
+          if (rerender && state.currentTab === 5) {
+            renderRestritoScreen(document.getElementById("app-content"));
+          }
+        }
+      } catch (err) {
+        console.warn("Aviso ao atualizar perfil do usuário da planilha:", err);
+      }
+    }
+
+    /**
+     * Sincroniza diretamente apenas a aba de links restritos da planilha
+     */
+    async function syncRestrictedLinksOnly(notify = true) {
+      const icon = document.getElementById("icon-sync-restricted");
+      if (icon) icon.classList.add("fa-spin");
+
+      const sheetId = state.spreadsheetId || PRESETS.spreadsheetId;
+      try {
+        await refreshAuthorizedUserProfile(false);
+
+        let csv = await downloadSheetCsv(sheetId, "links_restritos");
+        if (!csv) {
+          csv = await downloadSheetCsv(sheetId, "restrito");
+        }
+
+        if (csv) {
+          const parsed = parseRestrictedLinksCsv(csv);
+          if (parsed.length > 0) {
+            state.restrictedCards = parsed;
+            localStorage.setItem("cogerh_data_restricted", JSON.stringify(state.restrictedCards));
+            await saveSyncDataToCache();
+            if (notify) showToast("Links restritos atualizados com sucesso da planilha!");
+          } else {
+            if (notify) showToast("Aba de links restritos lida, porém nenhum link encontrado.");
+          }
+        } else {
+          if (notify) showToast("Aba 'links_restritos' não encontrada na planilha padrão.");
+        }
+      } catch (err) {
+        console.error("Erro ao atualizar links restritos:", err);
+        if (notify) showToast("Erro ao sincronizar links da planilha.");
+      } finally {
+        if (icon) icon.classList.remove("fa-spin");
+        if (state.currentTab === 5) {
+          renderRestritoScreen(document.getElementById("app-content"));
+        }
+      }
+    }
+
+    // ====================================================
+    // AUTHENTICATION & GOOGLE LOGIN CONTROLLER
+    // ====================================================
+
+    function openAuthModal() {
+      const modal = document.getElementById("auth-modal");
+      if (!modal) return;
+
+      const viewGuest = document.getElementById("auth-view-guest");
+      const viewAuthorized = document.getElementById("auth-view-authorized");
+      const statusLoading = document.getElementById("auth-status-loading");
+      const statusError = document.getElementById("auth-status-error");
+      if (statusLoading) statusLoading.classList.add("hidden");
+      if (statusError) statusError.classList.add("hidden");
+
+      if (state.isAuthorized && state.authUser) {
+        if (viewGuest) viewGuest.classList.add("hidden");
+        if (viewAuthorized) viewAuthorized.classList.remove("hidden");
+
+        const nameEl = document.getElementById("auth-user-name");
+        const emailEl = document.getElementById("auth-user-email");
+        const avatarEl = document.getElementById("auth-user-avatar");
+
+        if (nameEl) nameEl.textContent = state.authUser.name || "Membro da Equipe";
+        if (emailEl) emailEl.textContent = state.authUser.email || "";
+        if (avatarEl) {
+          if (state.authUser.picture) {
+            avatarEl.innerHTML = `<img src="${state.authUser.picture}" alt="Avatar" class="w-full h-full object-cover rounded-full">`;
+          } else {
+            const initials = (state.authUser.name || state.authUser.email || "CO").substring(0, 2).toUpperCase();
+            avatarEl.textContent = initials;
+          }
+        }
+      } else {
+        if (viewGuest) viewGuest.classList.remove("hidden");
+        if (viewAuthorized) viewAuthorized.classList.add("hidden");
+
+        // Attempt to render Google GIS button if SDK is loaded
+        renderGoogleGisButton();
+      }
+
+      modal.classList.remove("hidden");
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById("auth-modal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function renderGoogleGisButton() {
+      if (window.google && google.accounts && google.accounts.id) {
+        try {
+          google.accounts.id.initialize({
+            client_id: "194937625781-037o9j3ntj8b3qto8q1qutsqadnclepg.apps.googleusercontent.com",
+            callback: handleGoogleCredentialResponse,
+            auto_select: false
+          });
+
+          const container = document.getElementById("google-signin-btn-container");
+          if (container) {
+            container.innerHTML = "";
+            google.accounts.id.renderButton(container, {
+              theme: state.themeMode === "dark" ? "filled_black" : "outline",
+              size: "large",
+              shape: "pill",
+              text: "signin_with",
+              locale: "pt-BR",
+              width: 280
+            });
+          }
+        } catch (err) {
+          console.warn("Erro ao renderizar botão Google GIS:", err);
+        }
+      }
+    }
+
+    function handleGoogleCredentialResponse(response) {
+      if (!response || !response.credential) return;
+      try {
+        // Decode Google JWT Token (base64url payload)
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonPayload);
+        const email = payload.email || "";
+        const name = payload.name || "";
+        const picture = payload.picture || "";
+
+        validateUserAccess(email, name, picture);
+      } catch (err) {
+        console.error("Erro ao decodificar credencial do Google:", err);
+        showToast("Erro ao processar login com o Google.");
+      }
+    }
+
+    function verifyUserEmailAuth() {
+      const emailInput = document.getElementById("auth-email-input");
+      if (!emailInput || !emailInput.value.trim()) {
+        showToast("Por favor, digite seu e-mail Google.");
+        return;
+      }
+      const email = emailInput.value.trim();
+      validateUserAccess(email, "", "");
+    }
+
+    async function validateUserAccess(email, name, picture) {
+      if (!email) return;
+
+      const normalizedEmail = email.toLowerCase().trim();
+      const statusLoading = document.getElementById("auth-status-loading");
+      const statusError = document.getElementById("auth-status-error");
+      const authBtn = document.getElementById("auth-submit-btn");
+
+      if (statusLoading) statusLoading.classList.remove("hidden");
+      if (statusError) statusError.classList.add("hidden");
+      if (authBtn) authBtn.disabled = true;
+
+      let authorized = false;
+      let userRole = "Membro da Equipe COGERH-AP";
+      let userName = ""; // Will be populated strictly from equipe_autorizada
+      let userPicture = picture;
+      let customErrorMsg = "";
+
+      // 1. Prioridade: consulta ao Google Apps Script Web App
+      if (state.gasAuthUrl && state.gasAuthUrl.startsWith("http")) {
+        try {
+          const apiUrl = `${state.gasAuthUrl}${state.gasAuthUrl.includes('?') ? '&' : '?'}action=auth&email=${encodeURIComponent(normalizedEmail)}`;
+          const response = await fetch(apiUrl);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.authorized) {
+              authorized = true;
+              if (data.user?.name) {
+                userName = data.user.name.trim();
+              }
+              if (data.user?.role) {
+                userRole = data.user.role.trim();
+              }
+              if (data.user?.photoUrl) {
+                userPicture = data.user.photoUrl;
+              }
+            } else {
+              customErrorMsg = data.message || "";
+            }
+          }
+        } catch (gasErr) {
+          console.warn("Falha na requisição à API Apps Script (usando fallback local):", gasErr);
+        }
+      }
+
+      // 2. Busca e sincroniza diretamente na aba 'equipe_autorizada' da planilha para garantir o nome exato da coluna 'nome'
+      try {
+        const sheetId = state.spreadsheetId || PRESETS.spreadsheetId;
+        const csvAuth = await downloadSheetCsv(sheetId, "equipe_autorizada");
+        if (csvAuth) {
+          const rowsAuth = parseCsvText(csvAuth);
+          if (rowsAuth.length > 1) {
+            let emailCol = -1, nameCol = -1, roleCol = -1;
+            const headers = rowsAuth[0].map(h => String(h || "").toLowerCase().trim());
+            headers.forEach((h, idx) => {
+              if (h === "email" || h === "e-mail" || h === "e-mails" || h === "usuario" || h === "usuário") emailCol = idx;
+              else if (h === "nome" || h === "name" || h === "servidor" || h === "membro") nameCol = idx;
+              else if (h === "cargo" || h === "role" || h === "funcao" || h === "função" || h === "setor") roleCol = idx;
+            });
+            if (emailCol === -1) emailCol = 0;
+
+            for (let r = 1; r < rowsAuth.length; r++) {
+              if (String(rowsAuth[r][emailCol] || "").trim().toLowerCase() === normalizedEmail) {
+                authorized = true;
+                if (nameCol !== -1 && rowsAuth[r][nameCol] && rowsAuth[r][nameCol].trim()) {
+                  userName = rowsAuth[r][nameCol].trim();
+                }
+                if (roleCol !== -1 && rowsAuth[r][roleCol] && rowsAuth[r][roleCol].trim()) {
+                  userRole = rowsAuth[r][roleCol].trim();
+                }
+                break;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Aviso ao verificar equipe_autorizada na planilha:", e);
+      }
+
+      // 3. Fallback adicional de whitelist (PRESETS.authorizedEmails & state.team)
+      if (!authorized && !customErrorMsg) {
+        const authorizedList = PRESETS.authorizedEmails || [];
+        const isWhitelisted = authorizedList.some(e => e.toLowerCase().trim() === normalizedEmail);
+        const teamMember = (state.team || []).find(m => m.email && m.email.toLowerCase().trim() === normalizedEmail);
+
+        if (isWhitelisted || teamMember) {
+          authorized = true;
+          if (teamMember) {
+            if (!userName && teamMember.name) userName = teamMember.name;
+            if (teamMember.role) userRole = teamMember.role;
+            if (teamMember.photoUrl) userPicture = teamMember.photoUrl;
+          }
+        }
+      }
+
+      // Se o nome ainda não foi definido, usa o nome do Google ou gera a partir do email
+      if (!userName) {
+        userName = name || formatNameFromEmail(normalizedEmail);
+      }
+
+      // 4. Se autorizado, busca a foto na aba 'equipe' pelo PRIMEIRO NOME (ou email)
+      if (authorized) {
+        const teamList = state.team || [];
+        const firstName = (userName || "").trim().split(" ")[0].toLowerCase();
+        
+        if (firstName) {
+          const matchByFirstName = teamList.find(m => {
+            const mFirst = (m.name || "").trim().split(" ")[0].toLowerCase();
+            return mFirst === firstName;
+          });
+          if (matchByFirstName && matchByFirstName.photoUrl) {
+            userPicture = matchByFirstName.photoUrl;
+            if (!userRole || userRole === "Membro da Equipe COGERH-AP") {
+              userRole = matchByFirstName.role || userRole;
+            }
+          }
+        }
+
+        // Se ainda não achou a foto, tenta correspondência por e-mail na equipe
+        if (!userPicture) {
+          const matchByEmail = teamList.find(m => m.email && m.email.toLowerCase().trim() === normalizedEmail);
+          if (matchByEmail && matchByEmail.photoUrl) {
+            userPicture = matchByEmail.photoUrl;
+          }
+        }
+      }
+
+      if (statusLoading) statusLoading.classList.add("hidden");
+      if (authBtn) authBtn.disabled = false;
+
+      if (authorized) {
+        handleAuthSuccess(normalizedEmail, userName, userPicture, userRole);
+      } else {
+        handleAuthFailure(normalizedEmail, customErrorMsg);
+      }
+    }
+
+    function handleAuthSuccess(email, name, picture, role) {
+      state.isAuthorized = true;
+      state.authUser = {
+        email: email,
+        name: name || formatNameFromEmail(email),
+        picture: picture || "",
+        role: role || "Membro da Equipe COGERH-AP"
+      };
+
+      localStorage.setItem("cogerh_auth_authorized", "true");
+      localStorage.setItem("cogerh_auth_user", JSON.stringify(state.authUser));
+
+      updateNavigationUI();
+      showToast("Acesso autorizado! Bem-vindo(a) à Área Restrita.");
+
+      // Switch auth modal view to authorized state
+      const viewGuest = document.getElementById("auth-view-guest");
+      const viewAuthorized = document.getElementById("auth-view-authorized");
+      if (viewGuest) viewGuest.classList.add("hidden");
+      if (viewAuthorized) viewAuthorized.classList.remove("hidden");
+
+      const nameEl = document.getElementById("auth-user-name");
+      const emailEl = document.getElementById("auth-user-email");
+      const avatarEl = document.getElementById("auth-user-avatar");
+
+      if (nameEl) nameEl.textContent = state.authUser.name;
+      if (emailEl) emailEl.textContent = state.authUser.email;
+      if (avatarEl) {
+        if (state.authUser.picture) {
+          avatarEl.innerHTML = `<img src="${state.authUser.picture}" alt="Avatar" class="w-full h-full object-cover rounded-full">`;
+        } else {
+          const initials = (state.authUser.name || state.authUser.email).substring(0, 2).toUpperCase();
+          avatarEl.textContent = initials;
+        }
+      }
+
+      // If already on restricted screen or switching
+      if (state.currentTab === 5) {
+        renderRestritoScreen(document.getElementById("app-content"));
+      }
+
+      // Automatically switch to restricted screen after short delay
+      setTimeout(() => {
+        closeAuthModal();
+        switchTab(5);
+      }, 700);
+    }
+
+    function handleAuthFailure(email, customMsg) {
+      state.isAuthorized = false;
+      localStorage.removeItem("cogerh_auth_authorized");
+      localStorage.removeItem("cogerh_auth_user");
+      updateNavigationUI();
+
+      const statusError = document.getElementById("auth-status-error");
+      const descEl = document.getElementById("auth-error-desc");
+
+      if (descEl) {
+        descEl.textContent = customMsg || `A conta Google (${email}) não possui autorização de acesso aos recursos restritos da COGERH. Para os demais servidores, todas as funções públicas do aplicativo continuam normais.`;
+      }
+      if (statusError) {
+        statusError.classList.remove("hidden");
+      }
+    }
+
+    function performUserLogout() {
+      state.isAuthorized = false;
+      state.authUser = null;
+      localStorage.removeItem("cogerh_auth_authorized");
+      localStorage.removeItem("cogerh_auth_user");
+
+      updateNavigationUI();
+      if (state.currentTab === 5) {
+        switchTab(0);
+      }
+      closeAuthModal();
+      showToast("Você foi desconectado da Área Restrita.");
+    }
+
+    function goToRestrictedScreen() {
+      closeAuthModal();
+      switchTab(5);
+    }
+
+    function formatNameFromEmail(email) {
+      const username = email.split("@")[0] || "";
+      const parts = username.split(/[\._\-]/);
+      return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(" ");
     }
 
     // ----------------------------------------------------
@@ -1960,6 +3237,70 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       return results;
     }
 
+    /**
+     * Processa CSV da aba de links restritos (links_restritos ou restrito)
+     */
+    function parseRestrictedLinksCsv(csvText) {
+      if (!csvText) return [];
+      const rows = parseCsvText(csvText);
+      if (rows.length === 0) return [];
+
+      let idCol = 0, titleCol = 1, catCol = 2, descCol = 3, linkCol = 4, tagCol = 5, iconCol = -1;
+      const headers = rows[0].map(h => String(h || "").trim().toLowerCase());
+
+      headers.forEach((h, index) => {
+        if (h === "id" || h === "codigo" || h === "código") idCol = index;
+        else if (h === "titulo" || h === "title" || h === "título" || h === "nome" || h === "sistema" || h === "recurso") titleCol = index;
+        else if (h === "categoria" || h === "category" || h === "secao" || h === "seção" || h === "tipo") catCol = index;
+        else if (h === "descricao" || h === "description" || h === "descrição" || h === "detalhes" || h === "resumo") descCol = index;
+        else if (h === "link" || h === "url" || h === "endereco" || h === "endereço" || h === "acesso") linkCol = index;
+        else if (h === "tag" || h === "badge" || h === "rotulo" || h === "rótulo" || h === "frequencia" || h === "frequência" || h === "periodicidade") tagCol = index;
+        else if (h === "icone" || h === "ícone" || h === "icon") iconCol = index;
+      });
+
+      const parsed = [];
+      rows.forEach((row, idx) => {
+        if (idx === 0) return;
+        const title = (row[titleCol] || "").trim();
+        if (!title || title.toLowerCase() === "title" || title.toLowerCase() === "titulo" || title.toLowerCase() === "título") return;
+
+        const id = (row[idCol] || "").trim() || `r_${idx}`;
+        const category = (row[catCol] || "").trim() || "Sistemas Internos";
+        const description = (row[descCol] || "").trim();
+        const link = (row[linkCol] || "").trim() || "https://www.utfpr.edu.br";
+        const tag = tagCol !== -1 && row[tagCol] ? (row[tagCol] || "").trim() : "";
+
+        let icon = iconCol !== -1 && row[iconCol] ? (row[iconCol] || "").trim() : "";
+        if (!icon) {
+          const lTitle = title.toLowerCase();
+          const lCat = category.toLowerCase();
+          if (lCat.includes("planilha") || lCat.includes("folha") || lCat.includes("financeiro") || lTitle.includes("folha") || lTitle.includes("financeiro")) {
+            icon = "fa-solid fa-file-invoice-dollar";
+          } else if (lCat.includes("drive") || lCat.includes("pasta") || lCat.includes("nuvem") || lTitle.includes("drive")) {
+            icon = "fa-brands fa-google-drive";
+          } else if (lCat.includes("modelo") || lCat.includes("documento") || lCat.includes("edital") || lTitle.includes("modelo") || lTitle.includes("edital")) {
+            icon = "fa-solid fa-file-contract";
+          } else if (lCat.includes("pessoa") || lCat.includes("sougov") || lTitle.includes("sougov") || lTitle.includes("servidor")) {
+            icon = "fa-solid fa-user-check";
+          } else if (lCat.includes("ponto") || lCat.includes("frequencia") || lCat.includes("frequência") || lCat.includes("sisref") || lTitle.includes("sisref")) {
+            icon = "fa-solid fa-fingerprint";
+          } else if (lTitle.includes("sei") || lCat.includes("sei")) {
+            icon = "fa-solid fa-file-signature";
+          } else if (lTitle.includes("siape") || lTitle.includes("sisgep") || lCat.includes("governo") || lTitle.includes("sistema")) {
+            icon = "fa-solid fa-server";
+          } else if (lTitle.includes("férias") || lTitle.includes("ferias") || lCat.includes("férias") || lCat.includes("ferias")) {
+            icon = "fa-solid fa-umbrella-beach";
+          } else {
+            icon = "fa-solid fa-arrow-up-right-from-square";
+          }
+        }
+
+        parsed.push({ id, title, category, description, link, tag, icon });
+      });
+
+      return parsed;
+    }
+
     async function downloadSheetCsv(sheetId, sheetName) {
       const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
       try {
@@ -2002,13 +3343,19 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
 
       try {
         // Fetch sheets parallel
-        const [csvProc, csvNotices, csvAgenda, csvTeam, csvManuals] = await Promise.all([
+        const [csvProc, csvNotices, csvAgenda, csvTeam, csvManuals, csvRestrictedDirect] = await Promise.all([
           downloadSheetCsv(extractedId, "procedimentos"),
           downloadSheetCsv(extractedId, "avisos"),
           downloadSheetCsv(extractedId, "agenda"),
           downloadSheetCsv(extractedId, "equipe"),
-          downloadSheetCsv(extractedId, "manuais")
+          downloadSheetCsv(extractedId, "manuais"),
+          downloadSheetCsv(extractedId, "links_restritos")
         ]);
+
+        let csvRestricted = csvRestrictedDirect;
+        if (!csvRestricted) {
+          csvRestricted = await downloadSheetCsv(extractedId, "restrito");
+        }
 
         if (!csvProc || !csvNotices || !csvAgenda || !csvTeam) {
           throw new Error("Não foi possível sincronizar as abas obrigatórias da planilha. Verifique se a planilha é pública e possui as abas: 'procedimentos', 'avisos', 'agenda' e 'equipe'.");
@@ -2160,6 +3507,9 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
           }
         }
 
+        // Process Restrito (links_restritos / restrito)
+        const parsedRestricted = parseRestrictedLinksCsv(csvRestricted);
+
         // Apply and Save!
         state.spreadsheetId = extractedId;
         state.procedures = parsedProc.length > 0 ? parsedProc : PRESETS.procedures;
@@ -2167,6 +3517,7 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         state.agenda = parsedAgenda.length > 0 ? parsedAgenda : PRESETS.agenda;
         state.team = parsedTeam.length > 0 ? parsedTeam : PRESETS.team;
         if (parsedManuals.length > 0) state.manuals = parsedManuals;
+        if (parsedRestricted.length > 0) state.restrictedCards = parsedRestricted;
 
         const dateStr = new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", {hour: '2-digit', minute:'2-digit'});
         state.lastSyncTime = dateStr;
@@ -2185,6 +3536,7 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         localStorage.setItem("cogerh_data_agenda", JSON.stringify(state.agenda));
         localStorage.setItem("cogerh_data_team", JSON.stringify(state.team));
         localStorage.setItem("cogerh_data_manuals", JSON.stringify(state.manuals));
+        localStorage.setItem("cogerh_data_restricted", JSON.stringify(state.restrictedCards));
 
         // Sync with Service Worker Cache
         await saveSyncDataToCache();
@@ -2222,13 +3574,19 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
       const defaultId = PRESETS.spreadsheetId;
       try {
         console.log("Iniciando sincronização automática com a planilha padrão...");
-        const [csvProc, csvNotices, csvAgenda, csvTeam, csvManuals] = await Promise.all([
+        const [csvProc, csvNotices, csvAgenda, csvTeam, csvManuals, csvRestrictedDirect] = await Promise.all([
           downloadSheetCsv(defaultId, "procedimentos"),
           downloadSheetCsv(defaultId, "avisos"),
           downloadSheetCsv(defaultId, "agenda"),
           downloadSheetCsv(defaultId, "equipe"),
-          downloadSheetCsv(defaultId, "manuais")
+          downloadSheetCsv(defaultId, "manuais"),
+          downloadSheetCsv(defaultId, "links_restritos")
         ]);
+
+        let csvRestricted = csvRestrictedDirect;
+        if (!csvRestricted) {
+          csvRestricted = await downloadSheetCsv(defaultId, "restrito");
+        }
 
         if (!csvProc || !csvNotices || !csvAgenda || !csvTeam) {
           console.warn("Abas obrigatórias não encontradas na planilha de sincronização automática.");
@@ -2380,6 +3738,9 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
           }
         }
 
+        // Process Restrito (links_restritos / restrito)
+        const parsedRestricted = parseRestrictedLinksCsv(csvRestricted);
+
         // Apply and Save!
         state.spreadsheetId = defaultId;
         state.procedures = parsedProc.length > 0 ? parsedProc : state.procedures;
@@ -2387,6 +3748,7 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         state.agenda = parsedAgenda.length > 0 ? parsedAgenda : state.agenda;
         state.team = parsedTeam.length > 0 ? parsedTeam : state.team;
         if (parsedManuals.length > 0) state.manuals = parsedManuals;
+        if (parsedRestricted.length > 0) state.restrictedCards = parsedRestricted;
 
         const dateStr = new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", {hour: '2-digit', minute:'2-digit'});
         state.lastSyncTime = dateStr;
@@ -2401,6 +3763,7 @@ Rua Marcílio Dias, 635 - Apucarana - PR</p>
         localStorage.setItem("cogerh_data_agenda", JSON.stringify(state.agenda));
         localStorage.setItem("cogerh_data_team", JSON.stringify(state.team));
         localStorage.setItem("cogerh_data_manuals", JSON.stringify(state.manuals));
+        localStorage.setItem("cogerh_data_restricted", JSON.stringify(state.restrictedCards));
 
         // Sync with Service Worker Cache
         await saveSyncDataToCache();
